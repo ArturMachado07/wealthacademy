@@ -63,6 +63,19 @@ export default function ArticlePage({ params }: Props) {
           ))}
         </div>
 
+        {article.gallery && article.gallery.length > 0 && (
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            {article.gallery.map((image) => (
+              <MediaSlot
+                key={image}
+                baseName={image}
+                alt={article.title}
+                className="aspect-[4/3] rounded"
+              />
+            ))}
+          </div>
+        )}
+
         {article.source && (
           <p className="mt-10 border-t border-ink/10 pt-6 text-sm text-ink-soft">
             Publicado originalmente em {article.source}

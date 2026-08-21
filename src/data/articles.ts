@@ -9,6 +9,7 @@ export type Article = {
   date: string;
   readingTime?: string;
   photo?: string;
+  gallery?: string[];
   body?: string[];
   // Preencher source/sourceUrl quando o conteúdo for cobertura de imprensa
   // (não original da Wealth Academy) — mostra a citação da publicação de origem.
@@ -31,7 +32,8 @@ export const articles: Article[] = [
     category: "Negócios",
     authorSlug: "wealth-academy",
     date: "31 de Março de 2025",
-    photo: "boutiquefinanceira-2",
+    photo: "boutiquefinanceira-1",
+    gallery: ["boutiquefinanceira-2", "boutiquefinanceira-3"],
     excerpt:
       "A The Finance Boutique, apresentada como a primeira boutique financeira independente de Angola, foi lançada a 27 de Março de 2025, em Luanda, integrando a Wealth Academy como a sua unidade de formação profissional.",
     body: [
