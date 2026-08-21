@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { navigation, siteConfig } from "@/data/site";
 
 export default function Footer() {
@@ -7,11 +6,9 @@ export default function Footer() {
     <footer className="bg-ink text-cream">
       <div className="container-page grid gap-12 py-16 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
-          <Image
+          <img
             src="/brand/logo-fundo-escuro.svg"
             alt="Wealth Academy"
-            width={200}
-            height={80}
             className="h-16 w-auto"
           />
           <p className="mt-5 max-w-xs text-sm text-cream/70">

@@ -2,7 +2,6 @@
 
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 
 function LoginForm() {
   const router = useRouter();
@@ -38,11 +37,9 @@ function LoginForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink px-6">
       <div className="w-full max-w-sm rounded border border-cream/10 bg-ink/60 p-10 text-cream">
-        <Image
+        <img
           src="/brand/logo-fundo-escuro.svg"
           alt="Wealth Academy"
-          width={180}
-          height={72}
           className="mx-auto h-14 w-auto"
         />
         <p className="mt-6 text-center text-sm text-cream/70">

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { navigation } from "@/data/site";
@@ -18,13 +17,12 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream/95 backdrop-blur">
       <div className="container-page flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <Image
+          {/* SVG servido directamente (sem next/image) — evita problemas de
+              optimização/cache do Next para este ficheiro vectorial. */}
+          <img
             src="/brand/logo-fundo-claro.svg"
             alt="Wealth Academy"
-            width={180}
-            height={72}
             className="h-12 w-auto md:h-14"
-            priority
           />
         </Link>
 
