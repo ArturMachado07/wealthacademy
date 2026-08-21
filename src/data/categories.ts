@@ -14,9 +14,9 @@ export type TrainingCategory = (typeof trainingCategories)[number];
 export const insightCategories = [
   "Finanças",
   "Negócios",
-  "Gestão",
   "Liderança",
-  "Carreira",
-  "Mercado",
-  "Educação Financeira",
+  "Comunicação",
+  "Tecnologia",
+  "Desenvolvimento Profissional",
+  "Formação Corporativa",
 ] as const;

@@ -3,7 +3,8 @@ export type EventStatus = "Próximo" | "Inscrições abertas" | "Esgotado" | "Re
 export type WealthEvent = {
   slug: string;
   title: string;
-  date: string;
+  type?: string;
+  date?: string;
   time?: string;
   location?: string;
   description?: string;
@@ -12,5 +13,13 @@ export type WealthEvent = {
   status: EventStatus;
 };
 
-// Sem eventos confirmados ainda.
-export const events: WealthEvent[] = [];
+export const events: WealthEvent[] = [
+  {
+    slug: "lancamento-oficial-wealth-academy",
+    title: "Lançamento Oficial da Wealth Academy",
+    type: "Evento Institucional",
+    status: "Realizado",
+    description:
+      "Evento institucional que marcou o lançamento da The Finance Boutique – Wealth Management & Advisory Services, Lda e da sua unidade de capacitação, a Wealth Academy.",
+  },
+];

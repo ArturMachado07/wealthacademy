@@ -66,18 +66,20 @@ export const courses: Course[] = [
   },
   {
     slug: "comunicacao-institucional",
-    title: "Comunicação Institucional",
+    title: "Comunicação Institucional, Workshops e Conferências de Imprensa",
     category: "Comunicação",
     status: "Em breve",
     instructor: "Dalila Prata",
     description:
-      "Desenvolva competências para comunicar com estratégia, clareza e impacto no contexto institucional. O programa aborda a preparação de conferências de imprensa, organização de workshops institucionais, preparação de porta-vozes, relacionamento com os media e avaliação da comunicação. Metodologia prática e participativa.",
+      "Desenvolva competências para comunicar de forma estratégica, clara e eficaz no contexto institucional. A formação aborda a organização de workshops e conferências de imprensa, preparação de porta-vozes, relacionamento com os media e aplicação prática de técnicas de comunicação profissional, com exercícios e dinâmicas orientados para situações reais do contexto profissional.",
     syllabus: [
-      "Preparação de conferências de imprensa",
+      "Comunicação institucional",
       "Organização de workshops institucionais",
+      "Diferença entre workshop, palestra, fórum e conferência",
+      "Planeamento e execução de conferências de imprensa",
       "Preparação de porta-vozes",
-      "Relacionamento com os media",
-      "Avaliação da comunicação",
+      "Relação com os media",
+      "Avaliação do impacto da comunicação",
     ],
   },
   {
@@ -86,6 +88,8 @@ export const courses: Course[] = [
     category: "Tecnologia",
     status: "Em breve",
     duration: "10 horas",
+    description:
+      "Desenvolva competências para criar apresentações profissionais mais claras, apelativas e impactantes. A formação aborda princípios de design e comunicação visual, estruturação de apresentações, utilização estratégica de animações e transições, integração de elementos gráficos e multimédia e adaptação da apresentação a diferentes públicos.",
   },
   {
     slug: "word-intermedio-avancado",
@@ -93,5 +97,7 @@ export const courses: Course[] = [
     category: "Tecnologia",
     status: "Em breve",
     duration: "10 horas",
+    description:
+      "Desenvolva competências avançadas para criar e gerir documentos profissionais com maior rigor e eficiência. A formação inclui formatação avançada, estruturação de documentos longos com estilos, criação de índices e referências automáticas, ferramentas de revisão e colaboração e automatização de tarefas para aumentar a produtividade.",
   },
 ];
