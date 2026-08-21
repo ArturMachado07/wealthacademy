@@ -8,8 +8,8 @@ export const siteConfig = {
   whatsappNumber: "244923733660",
   emails: {
     geral: "geral@waca.ao",
-    info: "info@wealthacademy.ao",
   },
+  address: "Edifício Maianga Office Park, Maianga, Luanda, Angola",
   social: {
     instagram: "https://www.instagram.com/wealthacademy.ao",
     linkedin: "https://www.linkedin.com/company/wealth-aca-demy/about/",

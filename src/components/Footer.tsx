@@ -59,15 +59,11 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a href={`mailto:${siteConfig.emails.info}`} className="hover:text-gold-light">
-                {siteConfig.emails.info}
-              </a>
-            </li>
-            <li>
               <a href={siteConfig.phoneHref} className="hover:text-gold-light">
                 {siteConfig.phone}
               </a>
             </li>
+            <li className="text-cream/70">{siteConfig.address}</li>
           </ul>
 
           <p className="eyebrow mt-8 text-gold-light">Credibilidade Institucional</p>

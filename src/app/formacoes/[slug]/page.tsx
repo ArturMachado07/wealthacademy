@@ -27,6 +27,7 @@ export default function CoursePage({ params }: Props) {
   const details: [string, string | undefined][] = [
     ["Modalidade", course.modality],
     ["Duração", course.duration],
+    ["Acompanhamento", course.followUp],
     ["Data", course.date],
     ["Local", course.location],
     ["Formador", course.instructor],
