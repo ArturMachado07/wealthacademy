@@ -1,0 +1,26 @@
+import Link from "next/link";
+import type { Course } from "@/data/courses";
+
+export default function CourseCard({ course }: { course: Course }) {
+  return (
+    <Link
+      href={`/formacoes/${course.slug}`}
+      className="group flex flex-col overflow-hidden rounded border border-ink/10 bg-white/60 transition-colors hover:border-gold"
+    >
+      <div className="aspect-[4/3] w-full bg-ink/5" aria-hidden="true" />
+      <div className="flex flex-1 flex-col p-6">
+        <span className="eyebrow">{course.category}</span>
+        <h3 className="mt-2 text-lg font-medium text-ink">{course.title}</h3>
+        <p className="mt-2 flex-1 text-sm text-ink-soft">{course.description}</p>
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-soft">
+          {course.modality && <span>{course.modality}</span>}
+          {course.duration && <span>{course.duration}</span>}
+          {course.date && <span>{course.date}</span>}
+        </div>
+        <span className="mt-4 text-sm font-medium text-gold group-hover:underline">
+          {course.status === "Inscrições abertas" ? "Explorar formação" : course.status}
+        </span>
+      </div>
+    </Link>
+  );
+}
