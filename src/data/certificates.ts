@@ -11,6 +11,6 @@ export type Certificate = {
 export const certificates: Certificate[] = [];
 
 export function certificateValidationUrl(certificateNumber: string) {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wealthacademy.ao";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
   return `${base}/validar/${certificateNumber}`;
 }

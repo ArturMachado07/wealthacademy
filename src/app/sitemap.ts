@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { courses } from "@/data/courses";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wealthacademy.ao";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [

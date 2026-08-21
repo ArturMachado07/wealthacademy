@@ -6,7 +6,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import OrganizationJsonLd from "@/components/OrganizationJsonLd";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wealthacademy.ao";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
