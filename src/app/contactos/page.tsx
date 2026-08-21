@@ -21,15 +21,16 @@ export default function ContactosPage() {
               <a href={`mailto:${siteConfig.emails.geral}`} className="mt-1 block hover:text-gold-dark">
                 {siteConfig.emails.geral}
               </a>
-              <a href={`mailto:${siteConfig.emails.info}`} className="mt-1 block hover:text-gold-dark">
-                {siteConfig.emails.info}
-              </a>
             </div>
             <div>
               <p className="eyebrow">Telefone</p>
               <a href={siteConfig.phoneHref} className="mt-1 block hover:text-gold-dark">
                 {siteConfig.phone}
               </a>
+            </div>
+            <div>
+              <p className="eyebrow">Morada</p>
+              <p className="mt-1">{siteConfig.address}</p>
             </div>
             <div>
               <p className="eyebrow">Redes sociais</p>

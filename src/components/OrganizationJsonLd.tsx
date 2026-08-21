@@ -13,6 +13,8 @@ export default function OrganizationJsonLd() {
     sameAs: [siteConfig.social.instagram, siteConfig.social.linkedin],
     address: {
       "@type": "PostalAddress",
+      streetAddress: "Edifício Maianga Office Park",
+      addressLocality: "Maianga, Luanda",
       addressCountry: "AO",
     },
   };

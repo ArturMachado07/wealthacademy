@@ -13,12 +13,10 @@ export default function ContactCta() {
             <a href={`mailto:${siteConfig.emails.geral}`} className="hover:text-gold-dark">
               {siteConfig.emails.geral}
             </a>
-            <a href={`mailto:${siteConfig.emails.info}`} className="hover:text-gold-dark">
-              {siteConfig.emails.info}
-            </a>
             <a href={siteConfig.phoneHref} className="hover:text-gold-dark">
               {siteConfig.phone}
             </a>
+            <span>{siteConfig.address}</span>
           </div>
         </div>
         <a
