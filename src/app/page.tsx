@@ -3,6 +3,7 @@ import PositioningSection from "@/components/home/PositioningSection";
 import TrainingSection from "@/components/home/TrainingSection";
 import EmpresasSection from "@/components/home/EmpresasSection";
 import PartnerLogos from "@/components/PartnerLogos";
+import ExperienceLogos from "@/components/ExperienceLogos";
 import ContactCta from "@/components/home/ContactCta";
 
 export default function HomePage() {
@@ -13,6 +14,7 @@ export default function HomePage() {
       <TrainingSection />
       <EmpresasSection />
       <PartnerLogos />
+      <ExperienceLogos />
       <ContactCta />
     </>
   );

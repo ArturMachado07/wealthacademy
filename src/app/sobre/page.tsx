@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import PartnerLogos from "@/components/PartnerLogos";
+import ExperienceLogos from "@/components/ExperienceLogos";
 import MediaSlot from "@/components/MediaSlot";
 
 export const metadata: Metadata = {
@@ -143,6 +144,7 @@ export default function SobrePage() {
       </section>
 
       <PartnerLogos />
+      <ExperienceLogos />
     </>
   );
 }
