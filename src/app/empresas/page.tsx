@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import CorporateForm from "@/components/CorporateForm";
+import MediaSlot from "@/components/MediaSlot";
 
 export const metadata: Metadata = {
   title: "Para Empresas",
@@ -18,16 +19,23 @@ export default function EmpresasPage() {
   return (
     <>
       <section className="bg-ink py-24 text-cream">
-        <div className="container-page max-w-3xl">
-          <p className="eyebrow text-gold-light">Para Empresas</p>
-          <h1 className="mt-3 text-3xl font-medium leading-tight md:text-5xl">
-            Formação que responde aos desafios da sua organização.
-          </h1>
-          <p className="mt-6 text-lg leading-relaxed text-cream/80">
-            A Wealth Academy desenvolve programas de formação personalizados para
-            organizações que procuram desenvolver competências, fortalecer equipas e
-            responder de forma estratégica às exigências do mercado.
-          </p>
+        <div className="container-page grid gap-12 md:grid-cols-2 md:items-center">
+          <div>
+            <p className="eyebrow text-gold-light">Para Empresas</p>
+            <h1 className="mt-3 text-3xl font-medium leading-tight md:text-5xl">
+              Formação que responde aos desafios da sua organização.
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-cream/80">
+              A Wealth Academy desenvolve programas de formação personalizados para
+              organizações que procuram desenvolver competências, fortalecer equipas e
+              responder de forma estratégica às exigências do mercado.
+            </p>
+          </div>
+          <MediaSlot
+            baseName="empresas"
+            alt="Formação corporativa Wealth Academy"
+            className="aspect-[4/3] rounded"
+          />
         </div>
       </section>
 

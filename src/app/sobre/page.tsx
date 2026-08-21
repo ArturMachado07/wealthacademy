@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import PartnerLogos from "@/components/PartnerLogos";
+import MediaSlot from "@/components/MediaSlot";
 
 export const metadata: Metadata = {
   title: "Sobre Nós",
@@ -41,23 +42,30 @@ export default function SobrePage() {
   return (
     <>
       <section className="bg-ink py-24 text-cream">
-        <div className="container-page max-w-3xl">
-          <p className="eyebrow text-gold-light">Sobre Nós</p>
-          <h1 className="mt-3 text-3xl font-medium leading-tight md:text-5xl">
-            Sua distinção, Nossa missão.
-          </h1>
-          <p className="mt-6 text-lg leading-relaxed text-cream/80">
-            A Wealth Academy é uma Academia de Formação em Finanças e Negócios, dedicada à
-            capacitação de profissionais, empreendedores, organizações e instituições através
-            de soluções formativas orientadas para o desenvolvimento de competências e para as
-            exigências do mercado.
-          </p>
-          <p className="mt-4 text-lg leading-relaxed text-cream/80">
-            Licenciada pelo Instituto Nacional de Emprego e Formação Profissional (INEFOP), com
-            o registo 1140.01/LDA./2024, a Wealth Academy tem como propósito contribuir para a
-            formação de profissionais de excelência e para o desenvolvimento de uma sociedade
-            mais informada, estratégica e preparada para os desafios financeiros e empresariais.
-          </p>
+        <div className="container-page grid gap-12 md:grid-cols-2 md:items-center">
+          <div>
+            <p className="eyebrow text-gold-light">Sobre Nós</p>
+            <h1 className="mt-3 text-3xl font-medium leading-tight md:text-5xl">
+              Sua distinção, Nossa missão.
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-cream/80">
+              A Wealth Academy é uma Academia de Formação em Finanças e Negócios, dedicada à
+              capacitação de profissionais, empreendedores, organizações e instituições através
+              de soluções formativas orientadas para o desenvolvimento de competências e para as
+              exigências do mercado.
+            </p>
+            <p className="mt-4 text-lg leading-relaxed text-cream/80">
+              Licenciada pelo Instituto Nacional de Emprego e Formação Profissional (INEFOP), com
+              o registo 1140.01/LDA./2024, a Wealth Academy tem como propósito contribuir para a
+              formação de profissionais de excelência e para o desenvolvimento de uma sociedade
+              mais informada, estratégica e preparada para os desafios financeiros e empresariais.
+            </p>
+          </div>
+          <MediaSlot
+            baseName="sobre"
+            alt="Comunidade e formandos da Wealth Academy"
+            className="aspect-[4/3] rounded"
+          />
         </div>
       </section>
 
@@ -125,8 +133,9 @@ export default function SobrePage() {
           <p className="mt-5 leading-relaxed text-cream/80">
             As actividades extracurriculares e experiências práticas fazem parte da nossa
             perspectiva de formação integral. Um exemplo disso foi a visita dos formandos à
-            Biblioteca Nacional de Angola, realizada no âmbito de actividades destinadas ao
-            enriquecimento académico, cultural e intelectual dos estudantes. Esta visão reforça
+            Biblioteca Nacional de Angola, no dia 6 de Fevereiro de 2026, realizada no âmbito de
+            actividades destinadas ao enriquecimento académico, cultural e intelectual dos
+            estudantes. Esta visão reforça
             o nosso compromisso com uma formação que combina competências técnicas,
             conhecimento, cultura, pensamento crítico e desenvolvimento contínuo.
           </p>

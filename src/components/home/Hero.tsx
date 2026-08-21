@@ -1,14 +1,17 @@
 import Link from "next/link";
+import MediaSlot from "@/components/MediaSlot";
 
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-ink text-cream">
+      <MediaSlot
+        baseName="hero"
+        alt="Formação Wealth Academy"
+        className="absolute inset-0"
+        priority
+      />
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.07]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 20%, #C79A5D 0, transparent 45%), radial-gradient(circle at 80% 60%, #C79A5D 0, transparent 40%)",
-        }}
+        className="absolute inset-0 bg-gradient-to-t from-ink via-ink/85 to-ink/50"
         aria-hidden="true"
       />
       <div className="container-page relative flex min-h-[82vh] flex-col justify-center py-28">

@@ -42,6 +42,12 @@ export default function WorkshopsList() {
               <WorkshopCard key={workshop.slug} workshop={workshop} />
             ))}
           </div>
+        ) : active === "Todos" ? (
+          <EmptyState
+            eyebrow="Workshops e experiências práticas"
+            title="A Wealth Academy desenvolve experiências de aprendizagem orientadas para desafios concretos de profissionais e organizações."
+            description="Novas experiências serão anunciadas brevemente."
+          />
         ) : (
           <EmptyState
             title="Sem workshops nesta categoria"
