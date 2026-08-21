@@ -40,7 +40,9 @@ export default function CoursePage({ params }: Props) {
       <div className="container-page max-w-3xl">
         <p className="eyebrow">{course.category}</p>
         <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{course.title}</h1>
-        <p className="mt-5 text-lg leading-relaxed text-ink-soft">{course.description}</p>
+        {course.description && (
+          <p className="mt-5 text-lg leading-relaxed text-ink-soft">{course.description}</p>
+        )}
 
         <dl className="mt-10 grid grid-cols-2 gap-6 border-y border-ink/10 py-8 md:grid-cols-4">
           {details
