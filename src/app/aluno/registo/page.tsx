@@ -30,11 +30,18 @@ export default function AlunoRegistoPage() {
     setLoading(false);
 
     if (signUpError) {
-      setError(
-        signUpError.message.includes("already registered")
-          ? "Já existe uma conta com este email."
-          : "Não foi possível criar a conta. Tente novamente."
-      );
+      const msg = signUpError.message.toLowerCase();
+      if (msg.includes("already registered") || msg.includes("already exists")) {
+        setError("Já existe uma conta com este email.");
+      } else if (msg.includes("rate limit") || msg.includes("too many")) {
+        setError(
+          "Limite de emails atingido temporariamente (Supabase em modo de testes). Aguarde alguns minutos e tente novamente."
+        );
+      } else {
+        // Mostra a mensagem real do Supabase para facilitar o diagnóstico
+        // enquanto o envio de email não estiver num provedor próprio (SMTP).
+        setError(`Não foi possível criar a conta: ${signUpError.message}`);
+      }
       return;
     }
 
