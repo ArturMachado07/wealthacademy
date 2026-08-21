@@ -7,7 +7,7 @@ const nextConfig = {
     // não uploads de terceiros — por isso é seguro permitir a optimização
     // de SVG, que o Next bloqueia por defeito.
     dangerouslyAllowSVG: true,
-    contentDispositionType: "attachment",
+    contentDispositionType: "inline",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 };
