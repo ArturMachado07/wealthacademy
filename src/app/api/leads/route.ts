@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
-// Endpoint de recepção de leads (contacto geral e formulário corporativo).
-// Fase 1: valida e regista o pedido nos logs do servidor.
+// Endpoint de recepção de leads (contacto geral, formulário corporativo,
+// lista de interesse da Área do Aluno).
+// Se a base de dados Supabase estiver configurada, grava na tabela `leads`
+// (ver supabase/schema.sql). Caso contrário, mantém o comportamento
+// anterior (regista nos logs) para continuar a funcionar sem BD.
 // Próximo passo (fora de âmbito nesta fase): ligar a um serviço de email
-// (ex. Resend/SMTP) e/ou ao CRM, usando o mesmo payload já estruturado
-// em src/data/leads.ts (tipo Lead / CorporateLead).
+// (ex. Resend/SMTP) para notificar a equipa a cada novo lead.
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
 
@@ -15,7 +18,25 @@ export async function POST(request: Request) {
     );
   }
 
-  console.log("[wealth-academy] novo lead:", JSON.stringify(body));
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SECRET_KEY) {
+    const supabase = createSupabaseAdminClient();
+    const { error } = await supabase.from("leads").insert({
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      interest: body.interest ?? null,
+      origin: body.origin ?? "Website",
+      course_slug: body.course ?? null,
+      company: body.company ?? null,
+    });
+
+    if (error) {
+      console.error("[wealth-academy] falha ao gravar lead na BD:", error);
+      return NextResponse.json({ ok: false, error: "Não foi possível registar o pedido." }, { status: 500 });
+    }
+  } else {
+    console.log("[wealth-academy] novo lead (sem BD configurada):", JSON.stringify(body));
+  }
 
   return NextResponse.json({ ok: true });
 }

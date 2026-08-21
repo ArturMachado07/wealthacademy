@@ -1,9 +1,4 @@
-// Camada de autenticação — arquitectura preparada, sem implementação funcional
-// nesta fase (conforme briefing: "não implementar a Área do Aluno agora").
-//
-// Quando esta fase avançar, substituir por uma integração real
-// (ex. NextAuth.js, Clerk ou Supabase Auth) mantendo esta mesma assinatura,
-// para que app/area-do-aluno/** passe a funcionar sem alterações estruturais.
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type Student = {
   id: string;
@@ -11,6 +6,28 @@ export type Student = {
   email: string;
 };
 
+// Devolve o aluno autenticado (via Supabase Auth) ou null. Antes de
+// NEXT_PUBLIC_SUPABASE_URL/ANON_KEY estarem definidos, devolve sempre null
+// — a Área do Aluno mantém-se no estado "em preparação" sem rebentar.
 export async function getCurrentStudent(): Promise<Student | null> {
-  return null;
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    return null;
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, name, email")
+    .eq("auth_user_id", user.id)
+    .single();
+
+  if (!student) return null;
+
+  return student as Student;
 }

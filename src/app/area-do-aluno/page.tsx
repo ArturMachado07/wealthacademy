@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import SectionHeading from "@/components/SectionHeading";
 import InterestForm from "@/components/InterestForm";
 import { getCurrentStudent } from "@/lib/auth";
@@ -18,11 +20,12 @@ const features = [
 ];
 
 export default async function AreaDoAlunoPage() {
-  // Preparado para a fase em que a autenticação real existir: quando
-  // getCurrentStudent() devolver um aluno, este ecrã passa a redireccionar
-  // para o dashboard funcional em vez de mostrar a apresentação abaixo.
+  // Já autenticado — segue directo para o dashboard funcional em vez de
+  // mostrar a apresentação abaixo.
   const student = await getCurrentStudent();
-  void student;
+  if (student) {
+    redirect("/aluno");
+  }
 
   return (
     <section className="py-24">
@@ -30,8 +33,20 @@ export default async function AreaDoAlunoPage() {
         <SectionHeading
           eyebrow="Área do Aluno"
           title="A sua evolução, organizada num só lugar."
-          description="Esta área está em preparação. Quando estiver disponível, cada aluno terá acesso a um espaço pessoal com os elementos abaixo."
+          description="Cada aluno tem acesso a um espaço pessoal com os elementos abaixo. Algumas funcionalidades ainda estão em preparação."
         />
+
+        <div className="mt-8 flex flex-wrap gap-4">
+          <Link href="/aluno/login" className="btn-primary">
+            Entrar
+          </Link>
+          <Link
+            href="/aluno/registo"
+            className="rounded border border-ink/20 px-6 py-3 text-sm font-medium text-ink hover:border-ink/40"
+          >
+            Criar conta
+          </Link>
+        </div>
 
         <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
