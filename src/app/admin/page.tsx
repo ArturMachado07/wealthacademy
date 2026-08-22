@@ -61,6 +61,9 @@ export default async function AdminDashboardPage() {
             <p className="eyebrow">Painel Admin</p>
             <h1 className="mt-2 font-display text-3xl text-ink">Olá, {admin.name}</h1>
             <p className="mt-1 text-sm text-ink-soft">{admin.role}</p>
+            <Link href="/admin/formacoes" className="mt-3 inline-block text-sm text-gold-dark underline">
+              Gerir conteúdo das formações (módulos e aulas)
+            </Link>
           </div>
           <SignOutButton />
         </div>

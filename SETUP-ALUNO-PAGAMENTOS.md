@@ -158,14 +158,35 @@ domínio Resend também pode ser ligado à Supabase (Authentication → SMTP
 Settings) para resolver o limite de emails do registo de alunos — usa a
 mesma API key nos dois sítios.
 
+## 3.8. Conteúdo do LMS (módulos, aulas, progresso)
+
+Correr `supabase/007_lms_content.sql` no SQL Editor — cria as tabelas
+`course_modules`, `lessons` e `lesson_progress`, com RLS: um aluno só vê o
+conteúdo de uma formação em que está inscrito (estado "Em curso" ou
+"Concluída").
+
+Depois disso, em `/admin/formacoes` (link no topo do Painel Admin) é
+possível, por formação:
+
+1. Adicionar módulos (ex. "Módulo 1 — Introdução").
+2. Dentro de cada módulo, adicionar aulas: título, descrição opcional,
+   tipo de vídeo (YouTube/Vimeo — colar o link de **incorporação/embed**,
+   não o link normal; ou "Ficheiro directo" para um `.mp4` alojado algures),
+   duração em minutos e um link opcional para materiais (PDF, etc.).
+3. Eliminar módulos/aulas a qualquer momento.
+
+Não é preciso tocar em código para gerir o conteúdo — tudo passa pelo
+painel.
+
+O aluno acede ao curso a partir do botão **"Aceder ao curso"** no seu
+dashboard (`/aluno`), que aparece em qualquer inscrição "Em curso" ou
+"Concluída". Cada aula marcada como concluída actualiza automaticamente a
+percentagem de progresso da inscrição (o estado "Concluída"/emissão de
+certificado continua a ser sempre uma decisão manual do Admin).
+
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
-- Ligar inscrições reais: hoje uma inscrição só aparece no dashboard do
-  aluno se for inserida manualmente na tabela `enrollments` (via Supabase)
-  — ainda não há um fluxo de "inscrever-me numa formação" no site público
-  que crie essa linha automaticamente.
-- Conteúdo do LMS em si (vídeo-aulas, materiais, avaliações).
-- Geração de certificados (PDF + QR code) e página `/validar/WA-XXXX`.
-- Emails transaccionais (confirmação de inscrição/pagamento).
+- Avaliações/testes dentro do LMS (hoje só há vídeo-aulas + materiais +
+  marcação de conclusão manual por aula).
 - Autenticação própria do Admin (hoje `src/lib/admin-auth.ts` também
   devolve sempre `null`).

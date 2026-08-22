@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 
 type Enrollment = {
   id: string;
+  course_slug: string;
   course_title: string;
   status: string;
   progress_percent: number;
@@ -39,7 +40,7 @@ export default async function AlunoDashboardPage() {
   const [{ data: enrollments }, { data: certificates }] = await Promise.all([
     supabase
       .from("enrollments")
-      .select("id, course_title, status, progress_percent, next_lesson")
+      .select("id, course_slug, course_title, status, progress_percent, next_lesson")
       .eq("student_id", student.id)
       .order("enrolled_at", { ascending: false }),
     supabase
@@ -93,6 +94,14 @@ export default async function AlunoDashboardPage() {
                     <p className="mt-3 text-sm text-ink-soft">
                       Próxima aula: <span className="text-ink">{enrollment.next_lesson}</span>
                     </p>
+                  )}
+                  {(enrollment.status === "Em curso" || enrollment.status === "Concluída") && (
+                    <Link
+                      href={`/aluno/formacao/${enrollment.course_slug}`}
+                      className="mt-4 inline-block text-sm font-medium text-gold-dark underline"
+                    >
+                      Aceder ao curso
+                    </Link>
                   )}
                 </div>
                 );
