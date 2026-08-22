@@ -43,16 +43,31 @@ export default async function AdminDashboardPage() {
   // com a chave pública.
   const supabase = createSupabaseAdminClient();
 
-  const [{ data: enrollments }, { data: leads }] = await Promise.all([
+  const [{ data: enrollments }, { data: leads }, { data: payments }] = await Promise.all([
     supabase
       .from("enrollments")
       .select("id, course_title, status, progress_percent, enrolled_at, students(name, email)")
       .order("enrolled_at", { ascending: false }),
     supabase.from("leads").select("*").order("created_at", { ascending: false }),
+    supabase.from("payments").select("amount, currency, status"),
   ]);
 
   const enrollmentRows = (enrollments ?? []) as EnrollmentRow[];
   const leadRows = (leads ?? []) as LeadRow[];
+  const paymentRows = (payments ?? []) as { amount: number; currency: string; status: string }[];
+
+  const revenueByCurrency = new Map<string, number>();
+  for (const p of paymentRows) {
+    if (p.status !== "accepted") continue;
+    revenueByCurrency.set(p.currency, (revenueByCurrency.get(p.currency) ?? 0) + Number(p.amount));
+  }
+
+  const enrollmentsByCourse = new Map<string, number>();
+  for (const row of enrollmentRows) {
+    enrollmentsByCourse.set(row.course_title, (enrollmentsByCourse.get(row.course_title) ?? 0) + 1);
+  }
+  const courseCounts = [...enrollmentsByCourse.entries()].sort((a, b) => b[1] - a[1]);
+  const maxCourseCount = courseCounts.length > 0 ? courseCounts[0][1] : 0;
 
   return (
     <section className="py-16">
@@ -62,12 +77,62 @@ export default async function AdminDashboardPage() {
             <p className="eyebrow">Painel Admin</p>
             <h1 className="mt-2 font-display text-3xl text-ink">Olá, {admin.name}</h1>
             <p className="mt-1 text-sm text-ink-soft">{admin.role}</p>
-            <Link href="/admin/formacoes" className="mt-3 inline-block text-sm text-gold-dark underline">
-              Gerir conteúdo das formações (módulos e aulas)
-            </Link>
+            <div className="mt-3 flex flex-wrap gap-4 text-sm">
+              <Link href="/admin/formacoes" className="text-gold-dark underline">
+                Gerir conteúdo das formações (módulos e aulas)
+              </Link>
+              <Link href="/admin/pagamentos" className="text-gold-dark underline">
+                Ver todos os pagamentos
+              </Link>
+            </div>
           </div>
           <SignOutButton />
         </div>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="rounded border border-ink/10 bg-white/60 p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-soft">Inscrições</p>
+            <p className="mt-2 font-display text-3xl text-ink">{enrollmentRows.length}</p>
+          </div>
+          <div className="rounded border border-ink/10 bg-white/60 p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-soft">Leads</p>
+            <p className="mt-2 font-display text-3xl text-ink">{leadRows.length}</p>
+          </div>
+          <div className="rounded border border-ink/10 bg-white/60 p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-soft">Receita confirmada</p>
+            <p className="mt-2 font-display text-3xl text-ink">
+              {revenueByCurrency.size === 0
+                ? "0 Kz"
+                : [...revenueByCurrency.entries()]
+                    .map(([currency, total]) => `${total.toLocaleString("pt-PT")} ${currency === "AOA" ? "Kz" : currency}`)
+                    .join(" · ")}
+            </p>
+          </div>
+        </div>
+
+        {courseCounts.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">
+              Inscrições por formação
+            </h2>
+            <div className="mt-3 space-y-3">
+              {courseCounts.map(([title, count]) => (
+                <div key={title}>
+                  <div className="flex items-center justify-between text-xs text-ink-soft">
+                    <span>{title}</span>
+                    <span>{count}</span>
+                  </div>
+                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-ink/10">
+                    <div
+                      className="h-full rounded-full bg-gold"
+                      style={{ width: `${maxCourseCount > 0 ? (count / maxCourseCount) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-14">
           <h2 className="text-lg font-medium text-ink">Inscrições ({enrollmentRows.length})</h2>
@@ -113,7 +178,17 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className="mt-14">
-          <h2 className="text-lg font-medium text-ink">Leads ({leadRows.length})</h2>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="text-lg font-medium text-ink">Leads ({leadRows.length})</h2>
+            {leadRows.length > 0 && (
+              <a
+                href="/api/admin/leads/export"
+                className="rounded border border-ink/20 px-3 py-1.5 text-xs font-medium text-ink hover:border-ink/40"
+              >
+                Exportar CSV
+              </a>
+            )}
+          </div>
           {leadRows.length === 0 ? (
             <p className="mt-4 text-sm text-ink-soft">Ainda não há leads.</p>
           ) : (
