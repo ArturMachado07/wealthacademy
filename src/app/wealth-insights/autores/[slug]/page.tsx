@@ -4,6 +4,7 @@ import { getAuthorBySlug, getArticlesByAuthor } from "@/lib/wealth-insights";
 import ArticleCard from "@/components/ArticleCard";
 import SectionHeading from "@/components/SectionHeading";
 import EmptyState from "@/components/EmptyState";
+import MediaSlot from "@/components/MediaSlot";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -26,11 +27,18 @@ export default async function AuthorPage({ params }: Props) {
   return (
     <section className="py-24">
       <div className="container-page">
-        <SectionHeading
-          eyebrow="Autor"
-          title={author.name}
-          description={author.role ?? author.bio ?? undefined}
-        />
+        <div className="flex flex-wrap items-center gap-6">
+          {author.photo && (
+            <MediaSlot
+              baseName={author.photo}
+              alt={author.name}
+              className="h-24 w-24 shrink-0 rounded-full"
+            />
+          )}
+          <SectionHeading eyebrow="Autor" title={author.name} description={author.role ?? undefined} />
+        </div>
+
+        {author.bio && <p className="mt-6 max-w-2xl text-ink-soft">{author.bio}</p>}
 
         <div className="mt-14">
           {authorArticles.length > 0 ? (
