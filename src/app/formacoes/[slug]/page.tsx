@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { courses } from "@/data/courses";
 import { siteConfig, whatsappLink } from "@/data/site";
 import EnrollButton from "@/components/EnrollButton";
+import { getCurrentStudent } from "@/lib/auth";
 
 type Props = { params: { slug: string } };
 
@@ -21,9 +22,13 @@ export function generateMetadata({ params }: Props): Metadata {
   return { title: course.title, description: course.description };
 }
 
-export default function CoursePage({ params }: Props) {
+export default async function CoursePage({ params }: Props) {
   const course = getCourse(params.slug);
   if (!course) notFound();
+
+  // Aluno autenticado vê "Inscreva-se na sua conta" em vez do CTA comercial
+  // "Quero inscrever-me" (que leva a Contactos, para quem ainda não é aluno).
+  const student = await getCurrentStudent();
 
   const details: [string, string | undefined][] = [
     ["Modalidade", course.modality],
@@ -101,9 +106,13 @@ export default function CoursePage({ params }: Props) {
         )}
 
         <div className="mt-12 flex flex-wrap gap-4">
-          <Link href="/contactos" className="btn-primary">
-            Quero inscrever-me
-          </Link>
+          {student ? (
+            <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
+          ) : (
+            <Link href="/contactos" className="btn-primary">
+              Quero inscrever-me
+            </Link>
+          )}
           <a
             href={whatsappLink(`Olá, gostaria de obter informações sobre a formação ${course.title}.`)}
             target="_blank"
@@ -112,10 +121,6 @@ export default function CoursePage({ params }: Props) {
           >
             Pedir mais informações
           </a>
-        </div>
-
-        <div className="mt-4">
-          <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
         </div>
       </div>
     </article>

@@ -60,7 +60,7 @@ export default function EnrollButton({ courseSlug, courseTitle }: Props) {
         type="button"
         onClick={handleClick}
         disabled={status === "loading"}
-        className="rounded border border-ink/20 px-6 py-3 text-sm font-medium text-ink hover:border-ink/40"
+        className="btn-primary"
       >
         {status === "loading" ? "A inscrever..." : "Já é aluno? Inscreva-se na sua conta"}
       </button>
