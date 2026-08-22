@@ -75,7 +75,13 @@ function AlunoLoginForm() {
             </button>
           </form>
 
-          <p className="mt-6 text-sm text-ink-soft">
+          <p className="mt-4 text-sm text-ink-soft">
+            <Link href="/recuperar-password" className="text-gold-dark underline">
+              Esqueceu-se da password?
+            </Link>
+          </p>
+
+          <p className="mt-2 text-sm text-ink-soft">
             Ainda não tem conta?{" "}
             <Link href="/aluno/registo" className="text-gold-dark underline">
               Criar conta

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -69,6 +70,12 @@ export default function AdminLoginPage() {
             {loading ? "A entrar..." : "Entrar"}
           </button>
         </form>
+
+        <p className="mt-4 text-center text-sm text-cream/70">
+          <Link href="/recuperar-password" className="text-gold underline">
+            Esqueceu-se da password?
+          </Link>
+        </p>
       </div>
     </div>
   );
