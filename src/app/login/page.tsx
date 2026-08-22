@@ -40,6 +40,8 @@ function LoginForm() {
         <img
           src="/brand/logo-fundo-escuro.svg"
           alt="Wealth Academy"
+          width={122}
+          height={86}
           className="mx-auto h-14 w-auto"
         />
         <p className="mt-6 text-center text-sm text-cream/70">

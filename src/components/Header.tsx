@@ -22,6 +22,8 @@ export default function Header() {
           <img
             src="/brand/logo-fundo-claro.svg"
             alt="Wealth Academy"
+            width={122}
+            height={86}
             className="h-12 w-auto md:h-14"
           />
         </Link>

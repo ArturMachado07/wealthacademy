@@ -9,6 +9,8 @@ export default function Footer() {
           <img
             src="/brand/logo-fundo-escuro.svg"
             alt="Wealth Academy"
+            width={122}
+            height={86}
             className="h-16 w-auto"
           />
           <p className="mt-5 max-w-xs text-sm text-cream/70">
