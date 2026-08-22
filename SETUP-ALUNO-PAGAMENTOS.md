@@ -200,6 +200,20 @@ templates/`:
    `supabase/email-templates/reset-password.html`.
 4. Guardar cada um.
 
+Os restantes templates do Supabase Auth (não usados nos fluxos actuais do
+site, mas o Supabase pode disparar se algum dia se usar login por link,
+convites manuais ou troca de email) também têm versão em português, pela
+mesma lógica — Subject sugerido entre parêntesis:
+
+- **Magic Link** (`O seu link de acesso — Wealth Academy`) →
+  `supabase/email-templates/magic-link.html`
+- **Invite user** (`Foi convidado para a Wealth Academy`) →
+  `supabase/email-templates/invite-user.html`
+- **Change Email Address** (`Confirme o seu novo email — Wealth Academy`) →
+  `supabase/email-templates/change-email.html`
+- **Reauthentication** (`O seu código de confirmação — Wealth Academy`) →
+  `supabase/email-templates/reauthentication.html`
+
 O logótipo é carregado a partir de `/brand/logo-email.png` (já no
 `public/`, gerado a partir do SVG oficial) — funciona porque essa rota
 está fora do gate de staging. Quando o domínio final estiver ligado, basta

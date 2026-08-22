@@ -72,7 +72,10 @@ export async function POST(request: Request) {
     .single();
 
   if (student && certificate) {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
+    // Fallback aponta para o domínio Vercel actual (produção real ainda não
+    // ligada) — actualizar .env.example/Vercel quando o domínio final
+    // (wealthacademy.ao) estiver activo, sem precisar de tocar aqui.
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
     await sendCertificateEmail({
       to: student.email,
       name: student.name,

@@ -5,6 +5,10 @@ import { Resend } from "resend";
 // fazem nada (o site continua a funcionar normalmente, só sem emails) —
 // mesmo padrão de degradação usada para Supabase/ProxyPay neste projecto.
 // Ver .env.example e https://resend.com/docs/send-with-nextjs.
+//
+// O template visual (logo, cores, rodapé) espelha
+// supabase/email-templates/*.html, usados para os emails do próprio
+// Supabase Auth — mantém a mesma marca em todos os emails do site.
 
 function getResendClient(): Resend | null {
   if (!process.env.RESEND_API_KEY) return null;
@@ -12,6 +16,53 @@ function getResendClient(): Resend | null {
 }
 
 const FROM = process.env.RESEND_FROM_EMAIL || "Wealth Academy <notificacoes@waca.ao>";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
+const LOGO_URL = `${SITE_URL}/brand/logo-email.png`;
+
+function renderEmailShell(params: {
+  heading: string;
+  bodyHtml: string;
+  ctaLabel: string;
+  ctaUrl: string;
+}) {
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F8F6EA;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:4px;overflow:hidden;">
+          <tr>
+            <td align="center" style="padding:32px 32px 16px 32px;">
+              <img src="${LOGO_URL}" width="160" alt="Wealth Academy" style="display:block;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 40px 32px 40px;font-family:Arial,Helvetica,sans-serif;color:#352C29;">
+              <h1 style="font-size:20px;margin:0 0 16px 0;color:#352C29;">${params.heading}</h1>
+              ${params.bodyHtml}
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:8px;">
+                <tr>
+                  <td style="border-radius:2px;background-color:#9D743A;">
+                    <a href="${params.ctaUrl}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#F8F6EA;text-decoration:none;">${params.ctaLabel}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="margin-top:24px;">
+          <tr>
+            <td align="center" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:#57493F;">
+              © 2026 Wealth Academy — uma marca de The Finance Boutique, Wealth Management &amp;
+              Advisory Services, Lda.<br />
+              Registo INEFOP 1140.01/LDA./2024 · Luanda, Angola
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  `;
+}
 
 export async function sendEnrollmentConfirmationEmail(params: {
   to: string;
@@ -26,12 +77,18 @@ export async function sendEnrollmentConfirmationEmail(params: {
       from: FROM,
       to: params.to,
       subject: `Inscrição confirmada — ${params.courseTitle}`,
-      html: `
-        <p>Olá, ${params.name},</p>
-        <p>A sua inscrição na formação <strong>${params.courseTitle}</strong> foi confirmada.</p>
-        <p>Pode acompanhar o seu progresso na Área do Aluno, na Wealth Academy.</p>
-        <p>Cumprimentos,<br/>Wealth Academy</p>
-      `,
+      html: renderEmailShell({
+        heading: "Inscrição confirmada",
+        bodyHtml: `
+          <p style="font-size:14px;line-height:1.6;margin:0 0 16px 0;color:#57493F;">Olá, ${params.name},</p>
+          <p style="font-size:14px;line-height:1.6;margin:0 0 24px 0;color:#57493F;">
+            A sua inscrição na formação <strong>${params.courseTitle}</strong> foi confirmada.
+            Já pode acompanhar o seu progresso e aceder ao conteúdo na Área do Aluno.
+          </p>
+        `,
+        ctaLabel: "Aceder à Área do Aluno",
+        ctaUrl: `${SITE_URL}/aluno`,
+      }),
     });
   } catch (err) {
     console.error("[email] falha ao enviar confirmação de inscrição:", err);
@@ -53,13 +110,21 @@ export async function sendCertificateEmail(params: {
       from: FROM,
       to: params.to,
       subject: `O seu certificado — ${params.courseTitle}`,
-      html: `
-        <p>Olá, ${params.name},</p>
-        <p>Parabéns pela conclusão da formação <strong>${params.courseTitle}</strong>.</p>
-        <p>O seu certificado tem o número <strong>${params.certificateNumber}</strong> e pode ser
-        validado publicamente em: <a href="${params.validateUrl}">${params.validateUrl}</a></p>
-        <p>Cumprimentos,<br/>Wealth Academy</p>
-      `,
+      html: renderEmailShell({
+        heading: "Parabéns pela conclusão",
+        bodyHtml: `
+          <p style="font-size:14px;line-height:1.6;margin:0 0 16px 0;color:#57493F;">Olá, ${params.name},</p>
+          <p style="font-size:14px;line-height:1.6;margin:0 0 12px 0;color:#57493F;">
+            Concluiu com sucesso a formação <strong>${params.courseTitle}</strong>.
+          </p>
+          <p style="font-size:14px;line-height:1.6;margin:0 0 24px 0;color:#57493F;">
+            O seu certificado tem o número <strong>${params.certificateNumber}</strong> e pode ser
+            validado publicamente a qualquer momento.
+          </p>
+        `,
+        ctaLabel: "Validar certificado",
+        ctaUrl: params.validateUrl,
+      }),
     });
   } catch (err) {
     console.error("[email] falha ao enviar certificado:", err);
