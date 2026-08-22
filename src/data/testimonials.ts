@@ -21,4 +21,9 @@ export const testimonials: Testimonial[] = [
       "Formadora do curso de Comunicação Institucional — um programa pensado para preparar profissionais e organizações para comunicar com estratégia.",
     video: "videos/testemunho2.mp4",
   },
+  {
+    name: "Mahália Castro",
+    subtitle: "Fundadora da The Finance Boutique e da Wealth Academy e Formadora de Mercado de Capitais.",
+    video: "videos/testemunho3.mp4",
+  },
 ];
