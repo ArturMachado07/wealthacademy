@@ -1,32 +1,27 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { authors } from "@/data/authors";
-import { articles } from "@/data/articles";
+import { getAuthorBySlug, getArticlesByAuthor } from "@/lib/wealth-insights";
 import ArticleCard from "@/components/ArticleCard";
 import SectionHeading from "@/components/SectionHeading";
 import EmptyState from "@/components/EmptyState";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return authors.map((author) => ({ slug: author.slug }));
-}
+export const dynamic = "force-dynamic";
 
-function getAuthor(slug: string) {
-  return authors.find((author) => author.slug === slug);
-}
-
-export function generateMetadata({ params }: Props): Metadata {
-  const author = getAuthor(params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const author = await getAuthorBySlug(slug);
   if (!author) return { title: "Autor" };
   return { title: author.name, description: author.bio ?? `Artigos de ${author.name} na Wealth Academy.` };
 }
 
-export default function AuthorPage({ params }: Props) {
-  const author = getAuthor(params.slug);
+export default async function AuthorPage({ params }: Props) {
+  const { slug } = await params;
+  const author = await getAuthorBySlug(slug);
   if (!author) notFound();
 
-  const authorArticles = articles.filter((article) => article.authorSlug === author.slug);
+  const authorArticles = await getArticlesByAuthor(author.slug);
 
   return (
     <section className="py-24">
@@ -34,7 +29,7 @@ export default function AuthorPage({ params }: Props) {
         <SectionHeading
           eyebrow="Autor"
           title={author.name}
-          description={author.role ?? author.bio}
+          description={author.role ?? author.bio ?? undefined}
         />
 
         <div className="mt-14">

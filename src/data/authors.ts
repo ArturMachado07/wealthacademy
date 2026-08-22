@@ -1,3 +1,7 @@
+// NOTA: este ficheiro deixou de ser a fonte de dados do site — os autores
+// agora vivem na tabela `insight_authors` do Supabase (ver
+// supabase/010_wealth_insights.sql e src/lib/wealth-insights.ts), geridos
+// via /admin/insights. Fica aqui só como registo histórico.
 export type Author = {
   slug: string;
   name: string;

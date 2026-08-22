@@ -1,3 +1,8 @@
+// NOTA: este ficheiro deixou de ser a fonte de dados do site — os artigos
+// agora vivem na tabela `insight_articles` do Supabase (ver
+// supabase/010_wealth_insights.sql e src/lib/wealth-insights.ts), geridos
+// via /admin/insights. Fica aqui só como registo histórico do conteúdo
+// original.
 import type { insightCategories } from "./categories";
 
 export type Article = {

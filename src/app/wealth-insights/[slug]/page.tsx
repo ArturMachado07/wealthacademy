@@ -1,31 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { articles } from "@/data/articles";
-import { authors } from "@/data/authors";
+import { getArticleBySlug } from "@/lib/wealth-insights";
 import MediaSlot from "@/components/MediaSlot";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return articles.map((article) => ({ slug: article.slug }));
-}
+export const dynamic = "force-dynamic";
 
-function getArticle(slug: string) {
-  return articles.find((article) => article.slug === slug);
-}
-
-export function generateMetadata({ params }: Props): Metadata {
-  const article = getArticle(params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
   if (!article) return { title: "Artigo" };
   return { title: article.title, description: article.excerpt };
 }
 
-export default function ArticlePage({ params }: Props) {
-  const article = getArticle(params.slug);
-  if (!article) notFound();
+export default async function ArticlePage({ params }: Props) {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
+  if (!article || !article.published) notFound();
 
-  const author = authors.find((a) => a.slug === article.authorSlug);
+  const author = article.author;
 
   return (
     <article className="py-24">
@@ -41,10 +36,10 @@ export default function ArticlePage({ params }: Props) {
           ) : null}
           <span>·</span>
           <span>{article.date}</span>
-          {article.readingTime && (
+          {article.reading_time && (
             <>
               <span>·</span>
-              <span>{article.readingTime}</span>
+              <span>{article.reading_time}</span>
             </>
           )}
         </div>
@@ -58,7 +53,7 @@ export default function ArticlePage({ params }: Props) {
         )}
 
         <div className="prose-content mt-10 space-y-5 text-base leading-relaxed text-ink-soft">
-          {(article.body ?? [article.excerpt]).map((paragraph, index) => (
+          {(article.body && article.body.length > 0 ? article.body : [article.excerpt]).map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
@@ -79,10 +74,10 @@ export default function ArticlePage({ params }: Props) {
         {article.source && (
           <p className="mt-10 border-t border-ink/10 pt-6 text-sm text-ink-soft">
             Publicado originalmente em {article.source}
-            {article.sourceUrl && (
+            {article.source_url && (
               <>
                 {" — "}
-                <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-gold-dark">
+                <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-gold-dark">
                   ler no site de origem
                 </a>
               </>

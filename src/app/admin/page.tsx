@@ -84,6 +84,9 @@ export default async function AdminDashboardPage() {
               <Link href="/admin/pagamentos" className="text-gold-dark underline">
                 Ver todos os pagamentos
               </Link>
+              <Link href="/admin/insights" className="text-gold-dark underline">
+                Gerir Wealth Insights (autores e artigos)
+              </Link>
             </div>
           </div>
           <SignOutButton />

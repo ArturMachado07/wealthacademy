@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import ArticleCard from "@/components/ArticleCard";
 import EmptyState from "@/components/EmptyState";
-import { articles } from "@/data/articles";
+import { getArticles } from "@/lib/wealth-insights";
 import { insightCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   description: "Área editorial da Wealth Academy sobre Finanças, Negócios, Gestão, Liderança e Mercado.",
 };
 
-export default function WealthInsightsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function WealthInsightsPage() {
+  const articles = await getArticles();
+
   return (
     <section className="py-24">
       <div className="container-page">
