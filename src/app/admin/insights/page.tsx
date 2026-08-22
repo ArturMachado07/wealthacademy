@@ -11,7 +11,7 @@ import { findPublicImage } from "@/lib/media";
 export const metadata: Metadata = { title: "Wealth Insights — Admin" };
 export const dynamic = "force-dynamic";
 
-type AuthorRow = { slug: string; name: string; role: string | null; photo: string | null };
+type AuthorRow = { slug: string; name: string; role: string | null; photo: string | null; bio: string | null };
 type ArticleRow = {
   slug: string;
   title: string;
@@ -22,13 +22,18 @@ type ArticleRow = {
   photo: string | null;
 };
 
-export default async function AdminInsightsPage() {
+export default async function AdminInsightsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ editAuthor?: string }>;
+}) {
   const admin = await getCurrentAdmin();
   if (!admin) redirect("/admin/login");
 
+  const { editAuthor } = await searchParams;
   const supabase = createSupabaseAdminClient();
   const [{ data: authors }, { data: articles }] = await Promise.all([
-    supabase.from("insight_authors").select("slug, name, role, photo").order("name"),
+    supabase.from("insight_authors").select("slug, name, role, photo, bio").order("name"),
     supabase
       .from("insight_articles")
       .select("slug, title, category, date, published, author_slug, photo")
@@ -127,14 +132,43 @@ export default async function AdminInsightsPage() {
                         )}
                       </p>
                     </div>
-                    <DeleteAuthorButton slug={author.slug} />
+                    <div className="flex shrink-0 items-center gap-4">
+                      <a
+                        href={`/admin/insights?editAuthor=${author.slug}#autor-form`}
+                        className="text-xs text-gold-dark underline"
+                      >
+                        Editar
+                      </a>
+                      <DeleteAuthorButton slug={author.slug} />
+                    </div>
                   </div>
                 );
               })}
             </div>
           )}
-          <div className="mt-4">
-            <AddAuthorForm />
+          <div id="autor-form" className="mt-4">
+            {editAuthor ? (
+              (() => {
+                const target = authorRows.find((a) => a.slug === editAuthor);
+                if (!target) {
+                  return <p className="text-sm text-red-700">Autor não encontrado.</p>;
+                }
+                return (
+                  <AddAuthorForm
+                    lockSlug
+                    initial={{
+                      slug: target.slug,
+                      name: target.name,
+                      role: target.role ?? "",
+                      bio: target.bio ?? "",
+                      photo: target.photo ?? "",
+                    }}
+                  />
+                );
+              })()
+            ) : (
+              <AddAuthorForm />
+            )}
           </div>
         </div>
       </div>
