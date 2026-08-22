@@ -15,4 +15,10 @@ export const testimonials: Testimonial[] = [
       "Responsável por uma unidade de negócios na Aliança Seguros, participou na 3.ª edição do curso de Análise e Negociação no Mercado de Capitais.",
     video: "videos/testemunho1.mp4",
   },
+  {
+    name: "Dalila Prata",
+    subtitle:
+      "Formadora do curso de Comunicação Institucional — um programa pensado para preparar profissionais e organizações para comunicar com estratégia.",
+    video: "videos/testemunho2.mp4",
+  },
 ];
