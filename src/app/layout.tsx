@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import OrganizationJsonLd from "@/components/OrganizationJsonLd";
+import Analytics from "@/components/Analytics";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="pt-AO" className={`${quiche.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col">
+        <Analytics />
         <OrganizationJsonLd />
         <Header />
         <main className="flex-1">{children}</main>

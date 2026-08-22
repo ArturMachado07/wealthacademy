@@ -6,6 +6,7 @@ import { siteConfig, whatsappLink } from "@/data/site";
 import EnrollButton from "@/components/EnrollButton";
 import PaymentButton from "@/components/PaymentButton";
 import CourseSlideshow from "@/components/CourseSlideshow";
+import CourseJsonLd from "@/components/CourseJsonLd";
 import { getCurrentStudent } from "@/lib/auth";
 import { findPublicImage } from "@/lib/media";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
@@ -61,6 +62,7 @@ export default async function CoursePage({ params }: Props) {
 
   return (
     <article className="py-24">
+      <CourseJsonLd course={course} />
       <div className="container-page max-w-3xl">
         <p className="eyebrow">{course.category}</p>
         <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{course.title}</h1>

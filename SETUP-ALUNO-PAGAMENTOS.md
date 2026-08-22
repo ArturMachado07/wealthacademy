@@ -220,9 +220,38 @@ está fora do gate de staging. Quando o domínio final estiver ligado, basta
 que o ficheiro continue a existir em `public/brand/logo-email.png`; não é
 preciso alterar os templates.
 
+## 3.10. Preço/data por formação e Wealth Insights, editáveis sem deploy
+
+Correr `supabase/009_course_pricing.sql` e `supabase/010_wealth_insights.sql`.
+Com isto, em `/admin/formacoes/[curso]` dá para editar preço e data de cada
+formação, e em `/admin/insights` dá para criar/editar autores e artigos do
+Wealth Insights (incluindo diagnóstico de fotos em falta) — tudo sem tocar
+em código.
+
+## 3.11. Analytics e SEO
+
+O site já tem metadata, Open Graph, `sitemap.xml` e `robots.txt` (bloqueando
+áreas privadas: `/admin`, `/aluno`, `/login`, `/api`). As páginas de
+formação têm dados estruturados `Course` e os artigos têm `Article`
+(schema.org), para ajudar o Google a mostrar resultados mais ricos —
+propositadamente sem preço nos dados estruturados, porque os valores
+actuais são demo.
+
+Google Analytics e Meta Pixel estão prontos no código mas desligados por
+defeito (sem inventar IDs de teste). Para activar, adicionar à Vercel:
+
+```
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXX
+NEXT_PUBLIC_META_PIXEL_ID=XXXXXXXXXXXXXXX
+```
+
+Sem estas variáveis, nenhum script de acompanhamento é carregado.
+
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
 - Avaliações/testes dentro do LMS (hoje só há vídeo-aulas + materiais +
   marcação de conclusão manual por aula).
-- Autenticação própria do Admin (hoje `src/lib/admin-auth.ts` também
-  devolve sempre `null`).
+- Credenciais reais ProxyPay/EMIS e preços oficiais das formações (ver
+  secção 3) — sem isto os pagamentos continuam em modo demo.
+- Domínio próprio verificado no Resend — sem isto os emails só chegam à
+  conta do próprio Resend, não a alunos reais.
