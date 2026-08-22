@@ -1,6 +1,7 @@
 import Hero from "@/components/home/Hero";
 import PositioningSection from "@/components/home/PositioningSection";
 import TrainingSection from "@/components/home/TrainingSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
 import EmpresasSection from "@/components/home/EmpresasSection";
 import PartnerLogos from "@/components/PartnerLogos";
 import ExperienceLogos from "@/components/ExperienceLogos";
@@ -12,6 +13,7 @@ export default function HomePage() {
       <Hero />
       <PositioningSection />
       <TrainingSection />
+      <TestimonialsSection />
       <EmpresasSection />
       <PartnerLogos />
       <ExperienceLogos />
