@@ -8,6 +8,7 @@ import AddModuleForm from "@/components/admin/AddModuleForm";
 import AddLessonForm from "@/components/admin/AddLessonForm";
 import DeleteModuleButton from "@/components/admin/DeleteModuleButton";
 import DeleteLessonButton from "@/components/admin/DeleteLessonButton";
+import CoursePricingForm from "@/components/admin/CoursePricingForm";
 
 export async function generateMetadata({
   params,
@@ -48,11 +49,14 @@ export default async function AdminFormacaoContentPage({
   if (!course) notFound();
 
   const supabase = createSupabaseAdminClient();
-  const { data: modules } = await supabase
-    .from("course_modules")
-    .select("id, title, position, lessons(id, title, duration_minutes, position)")
-    .eq("course_slug", slug)
-    .order("position", { ascending: true });
+  const [{ data: modules }, { data: pricing }] = await Promise.all([
+    supabase
+      .from("course_modules")
+      .select("id, title, position, lessons(id, title, duration_minutes, position)")
+      .eq("course_slug", slug)
+      .order("position", { ascending: true }),
+    supabase.from("course_pricing").select("investment, date").eq("course_slug", slug).maybeSingle(),
+  ]);
 
   const moduleRows = ((modules ?? []) as ModuleRow[]).map((m) => ({
     ...m,
@@ -69,6 +73,22 @@ export default async function AdminFormacaoContentPage({
         <div className="mt-6">
           <p className="eyebrow">Conteúdo do LMS</p>
           <h1 className="mt-2 font-display text-3xl text-ink">{course.title}</h1>
+        </div>
+
+        <div className="mt-8 rounded border border-ink/10 bg-white/60 p-6">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">Preço e data</h2>
+          <p className="mt-1 text-xs text-ink-soft">
+            Deixe em branco para usar o valor definido no código (
+            {course.investment ?? "sem preço"}
+            {course.date ? ` · ${course.date}` : ""}).
+          </p>
+          <div className="mt-4">
+            <CoursePricingForm
+              courseSlug={slug}
+              initialInvestment={pricing?.investment ?? ""}
+              initialDate={pricing?.date ?? ""}
+            />
+          </div>
         </div>
 
         <div className="mt-10 space-y-8">

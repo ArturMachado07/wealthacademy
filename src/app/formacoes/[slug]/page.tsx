@@ -8,8 +8,11 @@ import PaymentButton from "@/components/PaymentButton";
 import CourseSlideshow from "@/components/CourseSlideshow";
 import { getCurrentStudent } from "@/lib/auth";
 import { findPublicImage } from "@/lib/media";
+import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 
 type Props = { params: { slug: string } };
+
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return courses.map((course) => ({ slug: course.slug }));
@@ -26,8 +29,11 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default async function CoursePage({ params }: Props) {
-  const course = getCourse(params.slug);
-  if (!course) notFound();
+  const baseCourse = getCourse(params.slug);
+  if (!baseCourse) notFound();
+
+  const overrides = await getCourseOverrides();
+  const course = applyCourseOverride(baseCourse, overrides.get(baseCourse.slug));
 
   // Aluno autenticado vê "Inscreva-se na sua conta" em vez do CTA comercial
   // "Quero inscrever-me" (que leva a Contactos, para quem ainda não é aluno).

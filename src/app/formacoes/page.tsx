@@ -4,6 +4,7 @@ import CourseCard from "@/components/CourseCard";
 import EmptyState from "@/components/EmptyState";
 import { courses } from "@/data/courses";
 import { trainingCategories } from "@/data/categories";
+import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 
 export const metadata: Metadata = {
   title: "Formações",
@@ -11,7 +12,12 @@ export const metadata: Metadata = {
     "Cursos e programas de formação em Finanças e Negócios da Wealth Academy, alinhados às exigências do mercado angolano.",
 };
 
-export default function FormacoesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function FormacoesPage() {
+  const overrides = await getCourseOverrides();
+  const coursesWithPricing = courses.map((course) => applyCourseOverride(course, overrides.get(course.slug)));
+
   return (
     <section className="py-24">
       <div className="container-page">
@@ -30,9 +36,9 @@ export default function FormacoesPage() {
         </div>
 
         <div className="mt-14">
-          {courses.length > 0 ? (
+          {coursesWithPricing.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {courses.map((course) => (
+              {coursesWithPricing.map((course) => (
                 <CourseCard key={course.slug} course={course} />
               ))}
             </div>
