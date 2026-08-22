@@ -3,13 +3,25 @@ import { randomUUID } from "node:crypto";
 import { createCharge } from "@/lib/payments/proxypay";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { getCurrentStudent } from "@/lib/auth";
+import { courses } from "@/data/courses";
+import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 
 const PROXYPAY_CONFIGURED = Boolean(
   process.env.PROXYPAY_API_TOKEN && process.env.PROXYPAY_POS_ID
 );
 
+// Converte o texto do preço (ex. "75.000 Kz") no valor numérico em Kz —
+// mesma lógica usada em PaymentButton.tsx para mostrar o preço ao aluno.
+function parseInvestment(investment?: string | null): number | null {
+  if (!investment) return null;
+  const digits = investment.replace(/[^\d]/g, "");
+  const value = Number(digits);
+  return value > 0 ? value : null;
+}
+
 // Cria um pedido de pagamento (Multicaixa Express via ProxyPay/GPO) para uma
-// formação. Espera { courseSlug, courseTitle, amount } no corpo do pedido —
+// formação. Espera { courseSlug, courseTitle } no corpo do pedido — o preço
+// é sempre calculado no servidor (nunca confiado do browser, ver acima) —
 // cria a inscrição com estado "Pendente" (ver supabase/006) e só passa a
 // "Em curso" quando o pagamento for confirmado.
 //
@@ -27,9 +39,29 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
 
-  if (!body?.courseSlug || !body?.courseTitle || !body?.amount) {
+  if (!body?.courseSlug || !body?.courseTitle) {
     return NextResponse.json(
-      { ok: false, error: "courseSlug, courseTitle e amount são obrigatórios." },
+      { ok: false, error: "courseSlug e courseTitle são obrigatórios." },
+      { status: 400 }
+    );
+  }
+
+  // Nunca confiamos no "amount" enviado pelo browser — alguém podia alterá-lo
+  // no devtools e pagar o valor que quisesse. O preço oficial vem sempre do
+  // servidor: catálogo estático (src/data/courses.ts) com o eventual
+  // override de preço definido pelo Admin (tabela course_pricing).
+  const course = courses.find((c) => c.slug === body.courseSlug);
+  if (!course) {
+    return NextResponse.json({ ok: false, error: "Formação não encontrada." }, { status: 404 });
+  }
+
+  const overrides = await getCourseOverrides();
+  const priced = applyCourseOverride(course, overrides.get(course.slug));
+  const amount = parseInvestment(priced.investment);
+
+  if (!amount) {
+    return NextResponse.json(
+      { ok: false, error: "Esta formação ainda não tem um preço definido." },
       { status: 400 }
     );
   }
@@ -70,7 +102,7 @@ export async function POST(request: Request) {
           .insert({
             student_id: student.id,
             course_slug: body.courseSlug,
-            course_title: body.courseTitle,
+            course_title: course.title,
             status: "Pendente",
             progress_percent: 0,
           })
@@ -86,7 +118,7 @@ export async function POST(request: Request) {
         .insert({
           student_id: student.id,
           enrollment_id: enrollmentId,
-          amount: body.amount,
+          amount,
           provider: "demo",
           status: "pending",
         })
@@ -99,7 +131,7 @@ export async function POST(request: Request) {
     }
 
     const charge = await createCharge({
-      amount: Number(body.amount).toFixed(2),
+      amount: amount.toFixed(2),
       callbackUrl: `${siteUrl}/api/payments/webhook`,
       idempotencyKey,
     });
@@ -109,7 +141,7 @@ export async function POST(request: Request) {
       .insert({
         student_id: student.id,
         enrollment_id: enrollmentId,
-        amount: body.amount,
+        amount,
         provider: "proxypay",
         provider_charge_id: charge.id,
         status: "pending",

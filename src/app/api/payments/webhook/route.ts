@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendEnrollmentConfirmationEmail } from "@/lib/email";
+import { getTransaction } from "@/lib/payments/proxypay";
 
 // Recebe o callback assíncrono da ProxyPay/EMIS GPO quando uma "charge" é
 // usada (aceite ou rejeitada). Ver "Callback Notification" em
@@ -8,11 +9,32 @@ import { sendEnrollmentConfirmationEmail } from "@/lib/email";
 //
 // Este endpoint fica fora do gate de staging (ver src/middleware.ts) —
 // tem de ser publicamente acessível para a EMIS conseguir chamá-lo.
+//
+// IMPORTANTE: a documentação oficial da ProxyPay OPG v1 não define nenhum
+// cabeçalho de assinatura para este callback — ou seja, não há forma de
+// confirmar, só a partir do corpo do POST, que o pedido veio mesmo da
+// ProxyPay e não de alguém a forjar um pedido a apontar para este URL
+// público. Por isso nunca confiamos no "status" enviado no corpo: usamos
+// só o "id" da transacção para voltar a perguntar à API da ProxyPay (com o
+// nosso Bearer token, que um atacante não tem) qual é o estado real — e
+// actualizamos a base de dados com base nessa resposta autoritativa.
 export async function POST(request: Request) {
-  const transaction = await request.json().catch(() => null);
+  const body = await request.json().catch(() => null);
 
-  if (!transaction?.charge_id) {
-    // Pode ser um transaction sem charge_id (ex. pagamento directo por
+  if (!body?.id) {
+    return NextResponse.json({ ok: true, ignored: true });
+  }
+
+  let transaction;
+  try {
+    transaction = await getTransaction(body.id);
+  } catch (err) {
+    console.error("[payments/webhook] falha ao confirmar transacção junto da ProxyPay", err);
+    return NextResponse.json({ ok: false }, { status: 502 });
+  }
+
+  if (!transaction.charge_id) {
+    // Pode ser uma transacção sem charge_id (ex. pagamento directo por
     // mobile) — por agora só tratamos o fluxo de charges (QR/Deeplink).
     return NextResponse.json({ ok: true, ignored: true });
   }

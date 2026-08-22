@@ -5,6 +5,9 @@ import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/SignOutButton";
 import EmptyState from "@/components/EmptyState";
+import PaymentButton from "@/components/PaymentButton";
+import { courses } from "@/data/courses";
+import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 
 export const metadata: Metadata = {
   title: "O meu Dashboard",
@@ -52,6 +55,7 @@ export default async function AlunoDashboardPage() {
 
   const activeEnrollments = (enrollments ?? []) as Enrollment[];
   const earnedCertificates = (certificates ?? []) as Certificate[];
+  const overrides = await getCourseOverrides();
 
   return (
     <section className="py-24">
@@ -111,6 +115,23 @@ export default async function AlunoDashboardPage() {
                       Aceder ao curso
                     </Link>
                   )}
+                  {enrollment.status === "Pendente" && (() => {
+                    const course = courses.find((c) => c.slug === enrollment.course_slug);
+                    const priced = course ? applyCourseOverride(course, overrides.get(course.slug)) : null;
+                    if (!priced?.investment) return null;
+                    return (
+                      <div className="mt-4">
+                        <p className="mb-2 text-xs text-ink-soft">
+                          A inscrição fica confirmada assim que o pagamento for concluído.
+                        </p>
+                        <PaymentButton
+                          courseSlug={enrollment.course_slug}
+                          courseTitle={enrollment.course_title}
+                          investment={priced.investment}
+                        />
+                      </div>
+                    );
+                  })()}
                 </div>
                 );
               })}

@@ -1,15 +1,25 @@
 import { NextResponse } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { getCurrentStudent } from "@/lib/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // Permite ao browser consultar o estado de um pagamento (polling simples
 // enquanto o aluno completa o pagamento no telemóvel), sem depender só do
-// webhook.
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
-  const supabase = createSupabaseAdminClient();
+// webhook. Usa o cliente com RLS (não a service role) — a policy "Aluno vê
+// os próprios pagamentos" já garante que só o dono consegue ler a linha;
+// a verificação de sessão aqui só serve para devolver um 401 claro em vez
+// de um 404 confuso a quem não está autenticado.
+export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
+  const student = await getCurrentStudent();
+  if (!student) {
+    return NextResponse.json({ ok: false, error: "not_authenticated" }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const supabase = await createSupabaseServerClient();
   const { data: payment, error } = await supabase
     .from("payments")
     .select("id, status, amount, created_at, updated_at")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (error || !payment) {
