@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export default function AlunoRegistoPage() {
+function AlunoRegistoForm() {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+  const loginHref = from ? `/aluno/login?from=${encodeURIComponent(from)}` : "/aluno/login";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -59,7 +63,7 @@ export default function AlunoRegistoPage() {
               Enviámos um link de confirmação para o email indicado. Depois de
               confirmar, já pode entrar na sua Área do Aluno.
             </p>
-            <Link href="/aluno/login" className="btn-primary mt-6 inline-block">
+            <Link href={loginHref} className="btn-primary mt-6 inline-block">
               Ir para o login
             </Link>
           </div>
@@ -119,12 +123,20 @@ export default function AlunoRegistoPage() {
 
           <p className="mt-6 text-sm text-ink-soft">
             Já tem conta?{" "}
-            <Link href="/aluno/login" className="text-gold-dark underline">
+            <Link href={loginHref} className="text-gold-dark underline">
               Entrar
             </Link>
           </p>
         </div>
       </div>
     </section>
+  );
+}
+
+export default function AlunoRegistoPage() {
+  return (
+    <Suspense fallback={null}>
+      <AlunoRegistoForm />
+    </Suspense>
   );
 }

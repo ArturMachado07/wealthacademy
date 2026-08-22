@@ -177,7 +177,7 @@ export default async function CoursePage({ params }: Props) {
               <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
             )
           ) : (
-            <Link href="/contactos" className="btn-primary">
+            <Link href={`/aluno/registo?from=/formacoes/${course.slug}`} className="btn-primary">
               Quero inscrever-me
             </Link>
           )}
