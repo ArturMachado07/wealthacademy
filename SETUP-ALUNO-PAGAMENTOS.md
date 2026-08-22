@@ -45,7 +45,11 @@ por email.
 
 ## 3. Activar pagamentos (Multicaixa Express / EMIS GPO)
 
-Isto depende de uma adesão fora do código:
+O código do lado do servidor já está pronto e testável assim que tiveres as
+credenciais (ver abaixo) — o que falta activar de vez são duas coisas que
+não dependem de código, e que eu não posso resolver por ti:
+
+**A. Adesão ao banco/EMIS** (para obter as credenciais técnicas):
 
 1. Contactar o banco que dá suporte à conta da Wealth Academy para aderir
    ao **Gateway de Pagamentos Online (GPO)** da EMIS/MULTICAIXA.
@@ -60,13 +64,30 @@ PROXYPAY_API_TOKEN=...
 PROXYPAY_POS_ID=...
 ```
 
-5. O fluxo já implementado (`src/lib/payments/proxypay.ts`,
-   `/api/payments/charge`, `/api/payments/webhook`): cria uma "charge"
-   (QR-Code + Deeplink), o aluno paga pelo telemóvel via Multicaixa
-   Express, a EMIS notifica o webhook, e o pagamento/inscrição são
-   actualizados na base de dados automaticamente.
-6. Testar primeiro no sandbox: o número `900000000` simula um pagamento
-   aceite; `900003000` simula uma recusa (ver documentação da ProxyPay).
+**B. Preços reais das formações.** Por regra deste projecto, não se
+inventam valores — o campo "Investimento" de cada formação (`src/data/
+courses.ts`) está por preencher em todas. É preciso dizeres o valor (em
+Kz) de cada formação que queres vender online antes de eu poder construir
+o botão "Pagar" nas páginas — sem isso, ou fica sem preço, ou eu estaria a
+inventar um número.
+
+**O que já está pronto no código, à espera destas duas peças:**
+
+- `src/lib/payments/proxypay.ts`, `/api/payments/charge`,
+  `/api/payments/webhook`, `/api/payments/status/[id]`: criam a "charge"
+  (QR-Code + Deeplink), o aluno paga pelo telemóvel via Multicaixa
+  Express, a EMIS notifica o webhook, e o pagamento/inscrição são
+  actualizados na base de dados automaticamente.
+- `supabase/006_enrollment_pending_status.sql` — corre este ficheiro: a
+  inscrição nasce com estado "Pendente" quando o pagamento é iniciado, e só
+  passa a "Em curso" quando o pagamento é confirmado.
+- Falta apenas: o botão de checkout na página da formação (chama
+  `/api/payments/charge` com `courseSlug`, `courseTitle` e `amount`, mostra
+  o QR-Code/deeplink, e vai verificando `/api/payments/status/[id]`) — é
+  rápido de construir assim que houver um preço real para usar.
+
+Testar primeiro no sandbox: o número `900000000` simula um pagamento
+aceite; `900003000` simula uma recusa (ver documentação da ProxyPay).
 
 Documentação oficial usada: [ProxyPay OPG API](https://developer.proxypay.co.ao/opg/v1/).
 
