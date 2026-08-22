@@ -111,6 +111,12 @@ export default async function AdminFormacaoContentPage({
                         {lesson.duration_minutes && (
                           <span className="text-xs text-ink-soft">{lesson.duration_minutes} min</span>
                         )}
+                        <Link
+                          href={`/admin/formacoes/${slug}/testes/${lesson.id}`}
+                          className="text-xs font-medium text-gold-dark underline"
+                        >
+                          Teste
+                        </Link>
                         <DeleteLessonButton lessonId={lesson.id} />
                       </span>
                     </div>

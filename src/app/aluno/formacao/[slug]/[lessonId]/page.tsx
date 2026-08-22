@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getCurrentStudent } from "@/lib/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
 import ToggleLessonButton from "@/components/aluno/ToggleLessonButton";
+import QuizForm from "@/components/aluno/QuizForm";
 
 export const dynamic = "force-dynamic";
 
@@ -88,6 +89,39 @@ export default async function AlunoLessonPage({
     .eq("lesson_id", lesson.id)
     .maybeSingle();
 
+  // O teste (se existir) é lido pelo service role, porque só assim
+  // conseguimos excluir o campo is_correct do que é enviado ao browser —
+  // com RLS normal não há como esconder uma coluna, só linhas inteiras.
+  const admin = createSupabaseAdminClient();
+  const { data: quiz } = await admin
+    .from("lesson_quizzes")
+    .select("id, questions:quiz_questions(id, question, position, options:quiz_options(id, option_text, position))")
+    .eq("lesson_id", lesson.id)
+    .maybeSingle();
+
+  let alreadyPassedQuiz = false;
+  if (quiz) {
+    const { data: passedAttempt } = await supabase
+      .from("quiz_attempts")
+      .select("id")
+      .eq("student_id", student.id)
+      .eq("quiz_id", quiz.id)
+      .eq("passed", true)
+      .maybeSingle();
+    alreadyPassedQuiz = Boolean(passedAttempt);
+  }
+
+  const quizQuestions = quiz
+    ? [...(quiz.questions ?? [])]
+        .sort((a, b) => a.position - b.position)
+        .map((q) => ({
+          id: q.id,
+          question: q.question,
+          options: [...(q.options ?? [])].sort((a, b) => a.position - b.position),
+        }))
+        .filter((q) => q.options.length > 0)
+    : [];
+
   return (
     <section className="py-24">
       <div className="container-page max-w-3xl">
@@ -132,7 +166,14 @@ export default async function AlunoLessonPage({
         )}
 
         <div className="mt-8">
-          <ToggleLessonButton lessonId={lesson.id} initialCompleted={Boolean(progressRow)} />
+          {quiz && quizQuestions.length > 0 ? (
+            <>
+              <p className="mb-3 text-sm font-medium text-ink">Teste desta aula</p>
+              <QuizForm quizId={quiz.id} questions={quizQuestions} alreadyPassed={alreadyPassedQuiz} />
+            </>
+          ) : (
+            <ToggleLessonButton lessonId={lesson.id} initialCompleted={Boolean(progressRow)} />
+          )}
         </div>
 
         <div className="mt-10 flex items-center justify-between border-t border-ink/10 pt-6 text-sm">

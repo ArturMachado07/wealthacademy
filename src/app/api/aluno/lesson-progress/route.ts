@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { recalcCourseProgress } from "@/lib/lms-progress";
 
 // Marca/desmarca uma aula como concluída para o aluno autenticado, e
 // recalcula automaticamente o progress_percent da inscrição correspondente
@@ -57,6 +58,22 @@ export async function POST(request: Request) {
   }
 
   if (completed) {
+    // Aulas com teste só podem ser marcadas como concluídas ao passar no
+    // teste (ver /api/aluno/quiz-attempt) — evita que a marcação manual
+    // contorne a avaliação.
+    const { data: quiz } = await supabase
+      .from("lesson_quizzes")
+      .select("id")
+      .eq("lesson_id", lessonId)
+      .maybeSingle();
+
+    if (quiz) {
+      return NextResponse.json(
+        { ok: false, error: "Esta aula tem um teste — conclua-o para marcar a aula como feita." },
+        { status: 400 }
+      );
+    }
+
     const { error: insertError } = await supabase
       .from("lesson_progress")
       .upsert(
@@ -79,47 +96,11 @@ export async function POST(request: Request) {
     }
   }
 
-  // Recalcula o progresso: total de aulas do curso vs. aulas concluídas
-  // pelo aluno nesse curso.
-  const { data: courseModules } = await supabase
-    .from("course_modules")
-    .select("id")
-    .eq("course_slug", courseSlug);
-
-  const moduleIds = (courseModules ?? []).map((m) => m.id);
-
-  let totalLessons = 0;
-  let completedLessons = 0;
-
-  if (moduleIds.length > 0) {
-    const { data: allLessons } = await supabase
-      .from("lessons")
-      .select("id")
-      .in("module_id", moduleIds);
-
-    const lessonIds = (allLessons ?? []).map((l) => l.id);
-    totalLessons = lessonIds.length;
-
-    if (lessonIds.length > 0) {
-      const { count } = await supabase
-        .from("lesson_progress")
-        .select("id", { count: "exact", head: true })
-        .eq("student_id", student.id)
-        .in("lesson_id", lessonIds);
-      completedLessons = count ?? 0;
-    }
-  }
-
-  const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-
-  // Não mexe no estado "Concluída" — isso continua a ser uma decisão do
-  // Admin (emite certificado), mesmo que o progresso chegue a 100%.
-  if (enrollment.status !== "Concluída") {
-    await supabase
-      .from("enrollments")
-      .update({ progress_percent: progressPercent, updated_at: new Date().toISOString() })
-      .eq("id", enrollment.id);
-  }
+  const { progressPercent, completedLessons, totalLessons } = await recalcCourseProgress(
+    supabase,
+    student.id,
+    courseSlug
+  );
 
   return NextResponse.json({ ok: true, progressPercent, completedLessons, totalLessons });
 }

@@ -184,6 +184,20 @@ dashboard (`/aluno`), que aparece em qualquer inscrição "Em curso" ou
 percentagem de progresso da inscrição (o estado "Concluída"/emissão de
 certificado continua a ser sempre uma decisão manual do Admin).
 
+### Testes por aula (opcional)
+
+Correr `supabase/011_lms_quizzes.sql`. Em `/admin/formacoes/[curso]`, cada
+aula tem agora um link **"Teste"** onde dá para definir a nota mínima e
+adicionar perguntas de escolha múltipla (marcando qual é a opção correcta).
+
+Uma aula sem perguntas continua a funcionar como antes — o aluno marca-a
+como concluída manualmente. Assim que a primeira pergunta é adicionada, o
+botão manual desaparece e o aluno passa a ter de responder ao teste e
+atingir a nota mínima para a aula contar como concluída (pode repetir o
+teste quantas vezes precisar). As respostas correctas nunca são enviadas
+ao browser antes de o aluno submeter — a correcção é sempre feita no
+servidor.
+
 ## 3.9. Emails do Supabase Auth em português, com logo
 
 Por defeito, os emails de confirmação de conta e recuperação de password
@@ -273,8 +287,6 @@ variável.
 
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
-- Avaliações/testes dentro do LMS (hoje só há vídeo-aulas + materiais +
-  marcação de conclusão manual por aula).
 - Credenciais reais ProxyPay/EMIS e preços oficiais das formações (ver
   secção 3) — sem isto os pagamentos continuam em modo demo.
 - Domínio próprio verificado no Resend — sem isto os emails só chegam à
