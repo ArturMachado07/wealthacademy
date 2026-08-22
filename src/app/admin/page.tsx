@@ -84,6 +84,7 @@ export default async function AdminDashboardPage() {
                 <tbody>
                   {enrollmentRows.map((row) => {
                     const student = studentOf(row);
+                    const progress = row.status === "Concluída" ? 100 : row.progress_percent;
                     return (
                       <tr key={row.id} className="border-b border-ink/5">
                         <td className="py-3 pr-4">
@@ -92,7 +93,7 @@ export default async function AdminDashboardPage() {
                         </td>
                         <td className="py-3 pr-4 text-ink">{row.course_title}</td>
                         <td className="py-3 pr-4 text-ink-soft">{row.status}</td>
-                        <td className="py-3 pr-4 text-ink-soft">{row.progress_percent}%</td>
+                        <td className="py-3 pr-4 text-ink-soft">{progress}%</td>
                         <td className="py-3 pr-4">
                           {row.status !== "Concluída" && (
                             <ConcluirInscricaoButton enrollmentId={row.id} />

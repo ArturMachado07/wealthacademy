@@ -75,24 +75,28 @@ export default async function AlunoDashboardPage() {
             </div>
           ) : (
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {activeEnrollments.map((enrollment) => (
+              {activeEnrollments.map((enrollment) => {
+                const progress =
+                  enrollment.status === "Concluída" ? 100 : enrollment.progress_percent;
+                return (
                 <div key={enrollment.id} className="rounded border border-ink/10 bg-white/60 p-6">
                   <p className="text-xs uppercase tracking-wide text-ink-soft">{enrollment.status}</p>
                   <h3 className="mt-1 text-lg font-medium text-ink">{enrollment.course_title}</h3>
                   <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-ink/10">
                     <div
                       className="h-full rounded-full bg-gold"
-                      style={{ width: `${enrollment.progress_percent}%` }}
+                      style={{ width: `${progress}%` }}
                     />
                   </div>
-                  <p className="mt-2 text-xs text-ink-soft">{enrollment.progress_percent}% concluído</p>
+                  <p className="mt-2 text-xs text-ink-soft">{progress}% concluído</p>
                   {enrollment.next_lesson && (
                     <p className="mt-3 text-sm text-ink-soft">
                       Próxima aula: <span className="text-ink">{enrollment.next_lesson}</span>
                     </p>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
