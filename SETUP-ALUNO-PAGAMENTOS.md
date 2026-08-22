@@ -184,6 +184,28 @@ dashboard (`/aluno`), que aparece em qualquer inscrição "Em curso" ou
 percentagem de progresso da inscrição (o estado "Concluída"/emissão de
 certificado continua a ser sempre uma decisão manual do Admin).
 
+## 3.9. Emails do Supabase Auth em português, com logo
+
+Por defeito, os emails de confirmação de conta e recuperação de password
+(enviados directamente pelo Supabase Auth, via SMTP configurado em 3.7) vêm
+em inglês e sem marca. Ficheiros prontos a colar em `supabase/email-
+templates/`:
+
+1. Supabase → **Authentication → Email Templates**.
+2. Abrir **"Confirm signup"**: colar o *Subject heading*
+   `Confirme o seu email — Wealth Academy` e, no corpo, o conteúdo de
+   `supabase/email-templates/confirm-signup.html`.
+3. Abrir **"Reset Password"**: colar o *Subject heading*
+   `Redefinir a sua password — Wealth Academy` e, no corpo, o conteúdo de
+   `supabase/email-templates/reset-password.html`.
+4. Guardar cada um.
+
+O logótipo é carregado a partir de `/brand/logo-email.png` (já no
+`public/`, gerado a partir do SVG oficial) — funciona porque essa rota
+está fora do gate de staging. Quando o domínio final estiver ligado, basta
+que o ficheiro continue a existir em `public/brand/logo-email.png`; não é
+preciso alterar os templates.
+
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
 - Avaliações/testes dentro do LMS (hoje só há vídeo-aulas + materiais +
