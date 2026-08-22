@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Course } from "@/data/courses";
 import { excerpt } from "@/lib/text";
+import { ArrowRightIcon } from "@/components/icons";
 
 export default function CourseCard({ course }: { course: Course }) {
   return (
@@ -26,8 +27,11 @@ export default function CourseCard({ course }: { course: Course }) {
             <span className="font-medium">{course.investment}</span>
           </p>
         )}
-        <span className="mt-4 text-sm font-medium text-gold group-hover:underline">
+        <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-gold group-hover:underline">
           {course.status === "Inscrições abertas" ? "Explorar formação" : course.status}
+          {course.status === "Inscrições abertas" && (
+            <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          )}
         </span>
       </div>
     </Link>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { navigation, siteConfig } from "@/data/site";
+import { InstagramIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon } from "@/components/icons";
 
 export default function Footer() {
   return (
@@ -16,22 +17,24 @@ export default function Footer() {
           <p className="mt-5 max-w-xs text-sm text-cream/70">
             {siteConfig.fullName}. {siteConfig.slogan}
           </p>
-          <div className="mt-6 flex gap-4">
+          <div className="mt-6 flex gap-3">
             <a
               href={siteConfig.social.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-cream/70 underline-offset-4 hover:text-gold-light hover:underline"
+              aria-label="Instagram da Wealth Academy"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-cream/20 text-cream/70 hover:border-gold-light hover:text-gold-light"
             >
-              Instagram
+              <InstagramIcon className="h-4 w-4" />
             </a>
             <a
               href={siteConfig.social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-cream/70 underline-offset-4 hover:text-gold-light hover:underline"
+              aria-label="LinkedIn da Wealth Academy"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-cream/20 text-cream/70 hover:border-gold-light hover:text-gold-light"
             >
-              LinkedIn
+              <LinkedinIcon className="h-4 w-4" />
             </a>
           </div>
         </div>
@@ -53,16 +56,21 @@ export default function Footer() {
           <p className="eyebrow text-gold-light">Contactos</p>
           <ul className="mt-4 space-y-2.5 text-sm text-cream/80">
             <li>
-              <a href={`mailto:${siteConfig.emails.geral}`} className="hover:text-gold-light">
+              <a href={`mailto:${siteConfig.emails.geral}`} className="flex items-center gap-2 hover:text-gold-light">
+                <MailIcon className="h-4 w-4 shrink-0 text-cream/50" />
                 {siteConfig.emails.geral}
               </a>
             </li>
             <li>
-              <a href={siteConfig.phoneHref} className="hover:text-gold-light">
+              <a href={siteConfig.phoneHref} className="flex items-center gap-2 hover:text-gold-light">
+                <PhoneIcon className="h-4 w-4 shrink-0 text-cream/50" />
                 {siteConfig.phone}
               </a>
             </li>
-            <li className="text-cream/70">{siteConfig.address}</li>
+            <li className="flex items-center gap-2 text-cream/70">
+              <MapPinIcon className="h-4 w-4 shrink-0 text-cream/50" />
+              {siteConfig.address}
+            </li>
           </ul>
 
           <p className="eyebrow mt-8 text-gold-light">Credibilidade Institucional</p>

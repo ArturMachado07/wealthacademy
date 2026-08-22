@@ -247,6 +247,30 @@ NEXT_PUBLIC_META_PIXEL_ID=XXXXXXXXXXXXXXX
 
 Sem estas variáveis, nenhum script de acompanhamento é carregado.
 
+## 3.12. Assistente de IA (substitui o botão do WhatsApp)
+
+O botão flutuante do site passa a ser um chat — responde sobre formações
+(investimento, datas, conteúdos) usando sempre os dados reais do catálogo,
+nunca inventa informação, e tem sempre um botão "Falar com uma pessoa no
+WhatsApp" visível para quem precisar de um humano (inscrições, pagamentos,
+reclamações). Sem a chave abaixo configurada, o botão continua a ser o
+WhatsApp normal, como hoje — nada muda até a activarem.
+
+1. Criar conta em [console.anthropic.com](https://console.anthropic.com).
+2. Em **Billing**, carregar saldo (é pré-pago — não é uma subscrição
+   mensal fixa; paga-se por uso, e o modelo por defeito usado aqui é o mais
+   económico da gama).
+3. Em **API Keys**, gerar uma nova chave.
+4. Adicionar ao `.env.local`/Vercel:
+
+```
+ANTHROPIC_API_KEY=...
+```
+
+A partir daqui o botão flutuante muda automaticamente para o chat — não é
+preciso mexer em código nem redeployar mais nada além de definir a
+variável.
+
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
 - Avaliações/testes dentro do LMS (hoje só há vídeo-aulas + materiais +

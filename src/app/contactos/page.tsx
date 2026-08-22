@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import ContactForm from "@/components/ContactForm";
 import { siteConfig, whatsappLink } from "@/data/site";
+import { InstagramIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Contactos",
@@ -18,28 +19,45 @@ export default function ContactosPage() {
           <div className="mt-10 space-y-6 text-sm text-ink">
             <div>
               <p className="eyebrow">Email</p>
-              <a href={`mailto:${siteConfig.emails.geral}`} className="mt-1 block hover:text-gold-dark">
+              <a href={`mailto:${siteConfig.emails.geral}`} className="mt-1 flex items-center gap-2 hover:text-gold-dark">
+                <MailIcon className="h-4 w-4 shrink-0 text-ink-soft" />
                 {siteConfig.emails.geral}
               </a>
             </div>
             <div>
               <p className="eyebrow">Telefone</p>
-              <a href={siteConfig.phoneHref} className="mt-1 block hover:text-gold-dark">
+              <a href={siteConfig.phoneHref} className="mt-1 flex items-center gap-2 hover:text-gold-dark">
+                <PhoneIcon className="h-4 w-4 shrink-0 text-ink-soft" />
                 {siteConfig.phone}
               </a>
             </div>
             <div>
               <p className="eyebrow">Morada</p>
-              <p className="mt-1">{siteConfig.address}</p>
+              <p className="mt-1 flex items-center gap-2">
+                <MapPinIcon className="h-4 w-4 shrink-0 text-ink-soft" />
+                {siteConfig.address}
+              </p>
             </div>
             <div>
               <p className="eyebrow">Redes sociais</p>
-              <div className="mt-1 flex gap-4">
-                <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-gold-dark">
-                  Instagram
+              <div className="mt-2 flex gap-3">
+                <a
+                  href={siteConfig.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram da Wealth Academy"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-ink-soft hover:border-gold hover:text-gold-dark"
+                >
+                  <InstagramIcon className="h-4 w-4" />
                 </a>
-                <a href={siteConfig.social.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-gold-dark">
-                  LinkedIn
+                <a
+                  href={siteConfig.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn da Wealth Academy"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-ink-soft hover:border-gold hover:text-gold-dark"
+                >
+                  <LinkedinIcon className="h-4 w-4" />
                 </a>
               </div>
             </div>
@@ -47,8 +65,9 @@ export default function ContactosPage() {
               href={whatsappLink("Olá, Wealth Academy. Gostaria de obter informações sobre as formações disponíveis.")}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary mt-2 inline-flex"
+              className="btn-primary mt-2 inline-flex items-center gap-2"
             >
+              <WhatsAppIcon className="h-4 w-4" />
               Falar no WhatsApp
             </a>
           </div>

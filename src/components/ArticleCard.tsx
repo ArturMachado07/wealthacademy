@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { InsightArticle } from "@/lib/wealth-insights";
 import MediaSlot from "@/components/MediaSlot";
+import { ArrowRightIcon } from "@/components/icons";
 
 export default function ArticleCard({ article }: { article: InsightArticle }) {
   return (
@@ -25,6 +26,10 @@ export default function ArticleCard({ article }: { article: InsightArticle }) {
             </>
           )}
         </div>
+        <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-gold group-hover:underline">
+          Ler artigo
+          <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </span>
       </div>
     </Link>
   );

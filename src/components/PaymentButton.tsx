@@ -25,9 +25,13 @@ type Status =
 // Os restantes ficam visíveis para o aluno perceber o que estará disponível,
 // mas seguem sempre o mesmo fluxo (Multicaixa Express) ao confirmar.
 const PAYMENT_METHODS = [
-  { id: "mcx", label: "Multicaixa Express", badge: "MCX" },
-  { id: "card", label: "Cartão Visa / Mastercard", badge: "VISA/MC" },
-  { id: "transfer", label: "Transferência bancária", badge: "IBAN" },
+  { id: "mcx", label: "Multicaixa Express", icons: ["/brand/icones-pagamento/express.svg"] },
+  {
+    id: "card",
+    label: "Cartão Visa / Mastercard",
+    icons: ["/brand/icones-pagamento/visa.svg", "/brand/icones-pagamento/mastercard.svg"],
+  },
+  { id: "transfer", label: "Transferência bancária", icons: ["/brand/icones-pagamento/transf-banco.svg"] },
 ] as const;
 
 export default function PaymentButton({ courseSlug, courseTitle, investment }: Props) {
@@ -217,8 +221,11 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
                     className="accent-gold-dark"
                   />
                   <span className="flex-1 text-sm text-ink">{option.label}</span>
-                  <span className="rounded bg-ink px-1.5 py-0.5 text-[10px] font-medium text-white">
-                    {option.badge}
+                  <span className="flex items-center gap-2">
+                    {option.icons.map((src) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={src} src={src} alt="" className="h-5 w-auto" />
+                    ))}
                   </span>
                 </label>
               ))}
