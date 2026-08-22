@@ -125,24 +125,6 @@ export default function SobrePage() {
         </div>
       </section>
 
-      <section className="bg-ink py-24 text-cream">
-        <div className="container-page max-w-3xl">
-          <p className="eyebrow text-gold-light">Formação além da sala de aula</p>
-          <h2 className="mt-3 text-2xl font-medium leading-tight md:text-3xl">
-            Actividades extracurriculares fazem parte da nossa formação integral
-          </h2>
-          <p className="mt-5 leading-relaxed text-cream/80">
-            As actividades extracurriculares e experiências práticas fazem parte da nossa
-            perspectiva de formação integral. Um exemplo disso foi a visita dos formandos à
-            Biblioteca Nacional de Angola, no dia 6 de Fevereiro de 2026, realizada no âmbito de
-            actividades destinadas ao enriquecimento académico, cultural e intelectual dos
-            estudantes. Esta visão reforça
-            o nosso compromisso com uma formação que combina competências técnicas,
-            conhecimento, cultura, pensamento crítico e desenvolvimento contínuo.
-          </p>
-        </div>
-      </section>
-
       <PartnerLogos />
       <ExperienceLogos />
     </>
