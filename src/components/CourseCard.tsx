@@ -20,6 +20,12 @@ export default function CourseCard({ course }: { course: Course }) {
           {course.duration && <span>{course.duration}</span>}
           {course.date && <span>{course.date}</span>}
         </div>
+        {course.investment && (
+          <p className="mt-3 text-sm text-ink">
+            <span className="text-xs uppercase tracking-wide text-ink-soft">Investimento</span>{" "}
+            <span className="font-medium">{course.investment}</span>
+          </p>
+        )}
         <span className="mt-4 text-sm font-medium text-gold group-hover:underline">
           {course.status === "Inscrições abertas" ? "Explorar formação" : course.status}
         </span>

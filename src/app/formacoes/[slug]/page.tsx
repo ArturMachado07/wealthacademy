@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { courses } from "@/data/courses";
 import { siteConfig, whatsappLink } from "@/data/site";
 import EnrollButton from "@/components/EnrollButton";
+import PaymentButton from "@/components/PaymentButton";
+import CourseSlideshow from "@/components/CourseSlideshow";
 import { getCurrentStudent } from "@/lib/auth";
 
 type Props = { params: { slug: string } };
@@ -50,6 +52,10 @@ export default async function CoursePage({ params }: Props) {
         {course.description && (
           <p className="mt-5 text-lg leading-relaxed text-ink-soft">{course.description}</p>
         )}
+
+        <div className="mt-8 max-w-md">
+          <CourseSlideshow slug={course.slug} title={course.title} />
+        </div>
 
         <dl className="mt-10 grid grid-cols-2 gap-6 border-y border-ink/10 py-8 md:grid-cols-4">
           {details
@@ -107,7 +113,15 @@ export default async function CoursePage({ params }: Props) {
 
         <div className="mt-12 flex flex-wrap gap-4">
           {student ? (
-            <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
+            course.investment ? (
+              <PaymentButton
+                courseSlug={course.slug}
+                courseTitle={course.title}
+                investment={course.investment}
+              />
+            ) : (
+              <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
+            )
           ) : (
             <Link href="/contactos" className="btn-primary">
               Quero inscrever-me
