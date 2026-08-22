@@ -60,6 +60,14 @@ export default async function AlunoDashboardPage() {
           <div>
             <p className="eyebrow">Área do Aluno</p>
             <h1 className="mt-2 font-display text-3xl text-ink">Olá, {student.name}</h1>
+            <div className="mt-3 flex gap-4 text-sm">
+              <Link href="/aluno/perfil" className="text-gold-dark underline">
+                O meu perfil
+              </Link>
+              <Link href="/aluno/pagamentos" className="text-gold-dark underline">
+                Os meus pagamentos
+              </Link>
+            </div>
           </div>
           <SignOutButton />
         </div>
