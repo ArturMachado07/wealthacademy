@@ -70,6 +70,28 @@ PROXYPAY_POS_ID=...
 
 Documentação oficial usada: [ProxyPay OPG API](https://developer.proxypay.co.ao/opg/v1/).
 
+## 3.5. Certificados
+
+Correr também `supabase/004_certificate_numbering.sql` — faz o número do
+certificado (ex. `WA-2026-0001`) gerar-se sozinho a cada inscrição concluída.
+
+Como ainda não existe painel Admin, emitir um certificado é manual: no SQL
+Editor da Supabase,
+
+```sql
+update enrollments set status = 'Concluída' where id = '<id da inscrição>';
+
+insert into certificates (student_id, enrollment_id, course_title, hours)
+select student_id, id, course_title, '16 horas'
+from enrollments
+where id = '<id da inscrição>';
+```
+
+O número do certificado é gerado automaticamente. O aluno vê-o de imediato
+no dashboard, com um link para a validação pública em
+`/validar/<numero-do-certificado>` — página que qualquer pessoa (sem login)
+pode abrir para confirmar a autenticidade.
+
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
 - Ligar inscrições reais: hoje uma inscrição só aparece no dashboard do

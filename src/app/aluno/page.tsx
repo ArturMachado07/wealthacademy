@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -115,6 +116,12 @@ export default async function AlunoDashboardPage() {
                   <p className="mt-1 text-xs text-ink-soft/70">
                     Emitido em {new Date(certificate.issue_date).toLocaleDateString("pt-PT")}
                   </p>
+                  <Link
+                    href={`/validar/${certificate.certificate_number}`}
+                    className="mt-3 inline-block text-sm text-gold-dark underline"
+                  >
+                    Ver validação pública
+                  </Link>
                 </div>
               ))}
             </div>
