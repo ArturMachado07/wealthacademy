@@ -1,23 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import MediaSlot from "@/components/MediaSlot";
+import Image from "next/image";
+
+type Slide = { key: string; label: string; src: string | null };
 
 type Props = {
-  slug: string;
   title: string;
+  slides: Slide[];
 };
 
-// Caixa do curso com 3 slides: Capa, Benefícios, Formadores. Cada slide
-// mostra a imagem real assim que existir em /public/images com o nome
-// indicado (mesmo padrão do MediaSlot) — até lá, mostra o painel
-// gráfico discreto.
-export default function CourseSlideshow({ slug, title }: Props) {
-  const slides = [
-    { key: "capa", label: "Capa", baseName: `curso-${slug}-1-capa` },
-    { key: "beneficios", label: "Benefícios", baseName: `curso-${slug}-2-beneficios` },
-    { key: "formadores", label: "Formadores", baseName: `curso-${slug}-3-formadores` },
-  ];
+// Caixa do curso com 3 slides (Capa, Benefícios, Formadores). Recebe os
+// URLs já resolvidos pelo Server Component (formacoes/[slug]/page.tsx),
+// que é quem sabe procurar ficheiros em /public/images — este componente
+// é "use client" (por causa das setas) e não pode usar fs/path do Node.
+export default function CourseSlideshow({ title, slides }: Props) {
   const [index, setIndex] = useState(0);
   const slide = slides[index];
 
@@ -30,12 +27,27 @@ export default function CourseSlideshow({ slug, title }: Props) {
 
   return (
     <div className="relative overflow-hidden rounded border border-ink/10">
-      <MediaSlot
-        baseName={slide.baseName}
-        alt={`${title} — ${slide.label}`}
-        className="aspect-[4/3] w-full"
-        sizes="(min-width: 768px) 600px, 100vw"
-      />
+      <div className="relative aspect-[4/3] w-full">
+        {slide.src ? (
+          <Image
+            src={slide.src}
+            alt={`${title} — ${slide.label}`}
+            fill
+            sizes="(min-width: 768px) 600px, 100vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-ink" aria-hidden="true">
+            <div
+              className="absolute inset-0 opacity-[0.12]"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 25% 25%, #C79A5D 0, transparent 50%), radial-gradient(circle at 75% 75%, #C79A5D 0, transparent 45%)",
+              }}
+            />
+          </div>
+        )}
+      </div>
 
       <span className="absolute left-3 top-3 rounded bg-ink/70 px-2 py-1 text-xs text-cream">
         {slide.label}

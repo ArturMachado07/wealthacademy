@@ -7,6 +7,7 @@ import EnrollButton from "@/components/EnrollButton";
 import PaymentButton from "@/components/PaymentButton";
 import CourseSlideshow from "@/components/CourseSlideshow";
 import { getCurrentStudent } from "@/lib/auth";
+import { findPublicImage } from "@/lib/media";
 
 type Props = { params: { slug: string } };
 
@@ -32,6 +33,14 @@ export default async function CoursePage({ params }: Props) {
   // "Quero inscrever-me" (que leva a Contactos, para quem ainda não é aluno).
   const student = await getCurrentStudent();
 
+  // Resolvido aqui (Server Component, pode usar fs) e passado como props
+  // simples ao CourseSlideshow (client component, só para as setas).
+  const slides = [
+    { key: "capa", label: "Capa", src: findPublicImage(`curso-${course.slug}-1-capa`) },
+    { key: "beneficios", label: "Benefícios", src: findPublicImage(`curso-${course.slug}-2-beneficios`) },
+    { key: "formadores", label: "Formadores", src: findPublicImage(`curso-${course.slug}-3-formadores`) },
+  ];
+
   const details: [string, string | undefined][] = [
     ["Modalidade", course.modality],
     ["Duração", course.duration],
@@ -54,7 +63,7 @@ export default async function CoursePage({ params }: Props) {
         )}
 
         <div className="mt-8 max-w-md">
-          <CourseSlideshow slug={course.slug} title={course.title} />
+          <CourseSlideshow title={course.title} slides={slides} />
         </div>
 
         <dl className="mt-10 grid grid-cols-2 gap-6 border-y border-ink/10 py-8 md:grid-cols-4">
