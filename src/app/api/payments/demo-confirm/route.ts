@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { sendEnrollmentConfirmationEmail } from "@/lib/email";
 
 // Confirma um pagamento em MODO DEMO (nunca chama a ProxyPay — só existe
 // enquanto PROXYPAY_API_TOKEN/PROXYPAY_POS_ID não estiverem configurados).
@@ -60,10 +61,20 @@ export async function POST(request: Request) {
   }
 
   if (payment.enrollment_id) {
-    await supabase
+    const { data: enrollment } = await supabase
       .from("enrollments")
       .update({ status: "Em curso", updated_at: new Date().toISOString() })
-      .eq("id", payment.enrollment_id);
+      .eq("id", payment.enrollment_id)
+      .select("course_title")
+      .single();
+
+    if (enrollment) {
+      await sendEnrollmentConfirmationEmail({
+        to: student.email,
+        name: student.name,
+        courseTitle: enrollment.course_title,
+      });
+    }
   }
 
   return NextResponse.json({ ok: true });

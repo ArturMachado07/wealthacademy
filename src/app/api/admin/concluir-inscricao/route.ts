@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { sendCertificateEmail } from "@/lib/email";
 
 // Marca uma inscrição como "Concluída" e emite o certificado
 // correspondente (número gerado automaticamente — ver
@@ -45,12 +46,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Não foi possível concluir a inscrição." }, { status: 500 });
   }
 
-  const { error: certError } = await supabase.from("certificates").insert({
-    student_id: enrollment.student_id,
-    enrollment_id: enrollment.id,
-    course_title: enrollment.course_title,
-    hours,
-  });
+  const { data: certificate, error: certError } = await supabase
+    .from("certificates")
+    .insert({
+      student_id: enrollment.student_id,
+      enrollment_id: enrollment.id,
+      course_title: enrollment.course_title,
+      hours,
+    })
+    .select("certificate_number")
+    .single();
 
   if (certError) {
     console.error("[wealth-academy] falha ao emitir certificado:", certError);
@@ -58,6 +63,23 @@ export async function POST(request: Request) {
       { ok: false, error: "Inscrição concluída, mas o certificado falhou." },
       { status: 500 }
     );
+  }
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("name, email")
+    .eq("id", enrollment.student_id)
+    .single();
+
+  if (student && certificate) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
+    await sendCertificateEmail({
+      to: student.email,
+      name: student.name,
+      courseTitle: enrollment.course_title,
+      certificateNumber: certificate.certificate_number,
+      validateUrl: `${siteUrl}/validar/${certificate.certificate_number}`,
+    });
   }
 
   return NextResponse.json({ ok: true });

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { sendEnrollmentConfirmationEmail } from "@/lib/email";
 
 // Recebe o callback assíncrono da ProxyPay/EMIS GPO quando uma "charge" é
 // usada (aceite ou rejeitada). Ver "Callback Notification" em
@@ -42,10 +43,28 @@ export async function POST(request: Request) {
   }
 
   if (status === "accepted" && payment?.enrollment_id) {
-    await supabase
+    const { data: enrollment } = await supabase
       .from("enrollments")
       .update({ status: "Em curso", updated_at: new Date().toISOString() })
-      .eq("id", payment.enrollment_id);
+      .eq("id", payment.enrollment_id)
+      .select("course_title, student_id")
+      .single();
+
+    if (enrollment?.student_id) {
+      const { data: student } = await supabase
+        .from("students")
+        .select("name, email")
+        .eq("id", enrollment.student_id)
+        .single();
+
+      if (student) {
+        await sendEnrollmentConfirmationEmail({
+          to: student.email,
+          name: student.name,
+          courseTitle: enrollment.course_title,
+        });
+      }
+    }
   }
 
   return NextResponse.json({ ok: true });

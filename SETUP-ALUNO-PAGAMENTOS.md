@@ -11,7 +11,7 @@ cd ~/wealthacademy/website
 npm install
 ```
 
-Isto instala `@supabase/supabase-js` e `@supabase/ssr`, já adicionados ao `package.json`.
+Isto instala `@supabase/supabase-js`, `@supabase/ssr` e `resend`, já adicionados ao `package.json`.
 
 ## 2. Criar o projecto Supabase — ✅ concluído
 
@@ -133,6 +133,30 @@ e leads (de todos os alunos — usa a service role, não fica limitado a "ver
 só o meu"), com botão para marcar uma inscrição como concluída (emite o
 certificado automaticamente) e um menu para actualizar o estado de cada
 lead.
+
+## 3.7. Emails transaccionais (confirmação de inscrição, certificado)
+
+1. Criar conta grátis em [resend.com](https://resend.com).
+2. Verificar um domínio próprio (ex. `waca.ao`) em **Domains** — sem isto só
+   consegues enviar para o teu próprio email de conta Resend.
+3. Gerar uma API key em **API Keys**.
+4. Adicionar ao `.env.local`/Vercel:
+
+```
+RESEND_API_KEY=...
+RESEND_FROM_EMAIL=Wealth Academy <notificacoes@waca.ao>
+```
+
+A partir daqui, o aluno recebe automaticamente um email quando a inscrição
+é confirmada (pagamento demo ou real) e quando um certificado é emitido
+pelo Admin. Sem `RESEND_API_KEY`, estes emails são simplesmente ignorados
+— nada quebra, só não há notificação.
+
+**Nota:** este é um provedor diferente do que já discutimos para os emails
+de confirmação de conta/login (Supabase Auth). Se quiseres, o mesmo
+domínio Resend também pode ser ligado à Supabase (Authentication → SMTP
+Settings) para resolver o limite de emails do registo de alunos — usa a
+mesma API key nos dois sítios.
 
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
