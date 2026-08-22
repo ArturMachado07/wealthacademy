@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export default function AlunoLoginPage() {
+function AlunoLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") ?? "/aluno";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +32,7 @@ export default function AlunoLoginPage() {
       return;
     }
 
-    router.push("/aluno");
+    router.push(from);
     router.refresh();
   }
 
@@ -82,5 +84,13 @@ export default function AlunoLoginPage() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function AlunoLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AlunoLoginForm />
+    </Suspense>
   );
 }

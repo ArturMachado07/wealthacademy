@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { courses } from "@/data/courses";
 import { siteConfig, whatsappLink } from "@/data/site";
+import EnrollButton from "@/components/EnrollButton";
 
 type Props = { params: { slug: string } };
 
@@ -111,6 +112,10 @@ export default function CoursePage({ params }: Props) {
           >
             Pedir mais informações
           </a>
+        </div>
+
+        <div className="mt-4">
+          <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
         </div>
       </div>
     </article>
