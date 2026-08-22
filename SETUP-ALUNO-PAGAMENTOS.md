@@ -92,6 +92,27 @@ no dashboard, com um link para a validação pública em
 `/validar/<numero-do-certificado>` — página que qualquer pessoa (sem login)
 pode abrir para confirmar a autenticidade.
 
+## 3.6. Painel Admin
+
+Correr `supabase/005_admin.sql` no SQL Editor. Não há registo público de
+admins — cria-se a conta manualmente:
+
+1. Supabase → **Authentication → Users → Add user** — email/password da
+   pessoa, marcar "Auto Confirm User".
+2. Copiar o **User UID** gerado.
+3. Correr no SQL Editor (substituindo os valores):
+
+```sql
+insert into admins (auth_user_id, name, email, role)
+values ('<uid-copiado>', 'Nome da Pessoa', 'email@wealthacademy.ao', 'Director');
+```
+
+Depois disso, entra em `/admin/login`. O painel mostra todas as inscrições
+e leads (de todos os alunos — usa a service role, não fica limitado a "ver
+só o meu"), com botão para marcar uma inscrição como concluída (emite o
+certificado automaticamente) e um menu para actualizar o estado de cada
+lead.
+
 ## 4. O que ainda falta depois disto (não incluído aqui)
 
 - Ligar inscrições reais: hoje uma inscrição só aparece no dashboard do
