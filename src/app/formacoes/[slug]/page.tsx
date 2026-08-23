@@ -103,6 +103,18 @@ export default async function CoursePage({ params }: Props) {
               <p className="mt-5 text-lg leading-relaxed text-ink-soft">{course.description}</p>
             )}
 
+            {/* Em mobile a imagem aparece aqui, entre a descrição e a
+                informação — no cartão lateral (que só existe visualmente a
+                partir do desktop) a mesma imagem fica escondida. */}
+            <div className="mt-6 overflow-hidden rounded border border-ink/10 lg:hidden">
+              <MediaSlot
+                baseName={course.image ?? course.slug}
+                alt={course.title}
+                className="aspect-[16/10] w-full"
+                sizes="100vw"
+              />
+            </div>
+
             {courseDetails.length > 0 && (
               <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-ink/10 py-6 sm:grid-cols-3">
                 {courseDetails.map(([label, value]) => (
@@ -197,8 +209,8 @@ export default async function CoursePage({ params }: Props) {
               <MediaSlot
                 baseName={course.image ?? course.slug}
                 alt={course.title}
-                className="aspect-[16/10] w-full"
-                sizes="(min-width: 1024px) 380px, 100vw"
+                className="hidden aspect-[16/10] w-full lg:block"
+                sizes="380px"
               />
 
               <div className="p-6">

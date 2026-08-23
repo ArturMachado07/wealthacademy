@@ -91,10 +91,17 @@ export default async function AlunoDashboardPage() {
               {activeEnrollments.map((enrollment) => {
                 const progress =
                   enrollment.status === "Concluída" ? 100 : enrollment.progress_percent;
+                // O título guardado na inscrição é uma cópia do momento da
+                // inscrição — se a formação for renomeada depois, mostramos
+                // o título actual do catálogo (por slug) para não ficar
+                // desactualizado, com o título guardado só como reserva
+                // (ex.: formação entretanto removida do catálogo).
+                const courseTitle =
+                  courses.find((c) => c.slug === enrollment.course_slug)?.title ?? enrollment.course_title;
                 return (
                 <div key={enrollment.id} className="rounded border border-ink/10 bg-white/60 p-6">
                   <p className="text-xs uppercase tracking-wide text-ink-soft">{enrollment.status}</p>
-                  <h3 className="mt-1 text-lg font-medium text-ink">{enrollment.course_title}</h3>
+                  <h3 className="mt-1 text-lg font-medium text-ink">{courseTitle}</h3>
                   <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-ink/10">
                     <div
                       className="h-full rounded-full bg-gold"
@@ -126,7 +133,7 @@ export default async function AlunoDashboardPage() {
                         </p>
                         <PaymentButton
                           courseSlug={enrollment.course_slug}
-                          courseTitle={enrollment.course_title}
+                          courseTitle={course?.title ?? enrollment.course_title}
                           investment={priced.investment}
                         />
                       </div>
