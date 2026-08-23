@@ -32,30 +32,28 @@ export default async function InstructorPage({ params }: Props) {
   return (
     <section className="py-24">
       <div className="container-page">
-        <div className="mx-auto max-w-3xl">
-          <div className="flex flex-wrap items-center gap-6">
-            <MediaSlot
-              baseName={instructor.photo ?? instructor.slug}
-              alt={instructor.name}
-              className="h-24 w-24 shrink-0 rounded-full"
-            />
-            <div>
-              <p className="eyebrow">Formador</p>
-              <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{instructor.name}</h1>
-              {instructor.role && (
-                <p className="mt-2 text-base leading-relaxed text-ink-soft">{instructor.role}</p>
-              )}
-            </div>
+        <div className="flex flex-wrap items-center gap-6">
+          <MediaSlot
+            baseName={instructor.photo ?? instructor.slug}
+            alt={instructor.name}
+            className="h-24 w-24 shrink-0 rounded-full"
+          />
+          <div>
+            <p className="eyebrow">Formador</p>
+            <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{instructor.name}</h1>
+            {instructor.role && (
+              <p className="mt-2 text-base leading-relaxed text-ink-soft">{instructor.role}</p>
+            )}
           </div>
-
-          {bioParagraphs.length > 0 && (
-            <div className="mt-6 space-y-4 text-ink-soft">
-              {bioParagraphs.map((paragraph, i) => (
-                <p key={i}>{paragraph}</p>
-              ))}
-            </div>
-          )}
         </div>
+
+        {bioParagraphs.length > 0 && (
+          <div className="mt-6 space-y-4 text-justify text-ink-soft">
+            {bioParagraphs.map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
+          </div>
+        )}
 
         <div className="mt-14">
           <h2 className="text-lg font-medium text-ink">Formações</h2>

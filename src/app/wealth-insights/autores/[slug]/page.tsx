@@ -23,6 +23,9 @@ export default async function AuthorPage({ params }: Props) {
   if (!author) notFound();
 
   const authorArticles = await getArticlesByAuthor(author.slug);
+  const bioParagraphs = author.bio
+    ? author.bio.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+    : [];
 
   return (
     <section className="py-24">
@@ -38,7 +41,13 @@ export default async function AuthorPage({ params }: Props) {
           <SectionHeading eyebrow="Autor" title={author.name} description={author.role ?? undefined} />
         </div>
 
-        {author.bio && <p className="mt-6 max-w-2xl text-ink-soft">{author.bio}</p>}
+        {bioParagraphs.length > 0 && (
+          <div className="mt-6 space-y-4 text-justify text-ink-soft">
+            {bioParagraphs.map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
+          </div>
+        )}
 
         <div className="mt-14">
           {authorArticles.length > 0 ? (
