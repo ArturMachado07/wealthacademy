@@ -19,9 +19,16 @@ export type Course = {
   objectives?: string[];
   audience?: string;
   syllabus?: string[];
-  modules?: string[];
+  // Módulos do curso (título + descrição curta), mostrados na secção "O que
+  // vai aprender" da página da formação.
+  modules?: { title: string; description: string }[];
   location?: string;
+  // Um único formador (texto livre) — usado quando só há um nome, sem cargo.
   instructor?: string;
+  // Vários formadores com cargo/função — usado na secção "Formadores" da
+  // página da formação quando há mais do que um, ou quando queremos indicar
+  // o cargo de cada um.
+  instructors?: { name: string; role: string }[];
   followUp?: string;
   investment?: string;
   certification?: string;
@@ -76,12 +83,42 @@ export const courses: Course[] = [
     description:
       "A Wealth Academy promove uma formação intensiva para quem pretende elevar o seu posicionamento no mercado financeiro e actuar com maior confiança e estratégia.",
     audience: "Profissionais de investimento, tesouraria, gestão de activos e consultoria.",
-    duration: "2 dias",
+    duration: "20h",
     date: "28 de Fevereiro e 7 de Março",
     followUp: "6 meses de acompanhamento remoto — conforme edição identificada",
     location: "Luanda | Hotel EPIC SANA",
     certification: "Certificado reconhecido pelo INEFOP",
     extras: ["Coffee Break e Almoço"],
+    modules: [
+      {
+        title: "Módulo 1 - Estrutura do Sistema Financeiro",
+        description:
+          "Compreenda o ecossistema financeiro angolano e as ligações estratégicas com padrões internacionais.",
+      },
+      {
+        title: "Módulo 2 - Mercado de Capitais e Produtos",
+        description:
+          "Identifique oportunidades em Angola e no exterior, dominando instrumentos financeiros e mercados primário e secundário.",
+      },
+      {
+        title: "Módulo 3 - Análise e Gestão de Risco",
+        description:
+          "Avalie activos e implemente estratégias de risco que funcionam tanto no contexto nacional como internacional.",
+      },
+      {
+        title: "Módulo 4 - Psicologia do Investidor",
+        description:
+          "Entenda os comportamentos que movem investidores em Angola e nos mercados internacionais para decisões mais assertivas.",
+      },
+      {
+        title: "Módulo 5 – Simulações de Negociação",
+        description: "Pratique negociação real, aplicando técnicas que funcionam em salas de mercados locais e internacionais.",
+      },
+    ],
+    instructors: [
+      { name: "Lombe Caculo", role: "Consultor de Investimentos e Analista Financeiro Independente" },
+      { name: "Mahália Castro", role: "Consultora de Investimentos e Analista Financeira Independente" },
+    ],
   },
   {
     slug: "comunicacao-institucional",

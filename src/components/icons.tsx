@@ -134,6 +134,15 @@ export function CheckIcon({ className }: IconProps) {
   );
 }
 
+export function CheckCircleIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8.3 12.3l2.4 2.4L15.7 9.4" />
+    </svg>
+  );
+}
+
 export function FilterIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

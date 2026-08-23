@@ -5,13 +5,12 @@ import { courses } from "@/data/courses";
 import { whatsappLink } from "@/data/site";
 import EnrollButton from "@/components/EnrollButton";
 import PaymentButton from "@/components/PaymentButton";
-import CourseSlideshow from "@/components/CourseSlideshow";
+import MediaSlot from "@/components/MediaSlot";
 import CourseCard from "@/components/CourseCard";
 import CourseJsonLd from "@/components/CourseJsonLd";
-import { CheckIcon } from "@/components/icons";
+import { CheckIcon, CheckCircleIcon } from "@/components/icons";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { findPublicImage } from "@/lib/media";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 
 type Props = { params: { slug: string } };
@@ -60,19 +59,11 @@ export default async function CoursePage({ params }: Props) {
     existingEnrollment = data;
   }
 
-  // Resolvido aqui (Server Component, pode usar fs) e passado como props
-  // simples ao CourseSlideshow (client component, só para as setas).
-  const slides = [
-    { key: "capa", label: "Capa", src: findPublicImage(`curso-${course.slug}-1-capa`) },
-    { key: "beneficios", label: "Benefícios", src: findPublicImage(`curso-${course.slug}-2-beneficios`) },
-    { key: "formadores", label: "Formadores", src: findPublicImage(`curso-${course.slug}-3-formadores`) },
-  ];
-
   // Logística e datas ficam junto à descrição, no corpo principal (mais
   // visível do que escondidas no cartão lateral). O cartão lateral guarda
   // só a informação mais "comercial" (modalidade, formador, vagas).
   const allCourseDetails: [string, string | undefined][] = [
-    ["Duração", course.duration],
+    ["Carga Horária", course.duration],
     ["Acompanhamento", course.followUp],
     ["Data", course.date],
     ["Local", course.location],
@@ -115,12 +106,43 @@ export default async function CoursePage({ params }: Props) {
             {courseDetails.length > 0 && (
               <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-ink/10 py-6 sm:grid-cols-3">
                 {courseDetails.map(([label, value]) => (
-                  <div key={label}>
-                    <dt className="text-xs uppercase tracking-wide2 text-ink-soft">{label}</dt>
-                    <dd className="mt-1 text-sm font-medium text-ink">{value}</dd>
+                  <div key={label} className="flex items-start gap-2.5">
+                    <CheckCircleIcon className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
+                    <div>
+                      <dt className="text-xs uppercase tracking-wide2 text-ink-soft">{label}</dt>
+                      <dd className="mt-1 text-sm font-medium text-ink">{value}</dd>
+                    </div>
                   </div>
                 ))}
               </dl>
+            )}
+
+            {course.modules && course.modules.length > 0 && (
+              <div className="mt-10">
+                <h2 className="text-xl font-medium text-ink">O que vai aprender</h2>
+                <div className="mt-4 space-y-5">
+                  {course.modules.map((item) => (
+                    <div key={item.title}>
+                      <p className="font-medium text-ink">{item.title}</p>
+                      <p className="mt-1 text-sm text-ink-soft">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {course.instructors && course.instructors.length > 0 && (
+              <div className="mt-10">
+                <h2 className="text-xl font-medium text-ink">Formadores</h2>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {course.instructors.map((person) => (
+                    <div key={person.name}>
+                      <p className="font-medium text-ink">{person.name}</p>
+                      <p className="mt-0.5 text-sm text-ink-soft">{person.role}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             {course.objectives && course.objectives.length > 0 && (
@@ -172,7 +194,12 @@ export default async function CoursePage({ params }: Props) {
 
           <aside className="lg:sticky lg:top-28 lg:self-start">
             <div className="overflow-hidden rounded border border-ink/10 bg-white/60">
-              <CourseSlideshow title={course.title} slides={slides} />
+              <MediaSlot
+                baseName={course.image ?? course.slug}
+                alt={course.title}
+                className="aspect-[16/10] w-full"
+                sizes="(min-width: 1024px) 380px, 100vw"
+              />
 
               <div className="p-6">
                 {course.investment && (

@@ -17,18 +17,30 @@ export default function CourseJsonLd({ course }: { course: Course }) {
       name: siteConfig.name,
       sameAs: process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao",
     },
-    ...(course.instructor
+    ...(course.instructors && course.instructors.length > 0
       ? {
           hasCourseInstance: {
             "@type": "CourseInstance",
             courseMode: course.modality === "Online" ? "online" : "onsite",
-            instructor: {
+            instructor: course.instructors.map((person) => ({
               "@type": "Person",
-              name: course.instructor,
-            },
+              name: person.name,
+              jobTitle: person.role,
+            })),
           },
         }
-      : {}),
+      : course.instructor
+        ? {
+            hasCourseInstance: {
+              "@type": "CourseInstance",
+              courseMode: course.modality === "Online" ? "online" : "onsite",
+              instructor: {
+                "@type": "Person",
+                name: course.instructor,
+              },
+            },
+          }
+        : {}),
   };
 
   return (
