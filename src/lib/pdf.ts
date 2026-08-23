@@ -238,15 +238,15 @@ function drawQrCode(page: PdfPage, text: string, x: number, y: number, size: num
   const n = matrix.length;
   const quiet = QR_QUIET_ZONE;
   const dim = n + quiet * 2;
-  const module = size / dim;
+  const moduleSize = size / dim;
 
   page.rectFill(x, y, size, size, { color: WHITE });
   for (let row = 0; row < n; row++) {
     for (let col = 0; col < n; col++) {
       if (!matrix[row][col]) continue;
-      const px = x + (quiet + col) * module;
-      const py = y + size - (quiet + row + 1) * module;
-      page.rectFill(px, py, module, module, { color: INK });
+      const px = x + (quiet + col) * moduleSize;
+      const py = y + size - (quiet + row + 1) * moduleSize;
+      page.rectFill(px, py, moduleSize, moduleSize, { color: INK });
     }
   }
 }
