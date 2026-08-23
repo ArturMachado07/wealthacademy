@@ -24,7 +24,7 @@ export default function Header() {
             alt="Wealth Academy"
             width={122}
             height={86}
-            className="h-12 w-auto md:h-14"
+            className="h-12 w-auto md:h-16 lg:h-[4.5rem]"
           />
         </Link>
 
