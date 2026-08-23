@@ -34,6 +34,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ nume
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
   const validateUrl = `${siteUrl.replace(/^https?:\/\//, "")}/validar/${certificate.certificate_number}`;
+  const pdfUrl = `${siteUrl}/api/validar/${certificate.certificate_number}/pdf`;
 
   const pdf = buildCertificatePdfBuffer({
     studentName,
@@ -42,6 +43,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ nume
     issueDate: certificate.issue_date,
     certificateNumber: certificate.certificate_number,
     validateUrl,
+    pdfUrl,
   });
 
   return new NextResponse(pdf, {

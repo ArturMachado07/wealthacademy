@@ -71,6 +71,7 @@ export default async function AlunoCertificadoPage({ params }: Props) {
             issueDate={certificate.issue_date}
             certificateNumber={certificate.certificate_number}
             validateUrl={validateUrl}
+            pdfUrl={`${siteUrl}/api/validar/${certificate.certificate_number}/pdf`}
           />
         </div>
       </div>

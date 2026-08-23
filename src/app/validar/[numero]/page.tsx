@@ -101,6 +101,7 @@ export default async function ValidarCertificadoPage({ params }: Props) {
                 issueDate={certificate.issue_date}
                 certificateNumber={certificate.certificate_number}
                 validateUrl={validateUrl}
+                pdfUrl={`${siteUrl}/api/validar/${certificate.certificate_number}/pdf`}
               />
             </div>
           </>

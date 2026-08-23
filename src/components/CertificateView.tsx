@@ -1,3 +1,5 @@
+import QrCode from "@/components/QrCode";
+
 type Props = {
   studentName: string;
   courseTitle: string;
@@ -5,6 +7,9 @@ type Props = {
   issueDate: string;
   certificateNumber: string;
   validateUrl: string;
+  // URL completa (com https://) que o QR code codifica — quem digitaliza
+  // abre directamente o PDF do certificado, sem passar pela página HTML.
+  pdfUrl: string;
 };
 
 // Representação visual do certificado (mesmo layout usado na área privada
@@ -19,6 +24,7 @@ export default function CertificateView({
   issueDate,
   certificateNumber,
   validateUrl,
+  pdfUrl,
 }: Props) {
   return (
     <div className="certificate-print mx-auto w-full max-w-3xl overflow-hidden rounded bg-white p-3 shadow-xl shadow-ink/10 sm:p-5">
@@ -48,17 +54,20 @@ export default function CertificateView({
         </p>
 
         <div className="mt-10 flex w-full flex-col items-center justify-between gap-8 border-t border-ink/10 pt-8 sm:flex-row sm:items-end">
-          <div className="text-center sm:text-left">
-            <p className="mx-auto w-40 border-t border-ink-soft sm:mx-0" />
-            <p className="mt-1.5 text-xs font-semibold text-ink">Mahália Castro</p>
-            <p className="text-[11px] text-ink-soft">Managing Director, Wealth Academy</p>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-end">
+            <QrCode text={pdfUrl} size={64} className="shrink-0" />
+            <div className="text-center sm:text-left">
+              <p className="text-xs font-semibold text-ink">{certificateNumber}</p>
+              <p className="text-[11px] text-ink-soft">
+                Emitido em {new Date(issueDate).toLocaleDateString("pt-PT")}
+              </p>
+              <p className="mt-0.5 text-[11px] text-ink-soft">{validateUrl}</p>
+            </div>
           </div>
           <div className="text-center sm:text-right">
-            <p className="text-xs font-semibold text-ink">{certificateNumber}</p>
-            <p className="text-[11px] text-ink-soft">
-              Emitido em {new Date(issueDate).toLocaleDateString("pt-PT")}
-            </p>
-            <p className="mt-0.5 text-[11px] text-ink-soft">{validateUrl}</p>
+            <p className="mx-auto w-40 border-t border-ink-soft sm:ml-auto sm:mr-0" />
+            <p className="mt-1.5 text-xs font-semibold text-ink">Mahália Castro</p>
+            <p className="text-[11px] text-ink-soft">Managing Director, Wealth Academy</p>
           </div>
         </div>
       </div>

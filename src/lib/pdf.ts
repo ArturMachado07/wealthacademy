@@ -6,6 +6,8 @@
 // download directo (application/pdf) sem abrir o diálogo de impressão do
 // browser e sem adicionar bibliotecas ao projecto.
 
+import { generateQrMatrix, QR_QUIET_ZONE } from "./qrcode";
+
 export type PdfFont = "Helvetica" | "Helvetica-Bold";
 export type RGB = [number, number, number];
 
@@ -62,7 +64,16 @@ export function wrapText(text: string, font: PdfFont, size: number, maxWidth: nu
 }
 
 type TextOp = { kind: "text"; x: number; y: number; text: string; size: number; font: PdfFont; color: RGB };
-type RectOp = { kind: "rect"; x: number; y: number; w: number; h: number; color: RGB; lineWidth: number };
+type RectOp = {
+  kind: "rect";
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  color: RGB;
+  lineWidth: number;
+  fill: boolean;
+};
 type LineOp = { kind: "line"; x1: number; y1: number; x2: number; y2: number; color: RGB; lineWidth: number };
 type DrawOp = TextOp | RectOp | LineOp;
 
@@ -87,7 +98,20 @@ export class PdfPage {
   }
 
   rectStroke(x: number, y: number, w: number, h: number, opts: { color?: RGB; lineWidth?: number } = {}) {
-    this.ops.push({ kind: "rect", x, y, w, h, color: opts.color ?? [0, 0, 0], lineWidth: opts.lineWidth ?? 1 });
+    this.ops.push({
+      kind: "rect",
+      x,
+      y,
+      w,
+      h,
+      color: opts.color ?? [0, 0, 0],
+      lineWidth: opts.lineWidth ?? 1,
+      fill: false,
+    });
+  }
+
+  rectFill(x: number, y: number, w: number, h: number, opts: { color?: RGB } = {}) {
+    this.ops.push({ kind: "rect", x, y, w, h, color: opts.color ?? [0, 0, 0], lineWidth: 0, fill: true });
   }
 
   line(x1: number, y1: number, x2: number, y2: number, opts: { color?: RGB; lineWidth?: number } = {}) {
@@ -117,9 +141,14 @@ function buildContentStream(page: PdfPage): Buffer {
 
   for (const op of page.ops) {
     if (op.kind === "rect") {
-      push(`${num(op.color[0])} ${num(op.color[1])} ${num(op.color[2])} RG\n`);
-      push(`${num(op.lineWidth)} w\n`);
-      push(`${num(op.x)} ${num(op.y)} ${num(op.w)} ${num(op.h)} re S\n`);
+      if (op.fill) {
+        push(`${num(op.color[0])} ${num(op.color[1])} ${num(op.color[2])} rg\n`);
+        push(`${num(op.x)} ${num(op.y)} ${num(op.w)} ${num(op.h)} re f\n`);
+      } else {
+        push(`${num(op.color[0])} ${num(op.color[1])} ${num(op.color[2])} RG\n`);
+        push(`${num(op.lineWidth)} w\n`);
+        push(`${num(op.x)} ${num(op.y)} ${num(op.w)} ${num(op.h)} re S\n`);
+      }
     } else if (op.kind === "line") {
       push(`${num(op.color[0])} ${num(op.color[1])} ${num(op.color[2])} RG\n`);
       push(`${num(op.lineWidth)} w\n`);
@@ -196,6 +225,31 @@ const GOLD_LIGHT: RGB = [0.78, 0.604, 0.365];
 const GOLD_DARK: RGB = [0.478, 0.353, 0.173];
 const INK: RGB = [0.208, 0.173, 0.161];
 const INK_SOFT: RGB = [0.341, 0.286, 0.247];
+const WHITE: RGB = [1, 1, 1];
+
+// Desenha o QR code (gerado em src/lib/qrcode.ts, sem dependências) como
+// uma grelha de rectângulos preenchidos. A matriz não inclui a "quiet
+// zone" (margem em branco obrigatória à volta do QR) — é adicionada aqui,
+// tal como em QrCode.tsx. Nota sobre eixos: a matriz tem a linha 0 no
+// topo visual do QR, mas no PDF o eixo Y cresce para cima — por isso a
+// linha 0 corresponde à maior coordenada Y do quadrado desenhado.
+function drawQrCode(page: PdfPage, text: string, x: number, y: number, size: number) {
+  const matrix = generateQrMatrix(text, "MEDIUM");
+  const n = matrix.length;
+  const quiet = QR_QUIET_ZONE;
+  const dim = n + quiet * 2;
+  const module = size / dim;
+
+  page.rectFill(x, y, size, size, { color: WHITE });
+  for (let row = 0; row < n; row++) {
+    for (let col = 0; col < n; col++) {
+      if (!matrix[row][col]) continue;
+      const px = x + (quiet + col) * module;
+      const py = y + size - (quiet + row + 1) * module;
+      page.rectFill(px, py, module, module, { color: INK });
+    }
+  }
+}
 
 export function buildCertificatePdfBuffer(data: {
   studentName: string;
@@ -204,6 +258,9 @@ export function buildCertificatePdfBuffer(data: {
   issueDate: string;
   certificateNumber: string;
   validateUrl: string;
+  // URL completa (com https://) que o QR code codifica — quem digitaliza
+  // abre directamente o PDF do certificado.
+  pdfUrl: string;
 }): Buffer {
   const width = 842;
   const height = 595;
@@ -249,19 +306,26 @@ export function buildCertificatePdfBuffer(data: {
   }
 
   // Rodapé — posição fixa (não depende do texto acima, que é sempre curto
-  // o suficiente para nunca sobrepor esta zona).
-  page.line(70, 120, 260, 120, { color: INK_SOFT, lineWidth: 0.7 });
-  page.text(70, 105, "Mahália Castro", { size: 11, font: "Helvetica-Bold", color: INK });
-  page.text(70, 91, "Managing Director, Wealth Academy", { size: 9, color: INK_SOFT });
+  // o suficiente para nunca sobrepor esta zona). QR + número/data/URL à
+  // esquerda (quem digitaliza abre o PDF directamente); assinatura à
+  // direita — mesmo layout de CertificateView.tsx.
+  const qrSize = 56;
+  const qrX = 70;
+  const qrY = 82;
+  drawQrCode(page, data.pdfUrl, qrX, qrY, qrSize);
 
-  const rightX = width - 70;
-  page.text(rightX, 120, data.certificateNumber, { size: 11, font: "Helvetica-Bold", color: INK, align: "right" });
-  page.text(rightX, 105, `Emitido em ${new Date(data.issueDate).toLocaleDateString("pt-PT")}`, {
+  const textX = qrX + qrSize + 14;
+  page.text(textX, 124, data.certificateNumber, { size: 11, font: "Helvetica-Bold", color: INK });
+  page.text(textX, 110, `Emitido em ${new Date(data.issueDate).toLocaleDateString("pt-PT")}`, {
     size: 9,
     color: INK_SOFT,
-    align: "right",
   });
-  page.text(rightX, 91, data.validateUrl, { size: 8.5, color: INK_SOFT, align: "right" });
+  page.text(textX, 96, data.validateUrl, { size: 8.5, color: INK_SOFT });
+
+  const rightX = width - 70;
+  page.line(rightX - 190, 120, rightX, 120, { color: INK_SOFT, lineWidth: 0.7 });
+  page.text(rightX, 105, "Mahália Castro", { size: 11, font: "Helvetica-Bold", color: INK, align: "right" });
+  page.text(rightX, 91, "Managing Director, Wealth Academy", { size: 9, color: INK_SOFT, align: "right" });
 
   return renderPdf(page);
 }
