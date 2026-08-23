@@ -101,7 +101,7 @@ export default function CoursesList({ items, initialCategory }: Props) {
               description="Estamos a preparar o catálogo de cursos. Contacte-nos para saber mais sobre as próximas formações."
             />
           ) : filtered.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2">
               {filtered.map((item, i) => (
                 <Reveal key={item.slug} as="div" delay={staggerDelay(i)}>
                   {item.node}
