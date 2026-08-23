@@ -5,23 +5,28 @@ import WorkshopCard from "@/components/WorkshopCard";
 import EmptyState from "@/components/EmptyState";
 import Reveal from "@/components/Reveal";
 import { staggerDelay } from "@/lib/reveal";
-import { workshops } from "@/data/workshops";
-import { trainingCategories } from "@/data/categories";
+import type { Workshop } from "@/lib/workshops";
 
-export default function WorkshopsList() {
-  const [active, setActive] = useState<string>("Todos");
+const FILTERS = ["Todos", "Próximos", "Realizados"] as const;
+type Filter = (typeof FILTERS)[number];
+
+function isUpcoming(workshop: Workshop) {
+  return workshop.status !== "Realizado";
+}
+
+export default function WorkshopsList({ workshops }: { workshops: Workshop[] }) {
+  const [active, setActive] = useState<Filter>("Todos");
 
   const filtered = useMemo(() => {
-    if (active === "Todos") return workshops;
-    return workshops.filter((workshop) => workshop.category === active);
-  }, [active]);
-
-  const filters = ["Todos", ...trainingCategories];
+    if (active === "Próximos") return workshops.filter(isUpcoming);
+    if (active === "Realizados") return workshops.filter((w) => !isUpcoming(w));
+    return workshops;
+  }, [active, workshops]);
 
   return (
     <div>
       <div className="flex flex-wrap gap-3">
-        {filters.map((filter) => (
+        {FILTERS.map((filter) => (
           <button
             key={filter}
             type="button"
@@ -39,7 +44,7 @@ export default function WorkshopsList() {
 
       <div className="mt-12">
         {filtered.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((workshop, i) => (
               <Reveal key={workshop.slug} as="div" delay={staggerDelay(i)}>
                 <WorkshopCard workshop={workshop} />
@@ -54,7 +59,7 @@ export default function WorkshopsList() {
           />
         ) : (
           <EmptyState
-            title="Sem workshops nesta categoria"
+            title={active === "Próximos" ? "Sem workshops próximos" : "Sem workshops realizados"}
             description="Novas datas são anunciadas periodicamente. Contacte-nos para saber mais."
           />
         )}

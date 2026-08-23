@@ -98,6 +98,9 @@ export default async function AdminDashboardPage() {
               <Link href="/admin/formadores" className="text-gold-dark underline">
                 Gerir Formadores
               </Link>
+              <Link href="/admin/workshops" className="text-gold-dark underline">
+                Gerir Workshops
+              </Link>
             </div>
           </div>
           <SignOutButton />
