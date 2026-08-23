@@ -78,7 +78,7 @@ const rawCourses: Course[] = [
     slug: "analise-negociacao-mercado-capitais",
     title: "Análise e Negociação no Mercado de Capitais",
     category: "Finanças",
-    image: "banner_formação-investimentos-capitais",
+    image: "banner_formação-investimentos-capitais2",
     status: "Em breve",
     investment: "85.000 Kz",
     summary: "Do local ao internacional. Eleve o seu posicionamento no mercado financeiro.",
