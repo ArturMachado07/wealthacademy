@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import InvoiceUploadForm from "@/components/admin/InvoiceUploadForm";
 
 export const metadata: Metadata = { title: "Pagamentos — Admin" };
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ type PaymentRow = {
   provider: string;
   status: string;
   created_at: string;
+  invoice_path: string | null;
   students: { name: string; email: string } | { name: string; email: string }[] | null;
   enrollments: { course_title: string } | { course_title: string }[] | null;
 };
@@ -40,7 +42,9 @@ export default async function AdminPagamentosPage() {
   const supabase = createSupabaseAdminClient();
   const { data: payments } = await supabase
     .from("payments")
-    .select("id, amount, currency, provider, status, created_at, students(name, email), enrollments(course_title)")
+    .select(
+      "id, amount, currency, provider, status, created_at, invoice_path, students(name, email), enrollments(course_title)"
+    )
     .order("created_at", { ascending: false });
 
   const paymentRows = (payments ?? []) as PaymentRow[];
@@ -71,6 +75,7 @@ export default async function AdminPagamentosPage() {
                     <th className="py-2 pr-4">Fornecedor</th>
                     <th className="py-2 pr-4">Estado</th>
                     <th className="py-2 pr-4">Data</th>
+                    <th className="py-2 pr-4">Factura</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -94,6 +99,13 @@ export default async function AdminPagamentosPage() {
                         </td>
                         <td className="py-3 pr-4 text-ink-soft">
                           {new Date(row.created_at).toLocaleDateString("pt-PT")}
+                        </td>
+                        <td className="py-3 pr-4">
+                          {row.status === "accepted" ? (
+                            <InvoiceUploadForm paymentId={row.id} hasInvoice={Boolean(row.invoice_path)} />
+                          ) : (
+                            <span className="text-xs text-ink-soft">—</span>
+                          )}
                         </td>
                       </tr>
                     );

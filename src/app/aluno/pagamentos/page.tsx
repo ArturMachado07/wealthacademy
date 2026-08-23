@@ -15,6 +15,7 @@ type PaymentRow = {
   provider: string;
   status: string;
   created_at: string;
+  invoice_path: string | null;
   enrollments: { course_title: string } | { course_title: string }[] | null;
 };
 
@@ -38,7 +39,7 @@ export default async function AlunoPagamentosPage() {
   const supabase = await createSupabaseServerClient();
   const { data: payments } = await supabase
     .from("payments")
-    .select("id, amount, currency, provider, status, created_at, enrollments(course_title)")
+    .select("id, amount, currency, provider, status, created_at, invoice_path, enrollments(course_title)")
     .eq("student_id", student.id)
     .order("created_at", { ascending: false });
 
@@ -72,6 +73,7 @@ export default async function AlunoPagamentosPage() {
                     <th className="py-2 pr-4">Valor</th>
                     <th className="py-2 pr-4">Estado</th>
                     <th className="py-2 pr-4">Data</th>
+                    <th className="py-2 pr-4">Factura</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -91,6 +93,20 @@ export default async function AlunoPagamentosPage() {
                         </td>
                         <td className="py-3 pr-4 text-ink-soft">
                           {new Date(row.created_at).toLocaleDateString("pt-PT")}
+                        </td>
+                        <td className="py-3 pr-4">
+                          {row.status !== "accepted" ? (
+                            <span className="text-ink-soft">—</span>
+                          ) : row.invoice_path ? (
+                            <a
+                              href={`/api/aluno/pagamentos/${row.id}/factura`}
+                              className="font-medium text-gold-dark underline"
+                            >
+                              Descarregar factura
+                            </a>
+                          ) : (
+                            <span className="text-xs text-ink-soft">A aguardar factura</span>
+                          )}
                         </td>
                       </tr>
                     );
