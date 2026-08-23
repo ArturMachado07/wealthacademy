@@ -12,6 +12,7 @@ import { CheckIcon, CheckCircleIcon } from "@/components/icons";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
+import { getInstructorsByCourse } from "@/lib/instructors";
 
 type Props = { params: { slug: string } };
 
@@ -37,6 +38,12 @@ export default async function CoursePage({ params }: Props) {
 
   const overrides = await getCourseOverrides();
   const course = applyCourseOverride(baseCourse, overrides.get(baseCourse.slug));
+
+  // Formadores geridos pelo Admin (com foto e link para /formadores/[slug]).
+  // Se ainda não houver nenhum ligado na BD, mantém a lista estática de
+  // src/data/courses.ts como recurso (sem foto/link) para não fazer a
+  // secção desaparecer antes da migração ser corrida.
+  const dbInstructors = await getInstructorsByCourse(course.slug);
 
   // Aluno autenticado vê "Inscreva-se na sua conta" em vez do CTA comercial
   // "Quero inscrever-me" (que leva a Contactos, para quem ainda não é aluno).
@@ -143,18 +150,44 @@ export default async function CoursePage({ params }: Props) {
               </div>
             )}
 
-            {course.instructors && course.instructors.length > 0 && (
+            {dbInstructors.length > 0 ? (
               <div className="mt-10">
                 <h2 className="text-xl font-medium text-ink">Formadores</h2>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  {course.instructors.map((person) => (
-                    <div key={person.name}>
-                      <p className="font-medium text-ink">{person.name}</p>
-                      <p className="mt-0.5 text-sm text-ink-soft">{person.role}</p>
-                    </div>
+                <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                  {dbInstructors.map((person) => (
+                    <Link
+                      key={person.slug}
+                      href={`/formadores/${person.slug}`}
+                      className="group flex items-center gap-4 rounded border border-ink/10 bg-white/60 p-4 transition-colors hover:border-gold"
+                    >
+                      <MediaSlot
+                        baseName={person.photo ?? person.slug}
+                        alt={person.name}
+                        className="h-14 w-14 shrink-0 rounded-full"
+                      />
+                      <div>
+                        <p className="font-medium text-ink group-hover:text-gold-dark">{person.name}</p>
+                        {person.role && <p className="mt-0.5 text-sm text-ink-soft">{person.role}</p>}
+                      </div>
+                    </Link>
                   ))}
                 </div>
               </div>
+            ) : (
+              course.instructors &&
+              course.instructors.length > 0 && (
+                <div className="mt-10">
+                  <h2 className="text-xl font-medium text-ink">Formadores</h2>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {course.instructors.map((person) => (
+                      <div key={person.name}>
+                        <p className="font-medium text-ink">{person.name}</p>
+                        <p className="mt-0.5 text-sm text-ink-soft">{person.role}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
             )}
 
             {course.objectives && course.objectives.length > 0 && (

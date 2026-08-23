@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { courses } from "@/data/courses";
 import { getArticles } from "@/lib/wealth-insights";
+import { getInstructors } from "@/lib/instructors";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
 
@@ -12,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/workshops",
     "/empresas",
     "/wealth-insights",
+    "/formadores",
     "/contactos",
   ].map((route) => ({
     url: `${siteUrl}${route}`,
@@ -29,5 +31,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
   }));
 
-  return [...staticRoutes, ...courseRoutes, ...articleRoutes];
+  const instructors = await getInstructors();
+  const instructorRoutes = instructors.map((instructor) => ({
+    url: `${siteUrl}/formadores/${instructor.slug}`,
+    lastModified: new Date(),
+  }));
+
+  return [...staticRoutes, ...courseRoutes, ...articleRoutes, ...instructorRoutes];
 }

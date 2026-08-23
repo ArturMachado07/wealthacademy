@@ -8,7 +8,8 @@ import AddModuleForm from "@/components/admin/AddModuleForm";
 import AddLessonForm from "@/components/admin/AddLessonForm";
 import DeleteModuleButton from "@/components/admin/DeleteModuleButton";
 import DeleteLessonButton from "@/components/admin/DeleteLessonButton";
-import CoursePricingForm from "@/components/admin/CoursePricingForm";
+import CourseContentForm from "@/components/admin/CourseContentForm";
+import CourseInstructorsForm from "@/components/admin/CourseInstructorsForm";
 
 export async function generateMetadata({
   params,
@@ -49,19 +50,37 @@ export default async function AdminFormacaoContentPage({
   if (!course) notFound();
 
   const supabase = createSupabaseAdminClient();
-  const [{ data: modules }, { data: pricing }] = await Promise.all([
-    supabase
-      .from("course_modules")
-      .select("id, title, position, lessons(id, title, duration_minutes, position)")
-      .eq("course_slug", slug)
-      .order("position", { ascending: true }),
-    supabase.from("course_pricing").select("investment, date").eq("course_slug", slug).maybeSingle(),
-  ]);
+  const [{ data: modules }, { data: pricing }, { data: instructors }, { data: courseInstructors }] =
+    await Promise.all([
+      supabase
+        .from("course_modules")
+        .select("id, title, position, lessons(id, title, duration_minutes, position)")
+        .eq("course_slug", slug)
+        .order("position", { ascending: true }),
+      supabase
+        .from("course_pricing")
+        .select(
+          "investment, date, title, description, duration, admission, location, certification, extras, image"
+        )
+        .eq("course_slug", slug)
+        .maybeSingle(),
+      supabase.from("instructors").select("slug, name, role").order("name"),
+      supabase
+        .from("course_instructors")
+        .select("instructor_slug")
+        .eq("course_slug", slug)
+        .order("position", { ascending: true }),
+    ]);
 
   const moduleRows = ((modules ?? []) as ModuleRow[]).map((m) => ({
     ...m,
     lessons: [...(m.lessons ?? [])].sort((a, b) => a.position - b.position),
   }));
+
+  const instructorOptions = (instructors ?? []) as { slug: string; name: string; role: string | null }[];
+  const linkedInstructorSlugs = ((courseInstructors ?? []) as { instructor_slug: string }[]).map(
+    (row) => row.instructor_slug
+  );
 
   return (
     <section className="py-16">
@@ -76,17 +95,54 @@ export default async function AdminFormacaoContentPage({
         </div>
 
         <div className="mt-8 rounded border border-ink/10 bg-white/60 p-6">
-          <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">Preço e data</h2>
+          <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">
+            Conteúdo da página da formação
+          </h2>
           <p className="mt-1 text-xs text-ink-soft">
-            Deixe em branco para usar o valor definido no código (
-            {course.investment ?? "sem preço"}
-            {course.date ? ` · ${course.date}` : ""}).
+            Título, descrição, informações e banner mostrados em /formacoes/{slug}. O programa (módulos) não é
+            editável aqui.
           </p>
           <div className="mt-4">
-            <CoursePricingForm
+            <CourseContentForm
               courseSlug={slug}
-              initialInvestment={pricing?.investment ?? ""}
-              initialDate={pricing?.date ?? ""}
+              initial={{
+                title: pricing?.title ?? "",
+                description: pricing?.description ?? "",
+                duration: pricing?.duration ?? "",
+                admission: pricing?.admission ?? "",
+                date: pricing?.date ?? "",
+                location: pricing?.location ?? "",
+                certification: pricing?.certification ?? "",
+                extras: pricing?.extras && pricing.extras.length > 0 ? pricing.extras.join("\n") : "",
+                image: pricing?.image ?? "",
+                investment: pricing?.investment ?? "",
+              }}
+              placeholders={{
+                title: course.title,
+                description: course.description ?? "",
+                duration: course.duration ?? "",
+                admission: course.admission ?? "",
+                date: course.date ?? "",
+                location: course.location ?? "",
+                certification: course.certification ?? "",
+                extras: course.extras && course.extras.length > 0 ? course.extras.join("\n") : "",
+                image: course.image ?? "",
+                investment: course.investment ?? "",
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 rounded border border-ink/10 bg-white/60 p-6">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">Formadores desta formação</h2>
+          <p className="mt-1 text-xs text-ink-soft">
+            Seleccione os formadores que aparecem na secção &quot;Formadores&quot; da página da formação.
+          </p>
+          <div className="mt-4">
+            <CourseInstructorsForm
+              courseSlug={slug}
+              allInstructors={instructorOptions}
+              linkedSlugs={linkedInstructorSlugs}
             />
           </div>
         </div>

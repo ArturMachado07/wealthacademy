@@ -87,6 +87,9 @@ export default async function AdminDashboardPage() {
               <Link href="/admin/insights" className="text-gold-dark underline">
                 Gerir Wealth Insights (autores e artigos)
               </Link>
+              <Link href="/admin/formadores" className="text-gold-dark underline">
+                Gerir Formadores
+              </Link>
             </div>
           </div>
           <SignOutButton />
