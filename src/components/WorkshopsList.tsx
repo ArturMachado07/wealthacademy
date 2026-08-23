@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import WorkshopCard from "@/components/WorkshopCard";
 import EmptyState from "@/components/EmptyState";
+import Reveal, { staggerDelay } from "@/components/Reveal";
 import { workshops } from "@/data/workshops";
 import { trainingCategories } from "@/data/categories";
 
@@ -38,8 +39,10 @@ export default function WorkshopsList() {
       <div className="mt-12">
         {filtered.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((workshop) => (
-              <WorkshopCard key={workshop.slug} workshop={workshop} />
+            {filtered.map((workshop, i) => (
+              <Reveal key={workshop.slug} as="div" delay={staggerDelay(i)}>
+                <WorkshopCard workshop={workshop} />
+              </Reveal>
             ))}
           </div>
         ) : active === "Todos" ? (

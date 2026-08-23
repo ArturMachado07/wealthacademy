@@ -37,3 +37,26 @@ h1, h2, h3, h4 {
 .eyebrow {
   @apply text-xs font-semibold uppercase tracking-wide2 text-gold;
 }
+
+/* Scroll reveal — fade-in + slide-up leve, activado via Intersection
+   Observer pelo componente <Reveal> (src/components/Reveal.tsx). Sem
+   bibliotecas externas. O conteúdo já está sempre presente no HTML (nada
+   de "display:none"), só a opacidade/posição mudam — não afecta SEO. */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 24px));
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

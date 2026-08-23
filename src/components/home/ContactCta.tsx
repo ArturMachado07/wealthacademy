@@ -1,10 +1,14 @@
 import { siteConfig, whatsappLink } from "@/data/site";
 import { MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "@/components/icons";
+import Reveal from "@/components/Reveal";
 
 export default function ContactCta() {
   return (
     <section className="py-24">
-      <div className="container-page flex flex-col items-start justify-between gap-8 rounded border border-ink/10 bg-white/50 p-10 md:flex-row md:items-center">
+      <Reveal
+        as="div"
+        className="container-page flex flex-col items-start justify-between gap-8 rounded border border-ink/10 bg-white/50 p-10 md:flex-row md:items-center"
+      >
         <div>
           <p className="eyebrow">Contactos</p>
           <h2 className="mt-3 text-2xl font-medium text-ink md:text-3xl">
@@ -34,7 +38,7 @@ export default function ContactCta() {
           <WhatsAppIcon className="h-4 w-4" />
           Falar no WhatsApp
         </a>
-      </div>
+      </Reveal>
     </section>
   );
 }

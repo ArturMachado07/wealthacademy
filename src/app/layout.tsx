@@ -45,6 +45,12 @@ export default function RootLayout({
   return (
     <html lang="pt-AO" className={`${quiche.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col">
+        {/* Sem JavaScript, as animações de scroll reveal nunca chegam a
+            activar-se — este fallback garante que o conteúdo fica sempre
+            visível em vez de ficar preso a opacidade 0. */}
+        <noscript>
+          <style>{".reveal { opacity: 1 !important; transform: none !important; }"}</style>
+        </noscript>
         <Analytics />
         <OrganizationJsonLd />
         <Header />

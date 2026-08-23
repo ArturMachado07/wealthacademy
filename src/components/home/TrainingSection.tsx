@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { trainingCategories } from "@/data/categories";
+import Reveal, { staggerDelay } from "@/components/Reveal";
 
 const offerings = [
   {
@@ -20,23 +21,28 @@ export default function TrainingSection() {
   return (
     <section className="bg-white/50 py-24">
       <div className="container-page">
-        <div className="max-w-2xl">
+        <Reveal as="div" className="max-w-2xl">
           <p className="eyebrow">Formação</p>
           <h2 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">
             Aprenda. Desenvolva. Distinga-se.
           </h2>
-        </div>
+        </Reveal>
 
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {offerings.map((item) => (
-            <div key={item.title} className="rounded border border-ink/10 bg-cream p-8">
+          {offerings.map((item, i) => (
+            <Reveal
+              key={item.title}
+              as="div"
+              delay={staggerDelay(i)}
+              className="rounded border border-ink/10 bg-cream p-8"
+            >
               <h3 className="text-xl font-medium text-ink">{item.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-ink-soft">{item.description}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center gap-3">
+        <Reveal as="div" className="mt-14 flex flex-wrap items-center gap-3">
           <span className="text-sm text-ink-soft">Áreas de formação:</span>
           {trainingCategories.map((category) => (
             <Link
@@ -47,7 +53,7 @@ export default function TrainingSection() {
               {category}
             </Link>
           ))}
-        </div>
+        </Reveal>
 
         <div className="mt-10">
           <Link href="/formacoes" className="btn-secondary">

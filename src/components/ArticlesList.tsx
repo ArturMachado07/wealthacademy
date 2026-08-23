@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import EmptyState from "@/components/EmptyState";
+import Reveal, { staggerDelay } from "@/components/Reveal";
 import { insightCategories } from "@/data/categories";
 
 // Recebe os cards já renderizados no servidor (via prop `items`) em vez de
@@ -51,8 +52,10 @@ export default function ArticlesList({ items, initialCategory }: Props) {
       <div className="mt-14">
         {filtered.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((item) => (
-              <div key={item.slug}>{item.node}</div>
+            {filtered.map((item, i) => (
+              <Reveal key={item.slug} as="div" delay={staggerDelay(i)}>
+                {item.node}
+              </Reveal>
             ))}
           </div>
         ) : active === "Todos" ? (

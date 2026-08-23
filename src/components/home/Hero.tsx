@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MediaSlot from "@/components/MediaSlot";
+import Reveal from "@/components/Reveal";
 
 export default function Hero() {
   return (
@@ -15,22 +16,24 @@ export default function Hero() {
         aria-hidden="true"
       />
       <div className="container-page relative flex min-h-[82vh] flex-col justify-center py-28">
-        <p className="eyebrow text-gold-light">Wealth Academy</p>
-        <h1 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.1] md:text-6xl">
+        <Reveal as="p" className="eyebrow text-gold-light">
+          Wealth Academy
+        </Reveal>
+        <Reveal as="h1" delay={80} className="mt-5 max-w-3xl text-4xl font-medium leading-[1.1] md:text-6xl">
           Conhecimento que transforma. Competências que distinguem.
-        </h1>
-        <p className="mt-6 max-w-xl text-lg text-cream/80">
+        </Reveal>
+        <Reveal as="p" delay={160} className="mt-6 max-w-xl text-lg text-cream/80">
           Formação especializada em Finanças e Negócios para profissionais e organizações
           preparados para evoluir.
-        </p>
-        <div className="mt-10 flex flex-wrap gap-4">
+        </Reveal>
+        <Reveal as="div" delay={240} className="mt-10 flex flex-wrap gap-4">
           <Link href="/formacoes" className="btn-primary">
             Explorar Formações
           </Link>
           <Link href="/empresas" className="btn-ghost">
             Soluções para Empresas
           </Link>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

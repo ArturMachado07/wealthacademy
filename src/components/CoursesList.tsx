@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import CourseCard from "@/components/CourseCard";
 import EmptyState from "@/components/EmptyState";
+import Reveal, { staggerDelay } from "@/components/Reveal";
 import type { Course } from "@/data/courses";
 import { trainingCategories } from "@/data/categories";
 
@@ -47,8 +48,10 @@ export default function CoursesList({ courses, initialCategory }: Props) {
       <div className="mt-14">
         {filtered.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((course) => (
-              <CourseCard key={course.slug} course={course} />
+            {filtered.map((course, i) => (
+              <Reveal key={course.slug} as="div" delay={staggerDelay(i)}>
+                <CourseCard course={course} />
+              </Reveal>
             ))}
           </div>
         ) : active === "Todos" ? (
