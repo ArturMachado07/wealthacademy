@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { courses } from "@/data/courses";
-import { siteConfig, whatsappLink } from "@/data/site";
+import { whatsappLink } from "@/data/site";
 import EnrollButton from "@/components/EnrollButton";
 import PaymentButton from "@/components/PaymentButton";
 import CourseSlideshow from "@/components/CourseSlideshow";
+import CourseCard from "@/components/CourseCard";
 import CourseJsonLd from "@/components/CourseJsonLd";
+import { CheckIcon } from "@/components/icons";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { findPublicImage } from "@/lib/media";
@@ -66,130 +68,182 @@ export default async function CoursePage({ params }: Props) {
     { key: "formadores", label: "Formadores", src: findPublicImage(`curso-${course.slug}-3-formadores`) },
   ];
 
-  const details: [string, string | undefined][] = [
+  // "O que está incluído" no cartão lateral — só campos reais preenchidos
+  // para esta formação, sem inventar parcelamentos, garantias ou bónus.
+  const allInclusions: [string, string | undefined][] = [
     ["Modalidade", course.modality],
     ["Duração", course.duration],
     ["Acompanhamento", course.followUp],
     ["Data", course.date],
     ["Local", course.location],
     ["Formador", course.instructor],
-    ["Investimento", course.investment],
     ["Certificação", course.certification],
     ["Vagas", course.seats],
   ];
+  const inclusions = allInclusions.filter(([, value]) => Boolean(value));
+
+  const relatedCourses = courses
+    .filter((c) => c.slug !== course.slug && c.category === course.category)
+    .slice(0, 3)
+    .map((c) => applyCourseOverride(c, overrides.get(c.slug)));
 
   return (
     <article className="py-24">
       <CourseJsonLd course={course} />
-      <div className="container-page max-w-3xl">
-        <p className="eyebrow">{course.category}</p>
-        <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{course.title}</h1>
-        {course.description && (
-          <p className="mt-5 text-lg leading-relaxed text-ink-soft">{course.description}</p>
-        )}
+      <div className="container-page">
+        <nav className="text-sm text-ink-soft">
+          <Link href="/formacoes" className="hover:text-gold-dark">
+            Formações
+          </Link>{" "}
+          <span aria-hidden="true">/</span> <span className="text-ink">{course.title}</span>
+        </nav>
 
-        <div className="mt-8 max-w-md">
-          <CourseSlideshow title={course.title} slides={slides} />
+        <div className="mt-8 grid gap-12 lg:grid-cols-[1fr_380px]">
+          <div className="max-w-2xl">
+            <p className="eyebrow">{course.category}</p>
+            <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{course.title}</h1>
+            {course.description && (
+              <p className="mt-5 text-lg leading-relaxed text-ink-soft">{course.description}</p>
+            )}
+
+            {course.objectives && course.objectives.length > 0 && (
+              <div className="mt-10 rounded border border-ink/10 bg-white/60 p-6">
+                <h2 className="text-lg font-medium text-ink">O que vai aprender</h2>
+                <ul className="mt-4 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+                  {course.objectives.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-ink-soft">
+                      <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {course.syllabus && course.syllabus.length > 0 && (
+              <div className="mt-10">
+                <h2 className="text-xl font-medium text-ink">Conteúdos programáticos</h2>
+                <ul className="mt-3 list-disc space-y-1.5 pl-5 text-ink-soft">
+                  {course.syllabus.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {course.audience && (
+              <div className="mt-10">
+                <h2 className="text-xl font-medium text-ink">Público-alvo</h2>
+                <p className="mt-3 text-ink-soft">{course.audience}</p>
+              </div>
+            )}
+
+            {course.faq && course.faq.length > 0 && (
+              <div className="mt-10">
+                <h2 className="text-xl font-medium text-ink">Perguntas frequentes</h2>
+                <div className="mt-3 space-y-4">
+                  {course.faq.map((item) => (
+                    <div key={item.question}>
+                      <p className="font-medium text-ink">{item.question}</p>
+                      <p className="mt-1 text-sm text-ink-soft">{item.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <aside className="lg:sticky lg:top-28 lg:self-start">
+            <div className="overflow-hidden rounded border border-ink/10 bg-white/60">
+              <CourseSlideshow title={course.title} slides={slides} />
+
+              <div className="p-6">
+                {course.investment && (
+                  <div>
+                    <p className="text-xs uppercase tracking-wide2 text-ink-soft">Investimento</p>
+                    <p className="mt-1 text-3xl font-medium text-ink">{course.investment}</p>
+                  </div>
+                )}
+
+                {existingEnrollment && (
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <span className="inline-block w-fit rounded-full bg-gold/15 px-3 py-1 text-xs font-medium text-gold-dark">
+                      {existingEnrollment.status === "Concluída"
+                        ? "Formação concluída"
+                        : existingEnrollment.status === "Pendente"
+                          ? "Pagamento pendente"
+                          : "Já está inscrito"}
+                    </span>
+                    {(existingEnrollment.status === "Em curso" || existingEnrollment.status === "Concluída") && (
+                      <Link
+                        href={`/aluno/formacao/${course.slug}`}
+                        className="text-sm font-medium text-gold-dark underline"
+                      >
+                        Aceder ao curso
+                      </Link>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-5 flex flex-col gap-3 [&_.btn-primary]:w-full [&_.btn-primary]:justify-center [&_.btn-secondary]:w-full [&_.btn-secondary]:justify-center">
+                  {existingEnrollment?.status === "Pendente" ? (
+                    <PaymentButton
+                      courseSlug={course.slug}
+                      courseTitle={course.title}
+                      investment={course.investment ?? ""}
+                    />
+                  ) : existingEnrollment ? null : student ? (
+                    course.investment ? (
+                      <PaymentButton
+                        courseSlug={course.slug}
+                        courseTitle={course.title}
+                        investment={course.investment}
+                      />
+                    ) : (
+                      <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
+                    )
+                  ) : (
+                    <Link href={`/aluno/registo?from=/formacoes/${course.slug}`} className="btn-primary">
+                      Quero inscrever-me
+                    </Link>
+                  )}
+                  <a
+                    href={whatsappLink(`Olá, gostaria de obter informações sobre a formação ${course.title}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary"
+                  >
+                    Pedir mais informações
+                  </a>
+                </div>
+
+                {inclusions.length > 0 && (
+                  <div className="mt-6 space-y-2.5 border-t border-ink/10 pt-6 text-sm">
+                    {inclusions.map(([label, value]) => (
+                      <div key={label} className="flex items-start gap-2 text-ink-soft">
+                        <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                        <span>
+                          <span className="text-ink">{label}:</span> {value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </aside>
         </div>
 
-        <dl className="mt-10 grid grid-cols-2 gap-6 border-y border-ink/10 py-8 md:grid-cols-4">
-          {details
-            .filter(([, value]) => Boolean(value))
-            .map(([label, value]) => (
-              <div key={label}>
-                <dt className="text-xs uppercase tracking-wide2 text-ink-soft">{label}</dt>
-                <dd className="mt-1 text-sm font-medium text-ink">{value}</dd>
-              </div>
-            ))}
-        </dl>
-
-        {course.objectives && course.objectives.length > 0 && (
-          <div className="mt-10">
-            <h2 className="text-xl font-medium text-ink">Objectivos</h2>
-            <ul className="mt-3 list-disc space-y-1.5 pl-5 text-ink-soft">
-              {course.objectives.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {course.audience && (
-          <div className="mt-10">
-            <h2 className="text-xl font-medium text-ink">Público-alvo</h2>
-            <p className="mt-3 text-ink-soft">{course.audience}</p>
-          </div>
-        )}
-
-        {course.syllabus && course.syllabus.length > 0 && (
-          <div className="mt-10">
-            <h2 className="text-xl font-medium text-ink">Conteúdos programáticos</h2>
-            <ul className="mt-3 list-disc space-y-1.5 pl-5 text-ink-soft">
-              {course.syllabus.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {course.faq && course.faq.length > 0 && (
-          <div className="mt-10">
-            <h2 className="text-xl font-medium text-ink">Perguntas frequentes</h2>
-            <div className="mt-3 space-y-4">
-              {course.faq.map((item) => (
-                <div key={item.question}>
-                  <p className="font-medium text-ink">{item.question}</p>
-                  <p className="mt-1 text-sm text-ink-soft">{item.answer}</p>
-                </div>
+        {relatedCourses.length > 0 && (
+          <div className="mt-20 border-t border-ink/10 pt-16">
+            <h2 className="text-2xl font-medium text-ink">Formações semelhantes</h2>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedCourses.map((c) => (
+                <CourseCard key={c.slug} course={c} />
               ))}
             </div>
           </div>
         )}
-
-        {existingEnrollment && (
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <span className="inline-block w-fit rounded-full bg-gold/15 px-3 py-1 text-xs font-medium text-gold-dark">
-              {existingEnrollment.status === "Concluída"
-                ? "Formação concluída"
-                : existingEnrollment.status === "Pendente"
-                  ? "Pagamento pendente"
-                  : "Já está inscrito"}
-            </span>
-            {(existingEnrollment.status === "Em curso" || existingEnrollment.status === "Concluída") && (
-              <Link href={`/aluno/formacao/${course.slug}`} className="text-sm font-medium text-gold-dark underline">
-                Aceder ao curso
-              </Link>
-            )}
-          </div>
-        )}
-
-        <div className="mt-8 flex flex-wrap gap-4">
-          {existingEnrollment?.status === "Pendente" ? (
-            <PaymentButton courseSlug={course.slug} courseTitle={course.title} investment={course.investment ?? ""} />
-          ) : existingEnrollment ? null : student ? (
-            course.investment ? (
-              <PaymentButton
-                courseSlug={course.slug}
-                courseTitle={course.title}
-                investment={course.investment}
-              />
-            ) : (
-              <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
-            )
-          ) : (
-            <Link href={`/aluno/registo?from=/formacoes/${course.slug}`} className="btn-primary">
-              Quero inscrever-me
-            </Link>
-          )}
-          <a
-            href={whatsappLink(`Olá, gostaria de obter informações sobre a formação ${course.title}.`)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-secondary"
-          >
-            Pedir mais informações
-          </a>
-        </div>
       </div>
     </article>
   );
