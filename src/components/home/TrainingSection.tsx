@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { trainingCategories } from "@/data/categories";
-import Reveal, { staggerDelay } from "@/components/Reveal";
+import Reveal from "@/components/Reveal";
+import { staggerDelay } from "@/lib/reveal";
 
 const offerings = [
   {

@@ -1,7 +1,8 @@
 import SectionHeading from "@/components/SectionHeading";
 import { testimonials } from "@/data/testimonials";
 import TestimonialVideoCard from "@/components/home/TestimonialVideoCard";
-import Reveal, { staggerDelay } from "@/components/Reveal";
+import Reveal from "@/components/Reveal";
+import { staggerDelay } from "@/lib/reveal";
 
 // Sempre 3 lugares — os testemunhos ainda por gravar ficam como placeholder
 // discreto em vez de inventar conteúdo.

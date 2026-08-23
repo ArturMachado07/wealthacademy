@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import CourseCard from "@/components/CourseCard";
 import EmptyState from "@/components/EmptyState";
-import Reveal, { staggerDelay } from "@/components/Reveal";
+import Reveal from "@/components/Reveal";
+import { staggerDelay } from "@/lib/reveal";
 import type { Course } from "@/data/courses";
 import { trainingCategories } from "@/data/categories";
 

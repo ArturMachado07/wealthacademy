@@ -71,9 +71,3 @@ export default function Reveal({ children, as = "div", className = "", delay = 0
     children
   );
 }
-
-// Ajuda a calcular o atraso de cada item de uma lista, com um limite
-// máximo para o stagger não se tornar lento em grupos grandes.
-export function staggerDelay(index: number, step = 80, max = 480) {
-  return Math.min(index * step, max);
-}

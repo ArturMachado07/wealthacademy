@@ -2,7 +2,8 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import EmptyState from "@/components/EmptyState";
-import Reveal, { staggerDelay } from "@/components/Reveal";
+import Reveal from "@/components/Reveal";
+import { staggerDelay } from "@/lib/reveal";
 import { insightCategories } from "@/data/categories";
 
 // Recebe os cards já renderizados no servidor (via prop `items`) em vez de

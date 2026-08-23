@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { clientLogos } from "@/data/clients";
-import Reveal, { staggerDelay } from "@/components/Reveal";
+import Reveal from "@/components/Reveal";
+import { staggerDelay } from "@/lib/reveal";
 
 export default function ExperienceLogos() {
   return (

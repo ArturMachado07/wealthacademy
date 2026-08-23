@@ -1,5 +1,6 @@
 import Link from "next/link";
-import Reveal, { staggerDelay } from "@/components/Reveal";
+import Reveal from "@/components/Reveal";
+import { staggerDelay } from "@/lib/reveal";
 
 const steps = [
   { number: "01", title: "Diagnóstico" },
