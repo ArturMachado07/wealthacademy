@@ -5,6 +5,7 @@ import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import CertificateView from "@/components/CertificateView";
 import DownloadCertificateButton from "@/components/DownloadCertificateButton";
+import ShareLinkedInButton from "@/components/ShareLinkedInButton";
 
 type Props = { params: Promise<{ numero: string }> };
 
@@ -40,7 +41,8 @@ export default async function AlunoCertificadoPage({ params }: Props) {
   if (!certificate) notFound();
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
-  const validateUrl = `${siteUrl.replace(/^https?:\/\//, "")}/validar/${certificate.certificate_number}`;
+  const publicPageUrl = `${siteUrl}/validar/${certificate.certificate_number}`;
+  const validateUrl = publicPageUrl.replace(/^https?:\/\//, "");
 
   return (
     <section className="py-16 print:py-0">
@@ -54,7 +56,10 @@ export default async function AlunoCertificadoPage({ params }: Props) {
               <p className="eyebrow">Certificado</p>
               <h1 className="mt-2 font-display text-3xl text-ink">{certificate.course_title}</h1>
             </div>
-            <DownloadCertificateButton href={`/api/aluno/certificados/${certificate.certificate_number}/pdf`} />
+            <div className="flex flex-wrap gap-3">
+              <ShareLinkedInButton url={publicPageUrl} />
+              <DownloadCertificateButton href={`/api/aluno/certificados/${certificate.certificate_number}/pdf`} />
+            </div>
           </div>
         </div>
 

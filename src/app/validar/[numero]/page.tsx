@@ -2,14 +2,11 @@ import type { Metadata } from "next";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import CertificateView from "@/components/CertificateView";
 import DownloadCertificateButton from "@/components/DownloadCertificateButton";
+import ShareLinkedInButton from "@/components/ShareLinkedInButton";
 
 type Props = { params: { numero: string } };
 
 export const dynamic = "force-dynamic";
-
-export function generateMetadata({ params }: Props): Metadata {
-  return { title: `Validar certificado ${params.numero}` };
-}
 
 type CertificateRow = {
   certificate_number: string;
@@ -22,8 +19,9 @@ type CertificateRow = {
 async function getCertificate(numero: string) {
   // Consulta feita com a service role (servidor) — não depende de sessão,
   // por isso funciona para qualquer visitante que tenha o número do
-  // certificado, sem expor a tabela inteira publicamente (RLS continua a
-  // proteger o acesso directo via a chave pública).
+  // certificado (ex.: quem recebe a partilha no LinkedIn), sem expor a
+  // tabela inteira publicamente (RLS continua a proteger o acesso directo
+  // via a chave pública).
   const supabase = createSupabaseAdminClient();
   const { data } = await supabase
     .from("certificates")
@@ -34,14 +32,54 @@ async function getCertificate(numero: string) {
   return data;
 }
 
+function siteBaseUrl() {
+  return process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const certificate = await getCertificate(params.numero);
+  const studentName = Array.isArray(certificate?.students)
+    ? certificate?.students[0]?.name
+    : certificate?.students?.name;
+
+  if (!certificate || !studentName) {
+    return { title: "Certificado não encontrado" };
+  }
+
+  const siteUrl = siteBaseUrl();
+  const pageUrl = `${siteUrl}/validar/${certificate.certificate_number}`;
+  const imageUrl = `${siteUrl}/api/validar/${certificate.certificate_number}/imagem`;
+  const title = `${studentName} concluiu a formação ${certificate.course_title} — Wealth Academy`;
+  const description = `Certificado ${certificate.certificate_number}, emitido pela Wealth Academy em ${new Date(certificate.issue_date).toLocaleDateString("pt-PT")}.`;
+
+  return {
+    title: `Certificado de ${studentName}`,
+    description,
+    openGraph: {
+      type: "website",
+      url: pageUrl,
+      title,
+      description,
+      images: [{ url: imageUrl, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
+
 export default async function ValidarCertificadoPage({ params }: Props) {
   const certificate = await getCertificate(params.numero);
   const studentName = Array.isArray(certificate?.students)
     ? certificate?.students[0]?.name
     : certificate?.students?.name;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
-  const validateUrl = `${siteUrl.replace(/^https?:\/\//, "")}/validar/${params.numero}`;
+  const siteUrl = siteBaseUrl();
+  const pageUrl = `${siteUrl}/validar/${params.numero}`;
+  const validateUrl = pageUrl.replace(/^https?:\/\//, "");
 
   return (
     <section className="py-24 print:py-0">
@@ -49,9 +87,9 @@ export default async function ValidarCertificadoPage({ params }: Props) {
         {certificate && studentName ? (
           <>
             <div className="mx-auto max-w-3xl text-center print:hidden">
-              <p className="eyebrow">Validação de Certificado</p>
-              <h1 className="mt-3 font-display text-2xl text-ink">Certificado válido</h1>
-              <div className="mt-6 flex justify-center">
+              <p className="eyebrow">Certificado Wealth Academy</p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <ShareLinkedInButton url={pageUrl} />
                 <DownloadCertificateButton href={`/api/validar/${certificate.certificate_number}/pdf`} />
               </div>
             </div>
@@ -68,7 +106,7 @@ export default async function ValidarCertificadoPage({ params }: Props) {
           </>
         ) : (
           <div className="mx-auto max-w-lg rounded border border-ink/10 bg-white/60 p-10 text-center">
-            <p className="eyebrow">Validação de Certificado</p>
+            <p className="eyebrow">Certificado Wealth Academy</p>
             <h1 className="mt-4 text-2xl font-medium text-ink">Certificado não encontrado</h1>
             <p className="mt-3 text-sm text-ink-soft">
               Não existe nenhum certificado emitido pela Wealth Academy com o número{" "}

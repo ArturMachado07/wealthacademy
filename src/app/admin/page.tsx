@@ -19,6 +19,8 @@ type EnrollmentRow = {
   students: { name: string; email: string } | { name: string; email: string }[] | null;
 };
 
+type CertificateRow = { enrollment_id: string | null; certificate_number: string };
+
 type LeadRow = {
   id: string;
   name: string;
@@ -43,17 +45,23 @@ export default async function AdminDashboardPage() {
   // com a chave pública.
   const supabase = createSupabaseAdminClient();
 
-  const [{ data: enrollments }, { data: leads }, { data: payments }] = await Promise.all([
+  const [{ data: enrollments }, { data: leads }, { data: payments }, { data: certificates }] = await Promise.all([
     supabase
       .from("enrollments")
       .select("id, course_title, status, progress_percent, enrolled_at, students(name, email)")
       .order("enrolled_at", { ascending: false }),
     supabase.from("leads").select("*").order("created_at", { ascending: false }),
     supabase.from("payments").select("amount, currency, status"),
+    supabase.from("certificates").select("enrollment_id, certificate_number"),
   ]);
 
   const enrollmentRows = (enrollments ?? []) as EnrollmentRow[];
   const leadRows = (leads ?? []) as LeadRow[];
+  const certificateByEnrollment = new Map(
+    ((certificates ?? []) as CertificateRow[])
+      .filter((c) => c.enrollment_id)
+      .map((c) => [c.enrollment_id as string, c.certificate_number])
+  );
   const paymentRows = (payments ?? []) as { amount: number; currency: string; status: string }[];
 
   const revenueByCurrency = new Map<string, number>();
@@ -170,8 +178,17 @@ export default async function AdminDashboardPage() {
                         <td className="py-3 pr-4 text-ink-soft">{row.status}</td>
                         <td className="py-3 pr-4 text-ink-soft">{progress}%</td>
                         <td className="py-3 pr-4">
-                          {row.status !== "Concluída" && (
+                          {row.status !== "Concluída" ? (
                             <ConcluirInscricaoButton enrollmentId={row.id} />
+                          ) : (
+                            certificateByEnrollment.has(row.id) && (
+                              <a
+                                href={`/api/validar/${certificateByEnrollment.get(row.id)}/pdf`}
+                                className="text-xs font-medium text-gold-dark underline"
+                              >
+                                Descarregar PDF
+                              </a>
+                            )
                           )}
                         </td>
                       </tr>
