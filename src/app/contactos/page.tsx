@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import ContactForm from "@/components/ContactForm";
 import { siteConfig, whatsappLink } from "@/data/site";
-import { InstagramIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "@/components/icons";
+import {
+  InstagramIcon,
+  LinkedinIcon,
+  MailIcon,
+  MapPinIcon,
+  PhoneIcon,
+  WhatsAppIcon,
+  YoutubeIcon,
+} from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Contactos",
@@ -58,6 +66,15 @@ export default function ContactosPage() {
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-ink-soft hover:border-gold hover:text-gold-dark"
                 >
                   <LinkedinIcon className="h-4 w-4" />
+                </a>
+                <a
+                  href={siteConfig.social.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube da Wealth Academy"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-ink-soft hover:border-gold hover:text-gold-dark"
+                >
+                  <YoutubeIcon className="h-4 w-4" />
                 </a>
               </div>
             </div>

@@ -13,6 +13,7 @@ export const siteConfig = {
   social: {
     instagram: "https://www.instagram.com/wealthacademy.ao",
     linkedin: "https://www.linkedin.com/company/wealth-aca-demy/about/",
+    youtube: "https://www.youtube.com/@wealthacademyangola",
   },
 };
 

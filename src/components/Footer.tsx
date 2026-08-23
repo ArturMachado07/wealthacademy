@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { navigation, siteConfig } from "@/data/site";
-import { InstagramIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon } from "@/components/icons";
+import { InstagramIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon, YoutubeIcon } from "@/components/icons";
 
 export default function Footer() {
   return (
@@ -35,6 +35,15 @@ export default function Footer() {
               className="flex h-9 w-9 items-center justify-center rounded-full border border-cream/20 text-cream/70 hover:border-gold-light hover:text-gold-light"
             >
               <LinkedinIcon className="h-4 w-4" />
+            </a>
+            <a
+              href={siteConfig.social.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube da Wealth Academy"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-cream/20 text-cream/70 hover:border-gold-light hover:text-gold-light"
+            >
+              <YoutubeIcon className="h-4 w-4" />
             </a>
           </div>
         </div>

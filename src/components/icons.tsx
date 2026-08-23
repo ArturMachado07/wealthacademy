@@ -82,6 +82,15 @@ export function LinkedinIcon({ className }: IconProps) {
   );
 }
 
+export function YoutubeIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="2.5" y="5.5" width="19" height="13" rx="4" />
+      <path d="M10.5 9.3v5.4l4.7-2.7-4.7-2.7Z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function MessageCircleIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
@@ -105,6 +114,14 @@ export function XIcon({ className }: IconProps) {
     <svg {...base} className={className}>
       <path d="M6 6l12 12" />
       <path d="M18 6L6 18" />
+    </svg>
+  );
+}
+
+export function PlayIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className} aria-hidden="true">
+      <path d="M8 5.5v13l11-6.5-11-6.5Z" />
     </svg>
   );
 }

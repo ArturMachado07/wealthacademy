@@ -10,7 +10,7 @@ export default function OrganizationJsonLd() {
       "Academia de Formação em Finanças e Negócios, licenciada pelo INEFOP (registo 1140.01/LDA./2024).",
     email: siteConfig.emails.geral,
     telephone: siteConfig.phone,
-    sameAs: [siteConfig.social.instagram, siteConfig.social.linkedin],
+    sameAs: [siteConfig.social.instagram, siteConfig.social.linkedin, siteConfig.social.youtube],
     address: {
       "@type": "PostalAddress",
       streetAddress: "Edifício Maianga Office Park",

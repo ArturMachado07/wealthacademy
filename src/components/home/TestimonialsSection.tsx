@@ -1,6 +1,7 @@
 import SectionHeading from "@/components/SectionHeading";
 import { testimonials } from "@/data/testimonials";
 import { findPublicImage } from "@/lib/media";
+import TestimonialVideoCard from "@/components/home/TestimonialVideoCard";
 
 // Sempre 3 lugares — os testemunhos ainda por gravar ficam como placeholder
 // discreto em vez de inventar conteúdo.
@@ -20,27 +21,13 @@ export default function TestimonialsSection() {
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {slots.map((testimonial, i) =>
             testimonial ? (
-              <div
+              <TestimonialVideoCard
                 key={testimonial.name}
-                className="overflow-hidden rounded border border-ink/10 bg-white/60"
-              >
-                <div className="aspect-video w-full bg-ink">
-                  <video
-                    src={`/${testimonial.video}`}
-                    poster={testimonial.photo ? (findPublicImage(testimonial.photo) ?? undefined) : undefined}
-                    controls
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="p-5">
-                  <p className="font-medium text-ink">{testimonial.name}</p>
-                  <p className="mt-1 text-sm text-ink-soft">{testimonial.subtitle}</p>
-                </div>
-              </div>
+                name={testimonial.name}
+                subtitle={testimonial.subtitle}
+                embedUrl={testimonial.embedUrl}
+                posterSrc={findPublicImage(testimonial.photo)}
+              />
             ) : (
               <div
                 key={`em-breve-${i}`}
