@@ -28,7 +28,7 @@ export default function Hero() {
           delay={80}
           className="mt-5 max-w-3xl text-4xl font-medium leading-[1.1] text-ink md:text-6xl"
         >
-          Conhecimento que transforma. Competências que distinguem.
+          O conhecimento é o melhor investimento.
         </Reveal>
         <Reveal as="p" delay={160} className="mt-6 max-w-xl text-lg text-ink/85">
           Formação especializada em Finanças e Negócios para profissionais e organizações
