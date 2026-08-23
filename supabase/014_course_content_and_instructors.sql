@@ -31,6 +31,7 @@ create table if not exists instructors (
 
 alter table instructors enable row level security;
 
+drop policy if exists "Qualquer pessoa vê formadores" on instructors;
 create policy "Qualquer pessoa vê formadores" on instructors
   for select using (true);
 
@@ -48,6 +49,7 @@ create table if not exists course_instructors (
 
 alter table course_instructors enable row level security;
 
+drop policy if exists "Qualquer pessoa vê formadores de cada formação" on course_instructors;
 create policy "Qualquer pessoa vê formadores de cada formação" on course_instructors
   for select using (true);
 
