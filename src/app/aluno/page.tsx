@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "O meu Dashboard",
   description: "Área do Aluno — Wealth Academy.",
 };
+export const dynamic = "force-dynamic";
 
 type Enrollment = {
   id: string;

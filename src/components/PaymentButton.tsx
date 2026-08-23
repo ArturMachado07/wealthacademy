@@ -107,6 +107,11 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
           return;
         }
         setStatus("success");
+        // Sem isto, o cache de router do Next mantinha a versão antiga de
+        // /aluno (sem a inscrição nova) até o aluno recarregar a página à
+        // força — router.refresh() invalida esse cache para a navegação
+        // seguinte, mesmo sendo para outra rota.
+        router.refresh();
       }, 1800);
       return;
     }
@@ -130,6 +135,7 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
 
       if (data.payment.status === "accepted") {
         setStatus("success");
+        router.refresh();
       } else if (data.payment.status === "rejected" || data.payment.status === "expired") {
         setStatus("error");
         setError("O pagamento não foi concluído. Tente novamente.");
@@ -137,7 +143,7 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [status, charge]);
+  }, [status, charge, router]);
 
   if (status === "success" || status === "already") {
     return (
