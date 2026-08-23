@@ -1,6 +1,5 @@
 import SectionHeading from "@/components/SectionHeading";
 import { testimonials } from "@/data/testimonials";
-import { findPublicImage } from "@/lib/media";
 import TestimonialVideoCard from "@/components/home/TestimonialVideoCard";
 
 // Sempre 3 lugares — os testemunhos ainda por gravar ficam como placeholder
@@ -26,7 +25,6 @@ export default function TestimonialsSection() {
                 name={testimonial.name}
                 subtitle={testimonial.subtitle}
                 embedUrl={testimonial.embedUrl}
-                posterSrc={findPublicImage(testimonial.photo)}
               />
             ) : (
               <div
