@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
+import ArticleCard from "@/components/ArticleCard";
 import ArticlesList from "@/components/ArticlesList";
 import { getArticles } from "@/lib/wealth-insights";
 
@@ -18,6 +19,15 @@ export default async function WealthInsightsPage({
   const { categoria } = await searchParams;
   const articles = await getArticles();
 
+  // ArticleCard usa MediaSlot (leitura de ficheiros no servidor) — é
+  // renderizado aqui, no servidor, e só o nó já pronto é passado ao
+  // componente de filtro no cliente.
+  const items = articles.map((article) => ({
+    slug: article.slug,
+    category: article.category,
+    node: <ArticleCard article={article} />,
+  }));
+
   return (
     <section className="py-24">
       <div className="container-page">
@@ -28,7 +38,7 @@ export default async function WealthInsightsPage({
         />
 
         <div className="mt-10">
-          <ArticlesList articles={articles} initialCategory={categoria} />
+          <ArticlesList items={items} initialCategory={categoria} />
         </div>
       </div>
     </section>

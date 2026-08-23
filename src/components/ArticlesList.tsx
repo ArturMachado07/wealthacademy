@@ -1,17 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import ArticleCard from "@/components/ArticleCard";
+import { useMemo, useState, type ReactNode } from "react";
 import EmptyState from "@/components/EmptyState";
-import type { InsightArticle } from "@/lib/wealth-insights";
 import { insightCategories } from "@/data/categories";
 
+// Recebe os cards já renderizados no servidor (via prop `items`) em vez de
+// montar <ArticleCard> aqui — ArticleCard usa MediaSlot, que lê ficheiros do
+// disco (node:fs) para encontrar a foto real, e isso só pode correr no
+// servidor. Este componente só trata do estado do filtro.
+type Item = { slug: string; category: string; node: ReactNode };
+
 type Props = {
-  articles: InsightArticle[];
+  items: Item[];
   initialCategory?: string;
 };
 
-export default function ArticlesList({ articles, initialCategory }: Props) {
+export default function ArticlesList({ items, initialCategory }: Props) {
   const [active, setActive] = useState<string>(
     initialCategory && (insightCategories as readonly string[]).includes(initialCategory)
       ? initialCategory
@@ -19,9 +23,9 @@ export default function ArticlesList({ articles, initialCategory }: Props) {
   );
 
   const filtered = useMemo(() => {
-    if (active === "Todos") return articles;
-    return articles.filter((article) => article.category === active);
-  }, [active, articles]);
+    if (active === "Todos") return items;
+    return items.filter((item) => item.category === active);
+  }, [active, items]);
 
   const filters = ["Todos", ...insightCategories];
 
@@ -47,8 +51,8 @@ export default function ArticlesList({ articles, initialCategory }: Props) {
       <div className="mt-14">
         {filtered.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((article) => (
-              <ArticleCard key={article.slug} article={article} />
+            {filtered.map((item) => (
+              <div key={item.slug}>{item.node}</div>
             ))}
           </div>
         ) : active === "Todos" ? (
