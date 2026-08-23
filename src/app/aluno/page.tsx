@@ -9,6 +9,8 @@ import EmptyState from "@/components/EmptyState";
 import PaymentButton from "@/components/PaymentButton";
 import { courses } from "@/data/courses";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
+import { getWorkshops } from "@/lib/workshops";
+import { whatsappLink } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "O meu Dashboard",
@@ -59,6 +61,15 @@ export default async function AlunoDashboardPage() {
   const earnedCertificates = (certificates ?? []) as Certificate[];
   const overrides = await getCourseOverrides();
 
+  const emCursoCount = activeEnrollments.filter((e) => e.status === "Em curso").length;
+  const concluidasCount = activeEnrollments.filter((e) => e.status === "Concluída").length;
+
+  // Só os próximos (não "Realizado") — teaser discreto para descobrir a
+  // galeria de workshops sem sair do dashboard.
+  const upcomingWorkshops = (await getWorkshops())
+    .filter((w) => w.status !== "Realizado")
+    .slice(0, 3);
+
   return (
     <section className="py-24">
       <div className="container-page">
@@ -75,13 +86,31 @@ export default async function AlunoDashboardPage() {
                 <Link href="/aluno/pagamentos" className="text-gold-dark underline">
                   Os meus pagamentos
                 </Link>
+                <Link href="/aluno/certificados" className="text-gold-dark underline">
+                  Os meus certificados
+                </Link>
               </div>
             </div>
           </div>
           <SignOutButton />
         </div>
 
-        <div className="mt-14">
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="rounded border border-ink/10 bg-white/60 p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-soft">Em curso</p>
+            <p className="mt-2 font-display text-3xl text-ink">{emCursoCount}</p>
+          </div>
+          <div className="rounded border border-ink/10 bg-white/60 p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-soft">Concluídos</p>
+            <p className="mt-2 font-display text-3xl text-ink">{concluidasCount}</p>
+          </div>
+          <div className="rounded border border-ink/10 bg-white/60 p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-soft">Certificados</p>
+            <p className="mt-2 font-display text-3xl text-ink">{earnedCertificates.length}</p>
+          </div>
+        </div>
+
+        <div className="mt-10">
           <h2 className="text-lg font-medium text-ink">Meus Cursos</h2>
           {activeEnrollments.length === 0 ? (
             <div className="mt-4">
@@ -163,6 +192,40 @@ export default async function AlunoDashboardPage() {
               })}
             </div>
           )}
+        </div>
+
+        {upcomingWorkshops.length > 0 && (
+          <div className="mt-14">
+            <h2 className="text-lg font-medium text-ink">Próximos workshops</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {upcomingWorkshops.map((workshop) => (
+                <Link
+                  key={workshop.slug}
+                  href={`/workshops/${workshop.slug}`}
+                  className="rounded border border-ink/10 bg-white/60 p-4 transition-colors hover:border-gold"
+                >
+                  <p className="text-sm font-medium text-ink">{workshop.title}</p>
+                  <p className="mt-1 text-xs text-ink-soft">
+                    {[workshop.date, workshop.location].filter(Boolean).join(" · ") || workshop.status}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-14 flex items-center gap-2 border-t border-ink/10 pt-6 text-sm text-ink-soft">
+          <span>
+            Precisa de ajuda?{" "}
+            <a
+              href={whatsappLink("Olá! Preciso de ajuda com a minha conta na Wealth Academy.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-gold-dark underline"
+            >
+              Fale connosco
+            </a>
+          </span>
         </div>
 
       </div>

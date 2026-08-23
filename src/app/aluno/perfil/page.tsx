@@ -5,6 +5,7 @@ import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProfileForm from "@/components/aluno/ProfileForm";
 import AvatarUploadForm from "@/components/aluno/AvatarUploadForm";
+import PasswordChangeForm from "@/components/aluno/PasswordChangeForm";
 
 export const metadata: Metadata = { title: "O meu perfil" };
 export const dynamic = "force-dynamic";
@@ -47,6 +48,11 @@ export default async function AlunoPerfilPage() {
         </p>
 
         <ProfileForm initialName={data?.name ?? ""} initialPhone={data?.phone ?? ""} />
+
+        <div className="mt-14 border-t border-ink/10 pt-10">
+          <h2 className="text-lg font-medium text-ink">Alterar password</h2>
+          <PasswordChangeForm />
+        </div>
       </div>
     </section>
   );
