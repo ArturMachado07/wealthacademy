@@ -1,10 +1,14 @@
+import Link from "next/link";
 import type { Workshop } from "@/lib/workshops";
 
 export default function WorkshopCard({ workshop }: { workshop: Workshop }) {
   const isPast = workshop.status === "Realizado";
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded border border-ink/10 bg-white/60 transition-colors hover:border-gold">
+    <Link
+      href={`/workshops/${workshop.slug}`}
+      className="group flex flex-col overflow-hidden rounded border border-ink/10 bg-white/60 transition-colors hover:border-gold"
+    >
       <div className="aspect-[3/4] w-full overflow-hidden bg-ink/5">
         {workshop.flyer_url ? (
           // Vem do bucket público do Supabase Storage (domínio dinâmico por
@@ -47,22 +51,10 @@ export default function WorkshopCard({ workshop }: { workshop: Workshop }) {
           {workshop.guest && <span>Convidado: {workshop.guest}</span>}
         </div>
 
-        {!isPast &&
-          (workshop.registration_link ? (
-            <a
-              href={workshop.registration_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn mt-5 w-full bg-gold text-center text-cream group-hover:bg-gold-dark"
-            >
-              Inscrever-me
-            </a>
-          ) : (
-            <span className="mt-5 w-full rounded border border-ink/15 py-2.5 text-center text-sm text-ink-soft">
-              Inscrições brevemente
-            </span>
-          ))}
+        <span className="btn mt-5 w-full bg-gold text-center text-cream group-hover:bg-gold-dark">
+          Ver detalhes
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }
