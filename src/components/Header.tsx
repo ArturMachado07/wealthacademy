@@ -4,6 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { navigation } from "@/data/site";
+import { ChevronDownIcon } from "@/components/icons";
+
+// Workshops e Para Empresas ficam agrupados num dropdown "Recursos" no
+// menu principal — liberta espaço horizontal para o logótipo (que, com
+// todos os itens soltos, ficava pequeno demais no ecrã).
+const RECURSOS_HREFS = ["/workshops", "/empresas"];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -11,7 +17,14 @@ export default function Header() {
 
   // "Área do Aluno" fica fora do menu principal (ainda em preparação) e
   // ganha um tratamento visual distinto, junto ao CTA.
-  const primaryNav = navigation.filter((item) => item.href !== "/area-do-aluno");
+  const primaryNav = navigation.filter(
+    (item) => item.href !== "/area-do-aluno" && !RECURSOS_HREFS.includes(item.href)
+  );
+  const recursosItems = navigation.filter((item) => RECURSOS_HREFS.includes(item.href));
+  const formacoesIndex = primaryNav.findIndex((item) => item.href === "/formacoes");
+  const beforeRecursos = primaryNav.slice(0, formacoesIndex + 1);
+  const afterRecursos = primaryNav.slice(formacoesIndex + 1);
+  const recursosActive = RECURSOS_HREFS.includes(pathname ?? "");
 
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream/95 backdrop-blur print:hidden">
@@ -24,13 +37,62 @@ export default function Header() {
             alt="Wealth Academy"
             width={122}
             height={86}
-            className="h-12 w-auto md:h-16 lg:h-[4.5rem]"
+            className="h-12 w-auto md:h-16 lg:h-[4.375rem]"
           />
         </Link>
 
         <div className="hidden items-center gap-8 lg:flex">
           <nav className="flex items-center gap-6">
-            {primaryNav.map((item) => {
+            {beforeRecursos.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`whitespace-nowrap text-sm font-medium tracking-wide transition-colors hover:text-gold ${
+                    active ? "text-gold" : "text-ink"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+
+            {/* Dropdown "Recursos" (Workshops + Para Empresas) — aberto ao
+                passar o rato (CSS puro, via group-hover) e também navegável
+                por teclado (o botão é focável e os links ficam sempre no
+                DOM). */}
+            <div className="group relative">
+              <button
+                type="button"
+                className={`flex items-center gap-1 whitespace-nowrap text-sm font-medium tracking-wide transition-colors hover:text-gold ${
+                  recursosActive ? "text-gold" : "text-ink"
+                }`}
+              >
+                Recursos
+                <ChevronDownIcon className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
+              </button>
+              <div className="invisible absolute left-1/2 top-full z-10 w-44 -translate-x-1/2 pt-3 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
+                <div className="overflow-hidden rounded border border-ink/10 bg-white shadow-lg">
+                  {recursosItems.map((item) => {
+                    const active = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`block px-4 py-2.5 text-sm font-medium transition-colors hover:bg-cream hover:text-gold ${
+                          active ? "text-gold" : "text-ink"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {afterRecursos.map((item) => {
               const active = pathname === item.href;
               return (
                 <Link
