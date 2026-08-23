@@ -12,7 +12,7 @@ export default function Hero() {
         priority
       />
       <div
-        className="absolute inset-0 bg-gradient-to-t from-[#9D743A] via-[#9D743A]/70 to-[#F8EA9A]/40"
+        className="absolute inset-0 bg-gradient-to-r from-[#9D743A] via-[#9D743A]/70 to-[#F8EA9A]/40"
         aria-hidden="true"
       />
       <div className="container-page relative flex min-h-[82vh] flex-col justify-center py-28">
