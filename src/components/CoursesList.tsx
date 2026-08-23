@@ -47,21 +47,19 @@ export default function CoursesList({ items, initialCategory }: Props) {
 
   return (
     <div>
-      <div className="md:hidden">
+      <div>
         <button
           type="button"
           onClick={() => setFiltersOpen((open) => !open)}
           aria-expanded={filtersOpen}
-          className="flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-sm text-ink"
+          className="flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-sm text-ink hover:border-gold"
         >
           <FilterIcon className="h-4 w-4" />
           Filtrar
         </button>
       </div>
 
-      <div
-        className={`${filtersOpen ? "mt-4 flex" : "hidden"} flex-col gap-4 md:mt-0 md:flex md:flex-row md:items-center`}
-      >
+      <div className={`${filtersOpen ? "mt-4 flex" : "hidden"} flex-col gap-4 sm:flex-row sm:items-center`}>
         <div className="md:w-64 md:shrink-0">
           <label htmlFor="formacoes-busca" className="sr-only">
             Procurar formação
