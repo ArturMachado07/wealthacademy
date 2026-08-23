@@ -1,24 +1,21 @@
 import Link from "next/link";
 import { trainingCategories } from "@/data/categories";
+import { courses } from "@/data/courses";
+import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
+import CourseCard from "@/components/CourseCard";
 import Reveal from "@/components/Reveal";
 import { staggerDelay } from "@/lib/reveal";
 
-const offerings = [
-  {
-    title: "Cursos",
-    description: "Programas de formação estruturados para desenvolver conhecimento aprofundado.",
-  },
-  {
-    title: "Workshops",
-    description: "Sessões práticas e concentradas sobre temas específicos.",
-  },
-  {
-    title: "Programas Personalizados",
-    description: "Soluções formativas desenhadas para as necessidades da sua organização.",
-  },
-];
+// As 3 formações em destaque na home — Controlo Financeiro Pessoal, Fast
+// Track Investidores e Análise e Negociação no Mercado de Capitais.
+const FEATURED_SLUGS = ["controlo-financeiro-pessoal", "fast-track-investidores", "analise-negociacao-mercado-capitais"];
 
-export default function TrainingSection() {
+export default async function TrainingSection() {
+  const overrides = await getCourseOverrides();
+  const featuredCourses = FEATURED_SLUGS.map((slug) => courses.find((course) => course.slug === slug))
+    .filter((course): course is NonNullable<typeof course> => Boolean(course))
+    .map((course) => applyCourseOverride(course, overrides.get(course.slug)));
+
   return (
     <section className="bg-white/50 py-24">
       <div className="container-page">
@@ -30,15 +27,9 @@ export default function TrainingSection() {
         </Reveal>
 
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {offerings.map((item, i) => (
-            <Reveal
-              key={item.title}
-              as="div"
-              delay={staggerDelay(i)}
-              className="rounded border border-ink/10 bg-cream p-8"
-            >
-              <h3 className="text-xl font-medium text-ink">{item.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-ink-soft">{item.description}</p>
+          {featuredCourses.map((course, i) => (
+            <Reveal key={course.slug} as="div" delay={staggerDelay(i)}>
+              <CourseCard course={course} />
             </Reveal>
           ))}
         </div>
