@@ -15,7 +15,7 @@ const features = [
   { title: "Progresso", text: "Acompanhamento do avanço em cada formação, módulo a módulo." },
   { title: "Próxima Aula", text: "O que se segue no seu percurso, sempre à mão." },
   { title: "Avaliações", text: "Testes e exercícios associados às formações concluídas." },
-  { title: "Certificados", text: "Certificados digitais, com número único e validação por QR code." },
+  { title: "Certificados", text: "Certificados digitais, com número único e validação pública online." },
   { title: "Perfil", text: "Os seus dados e histórico de formação num só lugar." },
 ];
 

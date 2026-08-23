@@ -18,6 +18,21 @@ h1, h2, h3, h4 {
   @apply mx-auto w-full max-w-content px-6 md:px-10;
 }
 
+/* Certificado — impressão/"Guardar como PDF". header/footer/chat ficam
+   escondidos via print:hidden nos próprios componentes; aqui só tratamos
+   do enquadramento do certificado em si. */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  body {
+    background: #fff !important;
+  }
+  .certificate-print {
+    box-shadow: none !important;
+  }
+}
+
 .btn {
   @apply inline-flex items-center justify-center gap-2 rounded-sm px-7 py-3.5 text-sm font-medium tracking-wide2 uppercase transition-colors duration-200;
 }

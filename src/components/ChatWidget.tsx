@@ -29,7 +29,7 @@ export default function ChatWidget({ aiEnabled }: Props) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Falar no WhatsApp com a ${siteConfig.name}`}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gold text-cream shadow-lg shadow-ink/20 transition-transform hover:scale-105"
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gold text-cream shadow-lg shadow-ink/20 transition-transform hover:scale-105 print:hidden"
       >
         <WhatsAppIcon className="h-7 w-7" />
       </a>
@@ -86,7 +86,7 @@ function ChatPanel() {
   }
 
   return (
-    <>
+    <div className="print:hidden">
       {open && (
         <div className="fixed bottom-24 right-6 z-40 flex h-[28rem] w-[22rem] max-w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-lg shadow-ink/20">
           <div className="flex items-center justify-between border-b border-ink/10 bg-ink px-4 py-3">
@@ -168,6 +168,6 @@ function ChatPanel() {
       >
         {open ? <XIcon className="h-6 w-6" /> : <MessageCircleIcon className="h-6 w-6" />}
       </button>
-    </>
+    </div>
   );
 }

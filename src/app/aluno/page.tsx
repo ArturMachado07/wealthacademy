@@ -153,7 +153,7 @@ export default async function AlunoDashboardPage() {
               <EmptyState
                 eyebrow="Ainda sem certificados"
                 title="Ainda não tem certificados emitidos"
-                description="Os certificados das formações concluídas aparecem aqui, com número único e validação por QR code."
+                description="Os certificados das formações concluídas aparecem aqui, com número único e validação pública online."
               />
             </div>
           ) : (
@@ -165,12 +165,20 @@ export default async function AlunoDashboardPage() {
                   <p className="mt-1 text-xs text-ink-soft/70">
                     Emitido em {new Date(certificate.issue_date).toLocaleDateString("pt-PT")}
                   </p>
-                  <Link
-                    href={`/validar/${certificate.certificate_number}`}
-                    className="mt-3 inline-block text-sm text-gold-dark underline"
-                  >
-                    Ver validação pública
-                  </Link>
+                  <div className="mt-3 flex flex-wrap items-center gap-4">
+                    <Link
+                      href={`/aluno/certificados/${certificate.certificate_number}`}
+                      className="text-sm font-medium text-gold-dark underline"
+                    >
+                      Ver certificado
+                    </Link>
+                    <Link
+                      href={`/validar/${certificate.certificate_number}`}
+                      className="text-sm text-ink-soft underline"
+                    >
+                      Ver validação pública
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>

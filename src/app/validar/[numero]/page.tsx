@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import CertificateView from "@/components/CertificateView";
+import DownloadCertificateButton from "@/components/DownloadCertificateButton";
 
 type Props = { params: { numero: string } };
 
@@ -38,50 +40,42 @@ export default async function ValidarCertificadoPage({ params }: Props) {
     ? certificate?.students[0]?.name
     : certificate?.students?.name;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
+  const validateUrl = `${siteUrl.replace(/^https?:\/\//, "")}/validar/${params.numero}`;
+
   return (
-    <section className="py-24">
-      <div className="container-page">
-        <div className="mx-auto max-w-lg rounded border border-ink/10 bg-white/60 p-10 text-center">
-          <p className="eyebrow">Validação de Certificado</p>
-
-          {certificate ? (
-            <>
-              <h1 className="mt-4 text-2xl font-medium text-ink">Certificado válido</h1>
-              <p className="mt-6 text-sm text-ink-soft">Nº do certificado</p>
-              <p className="text-lg font-medium text-ink">{certificate.certificate_number}</p>
-
-              {studentName && (
-                <>
-                  <p className="mt-4 text-sm text-ink-soft">Emitido a</p>
-                  <p className="text-lg font-medium text-ink">{studentName}</p>
-                </>
-              )}
-
-              <p className="mt-4 text-sm text-ink-soft">Formação</p>
-              <p className="text-lg font-medium text-ink">{certificate.course_title}</p>
-
-              {certificate.hours && (
-                <>
-                  <p className="mt-4 text-sm text-ink-soft">Carga horária</p>
-                  <p className="text-lg font-medium text-ink">{certificate.hours}</p>
-                </>
-              )}
-
-              <p className="mt-4 text-sm text-ink-soft">Data de emissão</p>
-              <p className="text-lg font-medium text-ink">
-                {new Date(certificate.issue_date).toLocaleDateString("pt-PT")}
-              </p>
-            </>
-          ) : (
-            <>
-              <h1 className="mt-4 text-2xl font-medium text-ink">Certificado não encontrado</h1>
-              <p className="mt-3 text-sm text-ink-soft">
-                Não existe nenhum certificado emitido pela Wealth Academy com o número{" "}
-                <span className="font-medium text-ink">{params.numero}</span>.
-              </p>
-            </>
-          )}
-        </div>
+    <section className="py-24 print:py-0">
+      <div className="container-page print:max-w-none print:px-0">
+        {certificate && studentName ? (
+          <>
+            <div className="mx-auto max-w-3xl text-center print:hidden">
+              <p className="eyebrow">Validação de Certificado</p>
+              <h1 className="mt-3 font-display text-2xl text-ink">Certificado válido</h1>
+              <div className="mt-6 flex justify-center">
+                <DownloadCertificateButton />
+              </div>
+            </div>
+            <div className="mt-8 print:mt-0">
+              <CertificateView
+                studentName={studentName}
+                courseTitle={certificate.course_title}
+                hours={certificate.hours}
+                issueDate={certificate.issue_date}
+                certificateNumber={certificate.certificate_number}
+                validateUrl={validateUrl}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="mx-auto max-w-lg rounded border border-ink/10 bg-white/60 p-10 text-center">
+            <p className="eyebrow">Validação de Certificado</p>
+            <h1 className="mt-4 text-2xl font-medium text-ink">Certificado não encontrado</h1>
+            <p className="mt-3 text-sm text-ink-soft">
+              Não existe nenhum certificado emitido pela Wealth Academy com o número{" "}
+              <span className="font-medium text-ink">{params.numero}</span>.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

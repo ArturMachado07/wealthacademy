@@ -4,7 +4,7 @@ import { InstagramIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon, YoutubeIc
 
 export default function Footer() {
   return (
-    <footer className="bg-ink text-cream">
+    <footer className="bg-ink text-cream print:hidden">
       <div className="container-page grid gap-12 py-16 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <img

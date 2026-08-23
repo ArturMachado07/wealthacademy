@@ -14,7 +14,7 @@ export default function Header() {
   const primaryNav = navigation.filter((item) => item.href !== "/area-do-aluno");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream/95 backdrop-blur print:hidden">
       <div className="container-page flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
           {/* SVG servido directamente (sem next/image) — evita problemas de
