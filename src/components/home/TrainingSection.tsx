@@ -6,14 +6,20 @@ import CourseCard from "@/components/CourseCard";
 import Reveal from "@/components/Reveal";
 import { staggerDelay } from "@/lib/reveal";
 
-// As 3 formações em destaque na home — Controlo Financeiro Pessoal, Fast
-// Track Investidores e Análise e Negociação no Mercado de Capitais.
-const FEATURED_SLUGS = ["controlo-financeiro-pessoal", "fast-track-investidores", "analise-negociacao-mercado-capitais"];
+// As 3 formações em destaque na home — Análise e Negociação no Mercado de
+// Capitais, Controlo Financeiro Pessoal e Fast Track Investidores. `courses`
+// já vem ordenado alfabeticamente (ver data/courses.ts), por isso filtrar
+// mantém essa mesma ordem A–Z aqui também.
+const FEATURED_SLUGS = new Set([
+  "controlo-financeiro-pessoal",
+  "fast-track-investidores",
+  "analise-negociacao-mercado-capitais",
+]);
 
 export default async function TrainingSection() {
   const overrides = await getCourseOverrides();
-  const featuredCourses = FEATURED_SLUGS.map((slug) => courses.find((course) => course.slug === slug))
-    .filter((course): course is NonNullable<typeof course> => Boolean(course))
+  const featuredCourses = courses
+    .filter((course) => FEATURED_SLUGS.has(course.slug))
     .map((course) => applyCourseOverride(course, overrides.get(course.slug)));
 
   return (

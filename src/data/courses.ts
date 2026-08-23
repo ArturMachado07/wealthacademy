@@ -48,7 +48,7 @@ export type Course = {
 // testar o sistema de checkout — NÃO são os preços oficiais da Wealth
 // Academy. Substituir por valores reais antes do lançamento público (ver
 // SETUP-ALUNO-PAGAMENTOS.md, secção de pagamentos).
-export const courses: Course[] = [
+const rawCourses: Course[] = [
   {
     slug: "controlo-financeiro-pessoal",
     title: "Controlo Financeiro Pessoal",
@@ -162,3 +162,8 @@ export const courses: Course[] = [
       "Desenvolva competências avançadas para criar e gerir documentos profissionais com maior rigor e eficiência. A formação inclui formatação avançada, estruturação de documentos longos com estilos, criação de índices e referências automáticas, ferramentas de revisão e colaboração e automatização de tarefas para aumentar a produtividade.",
   },
 ];
+
+// Ordenados alfabeticamente (A–Z) pelo título — esta é a ordem usada em
+// todo o site sempre que os cursos são listados (home, /formacoes, etc.),
+// por isso basta ordenar aqui uma única vez em vez de em cada página.
+export const courses: Course[] = [...rawCourses].sort((a, b) => a.title.localeCompare(b.title, "pt"));
