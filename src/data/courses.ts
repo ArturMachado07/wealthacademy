@@ -8,6 +8,9 @@ export type Course = {
   title: string;
   category: TrainingCategory;
   description?: string;
+  // Resumo curto para o card de listagem (/formacoes). Se não for definido,
+  // o card usa um excerto automático de `description`.
+  summary?: string;
   image?: string;
   modality?: Modality;
   duration?: string;
@@ -23,6 +26,9 @@ export type Course = {
   investment?: string;
   certification?: string;
   seats?: string;
+  // Informações extra e curtas sobre a formação (ex.: "Coffee Break e
+  // Almoço"), mostradas como "Inclui" no bloco de detalhes da página do curso.
+  extras?: string[];
   faq?: { question: string; answer: string }[];
 };
 
@@ -66,12 +72,16 @@ export const courses: Course[] = [
     image: "banner_formação-investimentos-capitais",
     status: "Em breve",
     investment: "85.000 Kz",
+    summary: "Do local ao internacional. Eleve o seu posicionamento no mercado financeiro.",
     description:
-      "Desenvolva uma compreensão prática e estratégica do Mercado de Capitais, com uma abordagem que integra o contexto angolano, os mercados internacionais e os principais produtos financeiros globais. A formação inclui análise, pensamento crítico e simulações práticas de negociação.",
+      "A Wealth Academy promove uma formação intensiva para quem pretende elevar o seu posicionamento no mercado financeiro e actuar com maior confiança e estratégia.",
     audience: "Profissionais de investimento, tesouraria, gestão de activos e consultoria.",
     duration: "2 dias",
     date: "28 de Fevereiro e 7 de Março",
     followUp: "6 meses de acompanhamento remoto — conforme edição identificada",
+    location: "Luanda | Hotel EPIC SANA",
+    certification: "Certificado reconhecido pelo INEFOP",
+    extras: ["Coffee Break e Almoço"],
   },
   {
     slug: "comunicacao-institucional",

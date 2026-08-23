@@ -68,16 +68,22 @@ export default async function CoursePage({ params }: Props) {
     { key: "formadores", label: "Formadores", src: findPublicImage(`curso-${course.slug}-3-formadores`) },
   ];
 
-  // "O que está incluído" no cartão lateral — só campos reais preenchidos
-  // para esta formação, sem inventar parcelamentos, garantias ou bónus.
-  const allInclusions: [string, string | undefined][] = [
-    ["Modalidade", course.modality],
+  // Logística e datas ficam junto à descrição, no corpo principal (mais
+  // visível do que escondidas no cartão lateral). O cartão lateral guarda
+  // só a informação mais "comercial" (modalidade, formador, vagas).
+  const allCourseDetails: [string, string | undefined][] = [
     ["Duração", course.duration],
     ["Acompanhamento", course.followUp],
     ["Data", course.date],
     ["Local", course.location],
-    ["Formador", course.instructor],
     ["Certificação", course.certification],
+    ["Inclui", course.extras && course.extras.length > 0 ? course.extras.join(" · ") : undefined],
+  ];
+  const courseDetails = allCourseDetails.filter(([, value]) => Boolean(value));
+
+  const allInclusions: [string, string | undefined][] = [
+    ["Modalidade", course.modality],
+    ["Formador", course.instructor],
     ["Vagas", course.seats],
   ];
   const inclusions = allInclusions.filter(([, value]) => Boolean(value));
@@ -104,6 +110,17 @@ export default async function CoursePage({ params }: Props) {
             <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{course.title}</h1>
             {course.description && (
               <p className="mt-5 text-lg leading-relaxed text-ink-soft">{course.description}</p>
+            )}
+
+            {courseDetails.length > 0 && (
+              <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-ink/10 py-6 sm:grid-cols-3">
+                {courseDetails.map(([label, value]) => (
+                  <div key={label}>
+                    <dt className="text-xs uppercase tracking-wide2 text-ink-soft">{label}</dt>
+                    <dd className="mt-1 text-sm font-medium text-ink">{value}</dd>
+                  </div>
+                ))}
+              </dl>
             )}
 
             {course.objectives && course.objectives.length > 0 && (
