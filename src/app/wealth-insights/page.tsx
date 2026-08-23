@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
-import ArticleCard from "@/components/ArticleCard";
-import EmptyState from "@/components/EmptyState";
+import ArticlesList from "@/components/ArticlesList";
 import { getArticles } from "@/lib/wealth-insights";
-import { insightCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
   title: "Wealth Insights",
@@ -12,7 +10,12 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function WealthInsightsPage() {
+export default async function WealthInsightsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string }>;
+}) {
+  const { categoria } = await searchParams;
   const articles = await getArticles();
 
   return (
@@ -24,27 +27,8 @@ export default async function WealthInsightsPage() {
           description="Artigos e análises sobre os temas que movem o mercado angolano."
         />
 
-        <div className="mt-10 flex flex-wrap gap-3">
-          {insightCategories.map((category) => (
-            <span key={category} className="rounded-full border border-ink/15 px-4 py-1.5 text-sm text-ink">
-              {category}
-            </span>
-          ))}
-        </div>
-
-        <div className="mt-14">
-          {articles.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {articles.map((article) => (
-                <ArticleCard key={article.slug} article={article} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title="Os primeiros artigos estão a ser preparados"
-              description="Em breve, análises e conteúdos sobre Finanças, Negócios e Mercado."
-            />
-          )}
+        <div className="mt-10">
+          <ArticlesList articles={articles} initialCategory={categoria} />
         </div>
       </div>
     </section>

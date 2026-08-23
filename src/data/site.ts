@@ -23,7 +23,6 @@ export const navigation = [
   { label: "Formações", href: "/formacoes" },
   { label: "Workshops", href: "/workshops" },
   { label: "Para Empresas", href: "/empresas" },
-  { label: "Eventos", href: "/eventos" },
   { label: "Wealth Insights", href: "/wealth-insights" },
   { label: "Contactos", href: "/contactos" },
   { label: "Área do Aluno", href: "/area-do-aluno" },

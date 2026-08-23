@@ -39,12 +39,13 @@ export default function TrainingSection() {
         <div className="mt-14 flex flex-wrap items-center gap-3">
           <span className="text-sm text-ink-soft">Áreas de formação:</span>
           {trainingCategories.map((category) => (
-            <span
+            <Link
               key={category}
-              className="rounded-full border border-ink/15 px-4 py-1.5 text-sm text-ink"
+              href={`/formacoes?categoria=${encodeURIComponent(category)}`}
+              className="rounded-full border border-ink/15 px-4 py-1.5 text-sm text-ink transition-colors hover:border-gold"
             >
               {category}
-            </span>
+            </Link>
           ))}
         </div>
 
