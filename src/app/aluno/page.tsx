@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/SignOutButton";
+import Avatar from "@/components/Avatar";
 import EmptyState from "@/components/EmptyState";
 import PaymentButton from "@/components/PaymentButton";
 import { courses } from "@/data/courses";
@@ -62,16 +63,19 @@ export default async function AlunoDashboardPage() {
     <section className="py-24">
       <div className="container-page">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="eyebrow">Área do Aluno</p>
-            <h1 className="mt-2 font-display text-3xl text-ink">Olá, {student.name}</h1>
-            <div className="mt-3 flex gap-4 text-sm">
-              <Link href="/aluno/perfil" className="text-gold-dark underline">
-                O meu perfil
-              </Link>
-              <Link href="/aluno/pagamentos" className="text-gold-dark underline">
-                Os meus pagamentos
-              </Link>
+          <div className="flex items-center gap-4">
+            <Avatar url={student.avatar_url} name={student.name} size={64} />
+            <div>
+              <p className="eyebrow">Área do Aluno</p>
+              <h1 className="mt-2 font-display text-3xl text-ink">Olá, {student.name}</h1>
+              <div className="mt-3 flex gap-4 text-sm">
+                <Link href="/aluno/perfil" className="text-gold-dark underline">
+                  O meu perfil
+                </Link>
+                <Link href="/aluno/pagamentos" className="text-gold-dark underline">
+                  Os meus pagamentos
+                </Link>
+              </div>
             </div>
           </div>
           <SignOutButton />

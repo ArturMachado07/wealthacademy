@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProfileForm from "@/components/aluno/ProfileForm";
+import AvatarUploadForm from "@/components/aluno/AvatarUploadForm";
 
 export const metadata: Metadata = { title: "O meu perfil" };
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export default async function AlunoPerfilPage() {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("students")
-    .select("name, email, phone")
+    .select("name, email, phone, avatar_url")
     .eq("id", student.id)
     .single();
 
@@ -31,6 +32,10 @@ export default async function AlunoPerfilPage() {
         <div className="mt-6">
           <p className="eyebrow">Área do Aluno</p>
           <h1 className="mt-2 font-display text-3xl text-ink">O meu perfil</h1>
+        </div>
+
+        <div className="mt-6">
+          <AvatarUploadForm name={data?.name ?? student.name} initialAvatarUrl={data?.avatar_url ?? null} />
         </div>
 
         <p className="mt-6 max-w-md text-sm text-ink-soft">

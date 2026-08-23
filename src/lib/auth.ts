@@ -4,6 +4,7 @@ export type Student = {
   id: string;
   name: string;
   email: string;
+  avatar_url: string | null;
 };
 
 // Devolve o aluno autenticado (via Supabase Auth) ou null. Antes de
@@ -23,7 +24,7 @@ export async function getCurrentStudent(): Promise<Student | null> {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id, name, email")
+    .select("id, name, email, avatar_url")
     .eq("auth_user_id", user.id)
     .single();
 
