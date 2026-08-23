@@ -15,7 +15,9 @@ type WorkshopRow = {
   title: string;
   category: string | null;
   date: string | null;
+  time: string | null;
   location: string | null;
+  guest: string | null;
   status: string;
   description: string | null;
   registration_link: string | null;
@@ -75,6 +77,8 @@ export default async function AdminWorkshopsPage({
                       <p className="text-xs text-ink-soft">
                         Slug: {workshop.slug} · {workshop.status}
                         {workshop.date ? ` · ${workshop.date}` : ""}
+                        {workshop.time ? ` · ${workshop.time}` : ""}
+                        {workshop.guest ? ` · Convidado: ${workshop.guest}` : ""}
                       </p>
                     </div>
                   </div>
@@ -107,7 +111,9 @@ export default async function AdminWorkshopsPage({
                         title: target.title,
                         category: target.category ?? "",
                         date: target.date ?? "",
+                        time: target.time ?? "",
                         location: target.location ?? "",
+                        guest: target.guest ?? "",
                         status: target.status,
                         description: target.description ?? "",
                         registration_link: target.registration_link ?? "",

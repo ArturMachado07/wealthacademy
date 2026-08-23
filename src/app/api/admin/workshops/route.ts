@@ -17,7 +17,9 @@ export async function POST(request: Request) {
   const title = body?.title?.trim();
   const category = body?.category?.trim() || null;
   const date = body?.date?.trim() || null;
+  const time = body?.time?.trim() || null;
   const location = body?.location?.trim() || null;
+  const guest = body?.guest?.trim() || null;
   const status = VALID_STATUS.includes(body?.status) ? body.status : "Em breve";
   const description = body?.description?.trim() || null;
   const registrationLink = body?.registration_link?.trim() || null;
@@ -33,7 +35,9 @@ export async function POST(request: Request) {
       title,
       category,
       date,
+      time,
       location,
+      guest,
       status,
       description,
       registration_link: registrationLink,

@@ -9,7 +9,9 @@ type Initial = {
   title: string;
   category: string;
   date: string;
+  time: string;
   location: string;
+  guest: string;
   status: string;
   description: string;
   registration_link: string;
@@ -20,7 +22,9 @@ const EMPTY: Initial = {
   title: "",
   category: "",
   date: "",
+  time: "",
   location: "",
+  guest: "",
   status: "Em breve",
   description: "",
   registration_link: "",
@@ -119,12 +123,21 @@ export default function AddWorkshopForm({ initial, lockSlug = false }: { initial
           </select>
         </div>
         <div>
-          <label className="block text-xs text-ink-soft">Data e local</label>
+          <label className="block text-xs text-ink-soft">Data</label>
           <input
             value={form.date}
             onChange={(e) => set("date", e.target.value)}
             placeholder="ex.: 12 de Setembro"
-            className="mt-1 w-48 rounded border border-ink/20 bg-white px-3 py-2 text-sm"
+            className="mt-1 w-40 rounded border border-ink/20 bg-white px-3 py-2 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-ink-soft">Hora</label>
+          <input
+            value={form.time}
+            onChange={(e) => set("time", e.target.value)}
+            placeholder="ex.: 14h00"
+            className="mt-1 w-32 rounded border border-ink/20 bg-white px-3 py-2 text-sm"
           />
         </div>
         <div>
@@ -133,6 +146,15 @@ export default function AddWorkshopForm({ initial, lockSlug = false }: { initial
             value={form.location}
             onChange={(e) => set("location", e.target.value)}
             placeholder="ex.: Luanda | Online"
+            className="mt-1 w-48 rounded border border-ink/20 bg-white px-3 py-2 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-ink-soft">Convidado</label>
+          <input
+            value={form.guest}
+            onChange={(e) => set("guest", e.target.value)}
+            placeholder="ex.: nome do convidado"
             className="mt-1 w-48 rounded border border-ink/20 bg-white px-3 py-2 text-sm"
           />
         </div>

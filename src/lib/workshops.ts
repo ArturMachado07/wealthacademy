@@ -12,7 +12,9 @@ export type Workshop = {
   title: string;
   category: string | null;
   date: string | null;
+  time: string | null;
   location: string | null;
+  guest: string | null;
   status: WorkshopStatus;
   description: string | null;
   registration_link: string | null;

@@ -42,7 +42,9 @@ export default function WorkshopCard({ workshop }: { workshop: Workshop }) {
 
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-soft">
           {workshop.date && <span>{workshop.date}</span>}
+          {workshop.time && <span>{workshop.time}</span>}
           {workshop.location && <span>{workshop.location}</span>}
+          {workshop.guest && <span>Convidado: {workshop.guest}</span>}
         </div>
 
         {!isPast &&
