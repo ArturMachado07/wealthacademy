@@ -54,7 +54,7 @@ export default async function AlunoCertificadoPage({ params }: Props) {
               <p className="eyebrow">Certificado</p>
               <h1 className="mt-2 font-display text-3xl text-ink">{certificate.course_title}</h1>
             </div>
-            <DownloadCertificateButton />
+            <DownloadCertificateButton href={`/api/aluno/certificados/${certificate.certificate_number}/pdf`} />
           </div>
         </div>
 

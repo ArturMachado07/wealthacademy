@@ -1,12 +1,10 @@
-"use client";
-
-// Usa a impressão do próprio browser — o utilizador escolhe "Guardar como
-// PDF" no diálogo de impressão. Sem dependências novas. header/footer/chat
-// ficam escondidos ao imprimir (print:hidden nesses componentes).
-export default function DownloadCertificateButton() {
+// Link directo para a rota que gera o PDF do certificado (application/pdf,
+// Content-Disposition: attachment) — descarrega logo, sem abrir o diálogo
+// de impressão do browser.
+export default function DownloadCertificateButton({ href }: { href: string }) {
   return (
-    <button type="button" onClick={() => window.print()} className="btn-secondary print:hidden">
+    <a href={href} download className="btn-secondary print:hidden">
       Descarregar PDF
-    </button>
+    </a>
   );
 }

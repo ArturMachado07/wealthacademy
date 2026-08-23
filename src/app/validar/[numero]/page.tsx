@@ -52,7 +52,7 @@ export default async function ValidarCertificadoPage({ params }: Props) {
               <p className="eyebrow">Validação de Certificado</p>
               <h1 className="mt-3 font-display text-2xl text-ink">Certificado válido</h1>
               <div className="mt-6 flex justify-center">
-                <DownloadCertificateButton />
+                <DownloadCertificateButton href={`/api/validar/${certificate.certificate_number}/pdf`} />
               </div>
             </div>
             <div className="mt-8 print:mt-0">

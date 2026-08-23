@@ -25,6 +25,7 @@ type Enrollment = {
 
 type Certificate = {
   id: string;
+  enrollment_id: string | null;
   course_title: string;
   certificate_number: string;
   issue_date: string;
@@ -48,7 +49,7 @@ export default async function AlunoDashboardPage() {
       .order("enrolled_at", { ascending: false }),
     supabase
       .from("certificates")
-      .select("id, course_title, certificate_number, issue_date")
+      .select("id, enrollment_id, course_title, certificate_number, issue_date")
       .eq("student_id", student.id)
       .order("issue_date", { ascending: false }),
   ]);
@@ -122,6 +123,20 @@ export default async function AlunoDashboardPage() {
                       Aceder ao curso
                     </Link>
                   )}
+                  {enrollment.status === "Concluída" && (() => {
+                    const certificate = earnedCertificates.find(
+                      (c) => c.enrollment_id === enrollment.id
+                    );
+                    if (!certificate) return null;
+                    return (
+                      <Link
+                        href={`/aluno/certificados/${certificate.certificate_number}`}
+                        className="mt-2 block text-sm font-medium text-gold-dark underline"
+                      >
+                        Ver certificado
+                      </Link>
+                    );
+                  })()}
                   {enrollment.status === "Pendente" && (() => {
                     const course = courses.find((c) => c.slug === enrollment.course_slug);
                     const priced = course ? applyCourseOverride(course, overrides.get(course.slug)) : null;
@@ -146,44 +161,6 @@ export default async function AlunoDashboardPage() {
           )}
         </div>
 
-        <div className="mt-14">
-          <h2 className="text-lg font-medium text-ink">Certificados</h2>
-          {earnedCertificates.length === 0 ? (
-            <div className="mt-4">
-              <EmptyState
-                eyebrow="Ainda sem certificados"
-                title="Ainda não tem certificados emitidos"
-                description="Os certificados das formações concluídas aparecem aqui, com número único e validação pública online."
-              />
-            </div>
-          ) : (
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {earnedCertificates.map((certificate) => (
-                <div key={certificate.id} className="rounded border border-ink/10 bg-white/60 p-6">
-                  <h3 className="text-lg font-medium text-ink">{certificate.course_title}</h3>
-                  <p className="mt-1 text-sm text-ink-soft">Nº {certificate.certificate_number}</p>
-                  <p className="mt-1 text-xs text-ink-soft/70">
-                    Emitido em {new Date(certificate.issue_date).toLocaleDateString("pt-PT")}
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-4">
-                    <Link
-                      href={`/aluno/certificados/${certificate.certificate_number}`}
-                      className="text-sm font-medium text-gold-dark underline"
-                    >
-                      Ver certificado
-                    </Link>
-                    <Link
-                      href={`/validar/${certificate.certificate_number}`}
-                      className="text-sm text-ink-soft underline"
-                    >
-                      Ver validação pública
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </section>
   );
