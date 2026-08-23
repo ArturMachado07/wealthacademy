@@ -5,16 +5,20 @@ import Reveal from "@/components/Reveal";
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-ink text-ink">
-      <MediaSlot
-        baseName="banner-hero"
-        alt="Formação Wealth Academy"
-        className="absolute inset-0"
-        priority
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-r from-[#9D743A] via-[#9D743A]/70 to-[#F8EA9A]/40"
-        aria-hidden="true"
-      />
+      {/* Contentor próprio para o "absolute inset-0" — o MediaSlot já usa
+          "relative" no seu wrapper interno; passar "absolute" directamente
+          a ele entrava em conflito (duas posições no mesmo elemento) e a
+          imagem ficava sem altura, invisível. Aqui o MediaSlot só recebe
+          "h-full w-full", sem position, e quem faz o fill do Hero é este
+          div externo. */}
+      <div className="absolute inset-0">
+        <MediaSlot
+          baseName="banner-hero"
+          alt="Formação Wealth Academy"
+          className="h-full w-full"
+          priority
+        />
+      </div>
       <div className="container-page relative flex min-h-[82vh] flex-col justify-center py-28">
         <Reveal as="p" className="eyebrow text-ink">
           Wealth Academy
