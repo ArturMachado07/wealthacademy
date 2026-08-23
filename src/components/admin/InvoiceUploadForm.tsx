@@ -44,7 +44,7 @@ export default function InvoiceUploadForm({
 
   return (
     <div>
-      <label className="cursor-pointer rounded border border-ink/20 px-3 py-1.5 text-xs font-medium text-ink hover:border-ink/40">
+      <label className="inline-block cursor-pointer whitespace-nowrap rounded border border-ink/20 px-3 py-1.5 text-xs font-medium text-ink hover:border-ink/40">
         {loading ? "A enviar..." : hasInvoice ? "Substituir factura" : "Anexar factura"}
         <input
           ref={inputRef}
