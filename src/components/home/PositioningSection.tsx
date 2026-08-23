@@ -11,9 +11,10 @@ export default function PositioningSection() {
           </h2>
         </Reveal>
         <Reveal as="p" delay={120} className="text-base leading-relaxed text-ink-soft md:text-lg">
-          A Wealth Academy desenvolve soluções de formação orientadas para as necessidades
-          reais do mercado, combinando conhecimento, aplicação prática e desenvolvimento de
-          competências. Academia especializada em Finanças e Negócios, licenciada pelo INEFOP.
+          A Wealth Academy é uma Academia de Formação em Finanças e Negócios, dedicada à
+          capacitação de profissionais, empreendedores, organizações e instituições através de
+          soluções formativas orientadas para o desenvolvimento de competências e para as
+          exigências do mercado.
         </Reveal>
       </div>
     </section>
