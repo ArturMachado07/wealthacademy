@@ -32,7 +32,7 @@ export default function EmpresasPage() {
             </p>
           </div>
           <MediaSlot
-            baseName="empresas"
+            baseName="para-empresas"
             alt="Formação corporativa Wealth Academy"
             className="aspect-[4/3] rounded"
           />
