@@ -16,7 +16,7 @@ export default function TestimonialsSection() {
         <SectionHeading
           eyebrow="Testemunhos"
           title="Quem já passou pela Wealth Academy"
-          description="Formandos que participaram nos nossos cursos partilham a sua experiência."
+          description="Formandos e Formadores que participaram nos nossos cursos partilham a sua experiência."
         />
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {slots.map((testimonial, i) =>
