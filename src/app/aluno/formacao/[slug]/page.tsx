@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import EmptyState from "@/components/EmptyState";
+import { courses } from "@/data/courses";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +80,10 @@ export default async function AlunoFormacaoPage({
   }
 
   const progress = enrollment.status === "Concluída" ? 100 : enrollment.progress_percent;
+  // Título ao vivo do catálogo por slug — o guardado na inscrição é só uma
+  // cópia do momento em que o aluno se inscreveu e fica desactualizado se a
+  // formação for renomeada depois.
+  const courseTitle = courses.find((c) => c.slug === slug)?.title ?? enrollment.course_title;
 
   return (
     <section className="py-24">
@@ -90,7 +95,7 @@ export default async function AlunoFormacaoPage({
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="eyebrow">{enrollment.status}</p>
-            <h1 className="mt-2 font-display text-3xl text-ink">{enrollment.course_title}</h1>
+            <h1 className="mt-2 font-display text-3xl text-ink">{courseTitle}</h1>
           </div>
         </div>
 

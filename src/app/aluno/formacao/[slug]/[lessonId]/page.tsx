@@ -5,6 +5,7 @@ import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
 import ToggleLessonButton from "@/components/aluno/ToggleLessonButton";
 import QuizForm from "@/components/aluno/QuizForm";
+import { courses } from "@/data/courses";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,11 @@ export default async function AlunoLessonPage({
   if (!enrollment || !["Em curso", "Concluída"].includes(enrollment.status)) {
     notFound();
   }
+
+  // Título ao vivo do catálogo por slug — o guardado na inscrição é só uma
+  // cópia do momento em que o aluno se inscreveu e fica desactualizado se a
+  // formação for renomeada depois.
+  const courseTitle = courses.find((c) => c.slug === slug)?.title ?? enrollment.course_title;
 
   // Vai buscar todos os módulos/aulas do curso para saber a ordem
   // (navegação anterior/seguinte) e confirmar que esta aula pertence a
@@ -126,7 +132,7 @@ export default async function AlunoLessonPage({
     <section className="py-24">
       <div className="container-page max-w-3xl">
         <Link href={`/aluno/formacao/${slug}`} className="text-sm text-ink-soft underline">
-          ← {enrollment.course_title}
+          ← {courseTitle}
         </Link>
 
         <h1 className="mt-4 font-display text-2xl text-ink">{lesson.title}</h1>
