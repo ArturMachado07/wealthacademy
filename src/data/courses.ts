@@ -30,6 +30,8 @@ export type Course = {
   // o cargo de cada um.
   instructors?: { name: string; role: string }[];
   followUp?: string;
+  // Critério de admissão/vagas (ex.: "Admissão por ordem de inscrição").
+  admission?: string;
   investment?: string;
   certification?: string;
   seats?: string;
@@ -85,7 +87,7 @@ export const courses: Course[] = [
     audience: "Profissionais de investimento, tesouraria, gestão de activos e consultoria.",
     duration: "20h",
     date: "28 de Fevereiro e 7 de Março",
-    followUp: "6 meses de acompanhamento remoto — conforme edição identificada",
+    admission: "Admissão por ordem de inscrição",
     location: "Luanda | Hotel EPIC SANA",
     certification: "Certificado reconhecido pelo INEFOP",
     extras: ["Coffee Break e Almoço"],

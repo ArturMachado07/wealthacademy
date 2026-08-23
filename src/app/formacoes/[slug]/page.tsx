@@ -64,7 +64,7 @@ export default async function CoursePage({ params }: Props) {
   // só a informação mais "comercial" (modalidade, formador, vagas).
   const allCourseDetails: [string, string | undefined][] = [
     ["Carga Horária", course.duration],
-    ["Acompanhamento", course.followUp],
+    ["Admissão", course.admission],
     ["Data", course.date],
     ["Local", course.location],
     ["Certificação", course.certification],
