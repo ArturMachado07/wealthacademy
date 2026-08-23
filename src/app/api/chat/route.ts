@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildKnowledgeContext, CHAT_SYSTEM_PROMPT_HEADER } from "@/lib/chat/knowledge";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 // Chat da Wealth Academy, alimentado pela API da Anthropic. Chamamos a API
 // directamente via fetch (sem SDK) para não depender de mais um pacote npm.
@@ -17,6 +18,16 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 export async function POST(request: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ ok: false, error: "not_configured" }, { status: 200 });
+  }
+
+  // Cada pedido a este endpoint tem custo real (API da Anthropic) — limite
+  // apertado por IP para impedir scripting/abuso (ver src/lib/rate-limit.ts).
+  const ip = getClientIp(request);
+  if (!checkRateLimit(`chat:${ip}`, 15, 5 * 60_000)) {
+    return NextResponse.json(
+      { ok: false, error: "Demasiadas mensagens em pouco tempo. Tente novamente daqui a alguns minutos." },
+      { status: 429 }
+    );
   }
 
   const body = await request.json().catch(() => null);

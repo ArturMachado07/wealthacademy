@@ -89,9 +89,17 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-cream/10">
-        <div className="container-page flex flex-col gap-2 py-6 text-xs text-cream/50 md:flex-row md:items-center md:justify-between">
+        <div className="container-page flex flex-col gap-3 py-6 text-xs text-cream/50 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Wealth Academy. Todos os direitos reservados.</p>
           <p>Licenciada pelo INEFOP — registo 1140.01/LDA./2024.</p>
+          <div className="flex gap-4">
+            <Link href="/privacidade" className="hover:text-gold-light">
+              Política de Privacidade
+            </Link>
+            <Link href="/termos" className="hover:text-gold-light">
+              Termos e Condições
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

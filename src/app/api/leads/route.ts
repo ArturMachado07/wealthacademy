@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 // Endpoint de recepção de leads (contacto geral, formulário corporativo,
 // lista de interesse da Área do Aluno).
@@ -9,6 +10,17 @@ import { createSupabaseAdminClient } from "@/lib/supabase/server";
 // Próximo passo (fora de âmbito nesta fase): ligar a um serviço de email
 // (ex. Resend/SMTP) para notificar a equipa a cada novo lead.
 export async function POST(request: Request) {
+  // Sem protecção nenhuma antes, um bot conseguia encher a tabela `leads`
+  // de lixo — limite generoso (não é um endpoint que um visitante real usa
+  // repetidamente) mas suficiente para travar scripting óbvio.
+  const ip = getClientIp(request);
+  if (!checkRateLimit(`leads:${ip}`, 8, 10 * 60_000)) {
+    return NextResponse.json(
+      { ok: false, error: "Demasiados pedidos em pouco tempo. Tente novamente daqui a alguns minutos." },
+      { status: 429 }
+    );
+  }
+
   const body = await request.json().catch(() => null);
 
   if (!body || !body.name || !body.email || !body.phone) {

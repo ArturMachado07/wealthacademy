@@ -20,18 +20,33 @@ type Status =
   | "already"
   | "error";
 
-// Métodos mostrados no popup de escolha — puramente informativos por agora
-// (a Wealth Academy só tem o Multicaixa Express/ProxyPay ligado de facto).
-// Os restantes ficam visíveis para o aluno perceber o que estará disponível,
-// mas seguem sempre o mesmo fluxo (Multicaixa Express) ao confirmar.
+// Métodos mostrados no popup de escolha. Só o Multicaixa Express está de
+// facto ligado (ProxyPay/EMIS GPO) — os restantes ficam visíveis, mas
+// claramente marcados como "Brevemente" e não seleccionáveis, para o aluno
+// saber o que vem a seguir sem nunca pensar que escolheu um método que na
+// realidade seguia por outro caminho (auditoria de pré-lançamento, Fase 1).
+// Assim que houver dados bancários reais / um gateway de cartão ligado,
+// basta mudar `available` para true em cada um — o resto do fluxo já lida
+// com qualquer método marcado como disponível.
 const PAYMENT_METHODS = [
-  { id: "mcx", label: "Multicaixa Express", icons: ["/brand/icones-pagamento/express.svg"] },
+  {
+    id: "mcx",
+    label: "Multicaixa Express",
+    icons: ["/brand/icones-pagamento/express.svg"],
+    available: true,
+  },
   {
     id: "card",
     label: "Cartão Visa / Mastercard",
     icons: ["/brand/icones-pagamento/visa.svg", "/brand/icones-pagamento/mastercard.svg"],
+    available: false,
   },
-  { id: "transfer", label: "Transferência bancária", icons: ["/brand/icones-pagamento/transf-banco.svg"] },
+  {
+    id: "transfer",
+    label: "Transferência bancária",
+    icons: ["/brand/icones-pagamento/transf-banco.svg"],
+    available: false,
+  },
 ] as const;
 
 export default function PaymentButton({ courseSlug, courseTitle, investment }: Props) {
@@ -209,18 +224,28 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
               {PAYMENT_METHODS.map((option) => (
                 <label
                   key={option.id}
-                  className={`flex cursor-pointer items-center gap-3 rounded border px-3 py-2.5 ${
-                    method === option.id ? "border-gold bg-white" : "border-ink/15"
+                  className={`flex items-center gap-3 rounded border px-3 py-2.5 ${
+                    !option.available
+                      ? "cursor-not-allowed border-ink/10 opacity-60"
+                      : method === option.id
+                        ? "cursor-pointer border-gold bg-white"
+                        : "cursor-pointer border-ink/15"
                   }`}
                 >
                   <input
                     type="radio"
                     name="payment-method"
                     checked={method === option.id}
-                    onChange={() => setMethod(option.id)}
+                    disabled={!option.available}
+                    onChange={() => option.available && setMethod(option.id)}
                     className="accent-gold-dark"
                   />
                   <span className="flex-1 text-sm text-ink">{option.label}</span>
+                  {!option.available && (
+                    <span className="rounded-full border border-ink/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink-soft">
+                      Brevemente
+                    </span>
+                  )}
                   <span className="flex items-center gap-2">
                     {option.icons.map((src) => (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -235,7 +260,11 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
               Confirmar inscrição
             </button>
             <p className="mt-3 text-center text-[11px] text-ink-soft">
-              Todas as transacções são seguras e encriptadas.
+              Todas as transacções são seguras e encriptadas. Ao confirmar, aceita os{" "}
+              <Link href="/termos" className="underline hover:text-ink" target="_blank">
+                Termos e Condições
+              </Link>
+              .
             </p>
           </div>
         </div>
