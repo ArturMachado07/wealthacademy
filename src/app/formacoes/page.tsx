@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
+import CourseCard from "@/components/CourseCard";
 import CoursesList from "@/components/CoursesList";
 import { courses } from "@/data/courses";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
@@ -21,6 +22,17 @@ export default async function FormacoesPage({
   const overrides = await getCourseOverrides();
   const coursesWithPricing = courses.map((course) => applyCourseOverride(course, overrides.get(course.slug)));
 
+  // CourseCard usa MediaSlot (leitura de ficheiros no servidor) — é
+  // renderizado aqui, no servidor, e só o nó já pronto é passado ao
+  // componente de busca/filtro no cliente.
+  const items = coursesWithPricing.map((course) => ({
+    slug: course.slug,
+    category: course.category,
+    title: course.title,
+    description: course.description,
+    node: <CourseCard course={course} />,
+  }));
+
   return (
     <section className="py-24">
       <div className="container-page">
@@ -31,7 +43,7 @@ export default async function FormacoesPage({
         />
 
         <div className="mt-10">
-          <CoursesList courses={coursesWithPricing} initialCategory={categoria} />
+          <CoursesList items={items} initialCategory={categoria} />
         </div>
       </div>
     </section>

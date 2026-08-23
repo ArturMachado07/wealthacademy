@@ -63,6 +63,7 @@ export const courses: Course[] = [
     slug: "investimentos-analise-negociacao-mercado-capitais",
     title: "Investimentos, Análise e Negociação no Mercado de Capitais",
     category: "Finanças",
+    image: "banner_formação-investimentos-capitais",
     status: "Em breve",
     investment: "85.000 Kz",
     description:
