@@ -75,7 +75,7 @@ export const courses: Course[] = [
     audience: "Adequada inclusive para quem começa sem experiência prévia em investimentos.",
   },
   {
-    slug: "investimentos-analise-negociacao-mercado-capitais",
+    slug: "analise-negociacao-mercado-capitais",
     title: "Análise e Negociação no Mercado de Capitais",
     category: "Finanças",
     image: "banner_formação-investimentos-capitais",
