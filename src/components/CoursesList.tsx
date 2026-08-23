@@ -3,6 +3,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import EmptyState from "@/components/EmptyState";
 import Reveal from "@/components/Reveal";
+import { FilterIcon } from "@/components/icons";
 import { staggerDelay } from "@/lib/reveal";
 import { trainingCategories } from "@/data/categories";
 
@@ -30,6 +31,7 @@ export default function CoursesList({ items, initialCategory }: Props) {
       : "Todos"
   );
   const [query, setQuery] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -44,9 +46,23 @@ export default function CoursesList({ items, initialCategory }: Props) {
   const categories = ["Todos", ...trainingCategories];
 
   return (
-    <div className="grid gap-10 md:grid-cols-[260px_1fr]">
-      <aside className="space-y-8">
-        <div>
+    <div>
+      <div className="md:hidden">
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((open) => !open)}
+          aria-expanded={filtersOpen}
+          className="flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-sm text-ink"
+        >
+          <FilterIcon className="h-4 w-4" />
+          Filtrar
+        </button>
+      </div>
+
+      <div
+        className={`${filtersOpen ? "mt-4 flex" : "hidden"} flex-col gap-4 md:mt-0 md:flex md:flex-row md:items-center`}
+      >
+        <div className="md:w-64 md:shrink-0">
           <label htmlFor="formacoes-busca" className="sr-only">
             Procurar formação
           </label>
@@ -60,34 +76,25 @@ export default function CoursesList({ items, initialCategory }: Props) {
           />
         </div>
 
-        <div>
-          <p className="text-sm font-medium text-ink">Categoria</p>
-          <div className="mt-3 space-y-1">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategory(cat)}
-                className={`flex w-full items-center gap-2.5 rounded px-2 py-1.5 text-left text-sm transition-colors ${
-                  category === cat ? "text-gold-dark" : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                <span
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                    category === cat ? "border-gold" : "border-ink/25"
-                  }`}
-                  aria-hidden="true"
-                >
-                  {category === cat && <span className="h-2 w-2 rounded-full bg-gold" />}
-                </span>
-                {cat === "Todos" ? "Todas as categorias" : cat}
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-wrap gap-3">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setCategory(cat)}
+              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+                category === cat
+                  ? "border-gold bg-gold text-cream"
+                  : "border-ink/15 text-ink hover:border-gold"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
-      </aside>
+      </div>
 
-      <div>
+      <div className="mt-10">
         {items.length > 0 && (
           <p className="text-sm text-ink-soft">
             {filtered.length} {filtered.length === 1 ? "formação" : "formações"}

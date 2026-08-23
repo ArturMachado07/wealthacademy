@@ -61,7 +61,7 @@ export const courses: Course[] = [
   },
   {
     slug: "investimentos-analise-negociacao-mercado-capitais",
-    title: "Investimentos, Análise e Negociação no Mercado de Capitais",
+    title: "Análise e Negociação no Mercado de Capitais",
     category: "Finanças",
     image: "banner_formação-investimentos-capitais",
     status: "Em breve",
@@ -69,7 +69,7 @@ export const courses: Course[] = [
     description:
       "Desenvolva uma compreensão prática e estratégica do Mercado de Capitais, com uma abordagem que integra o contexto angolano, os mercados internacionais e os principais produtos financeiros globais. A formação inclui análise, pensamento crítico e simulações práticas de negociação.",
     audience: "Profissionais de investimento, tesouraria, gestão de activos e consultoria.",
-    duration: "2 dias intensivos — conforme edição identificada",
+    duration: "2 dias",
     date: "28 de Fevereiro e 7 de Março",
     followUp: "6 meses de acompanhamento remoto — conforme edição identificada",
   },
