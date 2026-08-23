@@ -32,7 +32,7 @@ export default async function InstructorPage({ params }: Props) {
   return (
     <section className="py-24">
       <div className="container-page">
-        <div className="max-w-3xl">
+        <div className="mx-auto max-w-3xl">
           <div className="flex flex-wrap items-center gap-6">
             <MediaSlot
               baseName={instructor.photo ?? instructor.slug}
