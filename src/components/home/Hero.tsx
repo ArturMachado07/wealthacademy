@@ -13,7 +13,7 @@ export default function Hero() {
           div externo. */}
       <div className="absolute inset-0">
         <MediaSlot
-          baseName="banner-hero"
+          baseName="banner-hero1"
           alt="Formação Wealth Academy"
           className="h-full w-full"
           priority
