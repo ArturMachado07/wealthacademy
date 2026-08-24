@@ -113,6 +113,7 @@ export default async function ValidarCertificadoPage({ params }: Props) {
               {fileUrl ? (
                 <CertificateFilePreview
                   fileUrl={fileUrl}
+                  downloadHref={`/api/validar/${certificate.certificate_number}/ficheiro`}
                   isPdf={isPdf}
                   studentName={studentName}
                   courseTitle={certificate.course_title}

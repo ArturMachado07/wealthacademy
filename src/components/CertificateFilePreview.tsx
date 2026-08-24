@@ -1,5 +1,6 @@
 type Props = {
-  fileUrl: string;
+  fileUrl: string | null;
+  downloadHref: string;
   isPdf: boolean;
   studentName: string;
   courseTitle: string;
@@ -9,55 +10,49 @@ type Props = {
 
 // Mostra o documento real anexado pelo Admin — a digitalização do
 // certificado impresso e assinado fisicamente pelo INEFOP — em vez de uma
-// recriação do certificado feita pelo site. fileUrl é um link temporário
-// assinado do storage privado "certificados" (ver [numero]/page.tsx).
+// recriação do certificado feita pelo site. Sem moldura/cartão à volta: só
+// o certificado. Clicar (na imagem ou no botão "Descarregar certificado")
+// descarrega sempre o ficheiro — downloadHref aponta para uma rota que
+// gera um link assinado com Content-Disposition: attachment (ver
+// [numero]/ficheiro/route.ts), por isso funciona mesmo sem o atributo
+// HTML "download" (que o browser ignora em links de outra origem).
 export default function CertificateFilePreview({
   fileUrl,
+  downloadHref,
   isPdf,
   studentName,
   courseTitle,
   certificateNumber,
   issueDate,
 }: Props) {
-  // Suprime a barra de ferramentas/painel lateral do visualizador de PDF
-  // nativo do browser (Chrome/Edge) — sem isto mostra a sua própria "janela"
-  // escura à volta do certificado. É só um fragmento de URL, não vai para o
-  // servidor, por isso não interfere com a assinatura do link.
-  const pdfSrc = `${fileUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`;
-
   return (
-    <div className="certificate-print mx-auto w-full max-w-3xl">
-      <div className="overflow-hidden rounded border border-ink/10 bg-white p-3 shadow-xl shadow-ink/10 sm:p-4">
-        {isPdf ? (
-          // Sem nenhuma interface de visualizador aqui — o iframe fica
-          // "surdo" a cliques (pointer-events-none) e é só o link à volta
-          // que é clicável, abrindo o PDF a sério, no visualizador nativo do
-          // browser, numa nova aba. Visualmente comporta-se como uma imagem.
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block aspect-[1.414/1] w-full cursor-zoom-in overflow-hidden rounded"
-          >
-            <iframe
-              src={pdfSrc}
-              title={`Certificado de ${studentName}`}
-              tabIndex={-1}
-              aria-hidden="true"
-              className="h-full w-full border-0 pointer-events-none select-none"
+    <div className="mx-auto w-full max-w-2xl">
+      {isPdf ? (
+        <a
+          href={downloadHref}
+          className="flex flex-col items-center gap-3 rounded bg-ink/[0.03] py-16 text-center transition-colors hover:bg-ink/[0.06]"
+        >
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="text-gold-dark">
+            <path
+              d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
             />
-          </a>
-        ) : (
-          <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block cursor-zoom-in">
-            {/* eslint-disable-next-line @next/next/no-img-element -- link assinado, temporário, não passa por next/image */}
-            <img
-              src={fileUrl}
-              alt={`Certificado de ${studentName} — ${courseTitle}`}
-              className="mx-auto max-h-[80vh] w-auto rounded"
-            />
-          </a>
-        )}
-      </div>
+            <path d="M14 2v6h6" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+          <p className="text-sm font-medium text-ink">Certificado — {courseTitle}</p>
+          <p className="text-xs text-ink-soft underline">Clique para descarregar</p>
+        </a>
+      ) : (
+        <a href={downloadHref} className="block">
+          {/* eslint-disable-next-line @next/next/no-img-element -- link assinado, temporário, não passa por next/image */}
+          <img
+            src={fileUrl ?? undefined}
+            alt={`Certificado de ${studentName} — ${courseTitle}`}
+            className="mx-auto w-full"
+          />
+        </a>
+      )}
       <div className="mt-4 text-center print:hidden">
         <p className="text-sm font-medium text-ink">
           {studentName} — {courseTitle}

@@ -81,6 +81,7 @@ export default async function AlunoCertificadoPage({ params }: Props) {
           {fileUrl ? (
             <CertificateFilePreview
               fileUrl={fileUrl}
+              downloadHref={`/api/aluno/certificados/${certificate.certificate_number}/ficheiro`}
               isPdf={isPdf}
               studentName={student.name}
               courseTitle={certificate.course_title}

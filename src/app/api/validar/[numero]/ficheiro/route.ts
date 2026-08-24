@@ -20,9 +20,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ nume
     return NextResponse.json({ ok: false, error: "Certificado não encontrado." }, { status: 404 });
   }
 
+  const extension = certificate.file_path.split(".").pop() || "pdf";
   const { data: signed, error } = await supabase.storage
     .from("certificados")
-    .createSignedUrl(certificate.file_path, 60);
+    .createSignedUrl(certificate.file_path, 60, { download: `certificado-${numero}.${extension}` });
 
   if (error || !signed) {
     console.error("[wealth-academy] falha ao gerar link do certificado:", error);
