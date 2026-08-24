@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/SignOutButton";
+import NotificationBell from "@/components/aluno/NotificationBell";
 import Avatar from "@/components/Avatar";
 import EmptyState from "@/components/EmptyState";
 import PaymentButton from "@/components/PaymentButton";
@@ -93,7 +94,10 @@ export default async function AlunoDashboardPage() {
               </div>
             </div>
           </div>
-          <SignOutButton />
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <SignOutButton />
+          </div>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">

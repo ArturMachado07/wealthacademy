@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendCertificateEmail } from "@/lib/email";
+import { createNotification } from "@/lib/notifications";
 
 // Marca uma inscrição como "Concluída" e emite o certificado
 // correspondente (número gerado automaticamente — ver
@@ -82,6 +83,12 @@ export async function POST(request: Request) {
       courseTitle: enrollment.course_title,
       certificateNumber: certificate.certificate_number,
       validateUrl: `${siteUrl}/validar/${certificate.certificate_number}`,
+    });
+    await createNotification(supabase, {
+      studentId: enrollment.student_id,
+      title: "Certificado emitido",
+      message: `O seu certificado de "${enrollment.course_title}" já está disponível.`,
+      link: `/aluno/certificados/${certificate.certificate_number}`,
     });
   }
 

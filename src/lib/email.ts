@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { siteConfig } from "@/data/site";
 
 // Envio de emails transaccionais (confirmação de inscrição, certificado
 // emitido). Se RESEND_API_KEY não estiver definido, as funções abaixo não
@@ -92,6 +93,51 @@ export async function sendEnrollmentConfirmationEmail(params: {
     });
   } catch (err) {
     console.error("[email] falha ao enviar confirmação de inscrição:", err);
+  }
+}
+
+// Avisa a equipa (email geral da Wealth Academy) sempre que chega um lead
+// novo — antes disto, um lead só era visto se alguém fosse manualmente ao
+// painel Admin conferir (auditoria de pré-lançamento).
+export async function sendNewLeadNotificationEmail(params: {
+  name: string;
+  email: string;
+  phone: string;
+  interest?: string | null;
+  origin?: string | null;
+  company?: string | null;
+}) {
+  const resend = getResendClient();
+  if (!resend) return;
+
+  const to = siteConfig.emails.geral;
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject: `Novo lead — ${params.name}`,
+      html: renderEmailShell({
+        heading: "Novo pedido de contacto",
+        bodyHtml: `
+          <p style="font-size:14px;line-height:1.6;margin:0 0 16px 0;color:#57493F;">
+            Chegou um novo pedido pelo site:
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;line-height:1.8;color:#57493F;">
+            <tr><td style="font-weight:600;">Nome</td><td>${params.name}</td></tr>
+            <tr><td style="font-weight:600;">Email</td><td>${params.email}</td></tr>
+            <tr><td style="font-weight:600;">Telefone</td><td>${params.phone}</td></tr>
+            ${params.interest ? `<tr><td style="font-weight:600;">Interesse</td><td>${params.interest}</td></tr>` : ""}
+            ${params.company ? `<tr><td style="font-weight:600;">Empresa</td><td>${params.company}</td></tr>` : ""}
+            ${params.origin ? `<tr><td style="font-weight:600;">Origem</td><td>${params.origin}</td></tr>` : ""}
+          </table>
+        `,
+        ctaLabel: "Ver todos os leads",
+        ctaUrl: `${SITE_URL}/admin`,
+      }),
+    });
+  } catch (err) {
+    console.error("[email] falha ao enviar notificação de novo lead:", err);
   }
 }
 

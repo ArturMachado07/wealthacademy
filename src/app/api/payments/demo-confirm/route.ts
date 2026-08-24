@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendEnrollmentConfirmationEmail } from "@/lib/email";
+import { createNotification } from "@/lib/notifications";
 
 // Confirma um pagamento em MODO DEMO (nunca chama a ProxyPay — só existe
 // enquanto PROXYPAY_API_TOKEN/PROXYPAY_POS_ID não estiverem configurados).
@@ -73,6 +74,12 @@ export async function POST(request: Request) {
         to: student.email,
         name: student.name,
         courseTitle: enrollment.course_title,
+      });
+      await createNotification(supabase, {
+        studentId: student.id,
+        title: "Inscrição confirmada",
+        message: `A sua inscrição em "${enrollment.course_title}" foi confirmada.`,
+        link: "/aluno",
       });
     }
   }

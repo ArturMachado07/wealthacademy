@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendEnrollmentConfirmationEmail } from "@/lib/email";
+import { createNotification } from "@/lib/notifications";
 import { getTransaction } from "@/lib/payments/proxypay";
 
 // Recebe o callback assíncrono da ProxyPay/EMIS GPO quando uma "charge" é
@@ -84,6 +85,12 @@ export async function POST(request: Request) {
           to: student.email,
           name: student.name,
           courseTitle: enrollment.course_title,
+        });
+        await createNotification(supabase, {
+          studentId: payment.student_id,
+          title: "Inscrição confirmada",
+          message: `A sua inscrição em "${enrollment.course_title}" foi confirmada.`,
+          link: "/aluno",
         });
       }
     }

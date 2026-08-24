@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { sendNewLeadNotificationEmail } from "@/lib/email";
 
 // Endpoint de recepção de leads (contacto geral, formulário corporativo,
 // lista de interesse da Área do Aluno).
 // Se a base de dados Supabase estiver configurada, grava na tabela `leads`
 // (ver supabase/schema.sql). Caso contrário, mantém o comportamento
 // anterior (regista nos logs) para continuar a funcionar sem BD.
-// Próximo passo (fora de âmbito nesta fase): ligar a um serviço de email
-// (ex. Resend/SMTP) para notificar a equipa a cada novo lead.
 export async function POST(request: Request) {
   // Sem protecção nenhuma antes, um bot conseguia encher a tabela `leads`
   // de lixo — limite generoso (não é um endpoint que um visitante real usa
@@ -49,6 +48,15 @@ export async function POST(request: Request) {
   } else {
     console.log("[wealth-academy] novo lead (sem BD configurada):", JSON.stringify(body));
   }
+
+  await sendNewLeadNotificationEmail({
+    name: body.name,
+    email: body.email,
+    phone: body.phone,
+    interest: body.interest ?? null,
+    origin: body.origin ?? "Website",
+    company: body.company ?? null,
+  });
 
   return NextResponse.json({ ok: true });
 }
