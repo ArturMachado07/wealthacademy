@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
-import { sendCertificateEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
 import { alertServerError } from "@/lib/error-alert";
 
-// Marca uma inscrição como "Concluída" e emite o certificado
-// correspondente (número gerado automaticamente — ver
-// supabase/004_certificate_numbering.sql). Só acessível a administradores.
+// Marca uma inscrição como "Concluída". Não emite nenhum certificado —
+// o certificado só é disponibilizado depois de ser impresso e assinado
+// fisicamente pelo INEFOP; o Admin anexa a digitalização à parte, via
+// /api/admin/inscricoes/[enrollmentId]/certificado (ver AddWorkshopForm-
+// -like CertificateUploadForm em /admin). Só acessível a administradores.
 export async function POST(request: Request) {
   const admin = await getCurrentAdmin();
   if (!admin) {
@@ -16,7 +17,6 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const enrollmentId = body?.enrollmentId;
-  const hours = body?.hours || null;
 
   if (!enrollmentId) {
     return NextResponse.json({ ok: false, error: "Inscrição em falta." }, { status: 400 });
@@ -48,50 +48,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Não foi possível concluir a inscrição." }, { status: 500 });
   }
 
-  const { data: certificate, error: certError } = await supabase
-    .from("certificates")
-    .insert({
-      student_id: enrollment.student_id,
-      enrollment_id: enrollment.id,
-      course_title: enrollment.course_title,
-      hours,
-    })
-    .select("certificate_number")
-    .single();
-
-  if (certError) {
-    await alertServerError("admin/concluir-inscricao: emitir certificado", certError);
-    return NextResponse.json(
-      { ok: false, error: "Inscrição concluída, mas o certificado falhou." },
-      { status: 500 }
-    );
-  }
-
-  const { data: student } = await supabase
-    .from("students")
-    .select("name, email")
-    .eq("id", enrollment.student_id)
-    .single();
-
-  if (student && certificate) {
-    // Fallback aponta para o domínio Vercel actual (produção real ainda não
-    // ligada) — actualizar .env.example/Vercel quando o domínio final
-    // (wealthacademy.ao) estiver activo, sem precisar de tocar aqui.
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
-    await sendCertificateEmail({
-      to: student.email,
-      name: student.name,
-      courseTitle: enrollment.course_title,
-      certificateNumber: certificate.certificate_number,
-      validateUrl: `${siteUrl}/validar/${certificate.certificate_number}`,
-    });
-    await createNotification(supabase, {
-      studentId: enrollment.student_id,
-      title: "Certificado emitido",
-      message: `O seu certificado de "${enrollment.course_title}" já está disponível.`,
-      link: `/aluno/certificados/${certificate.certificate_number}`,
-    });
-  }
+  await createNotification(supabase, {
+    studentId: enrollment.student_id,
+    title: "Formação concluída",
+    message: `Concluiu "${enrollment.course_title}". O certificado assinado pelo INEFOP será disponibilizado aqui assim que estiver pronto.`,
+    link: "/aluno",
+  });
 
   return NextResponse.json({ ok: true });
 }

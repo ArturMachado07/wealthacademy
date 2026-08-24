@@ -5,6 +5,7 @@ import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/SignOutButton";
 import ConcluirInscricaoButton from "@/components/admin/ConcluirInscricaoButton";
+import CertificateUploadForm from "@/components/admin/CertificateUploadForm";
 import LeadStatusSelect from "@/components/admin/LeadStatusSelect";
 
 export const metadata: Metadata = { title: "Painel Admin" };
@@ -19,7 +20,7 @@ type EnrollmentRow = {
   students: { name: string; email: string } | { name: string; email: string }[] | null;
 };
 
-type CertificateRow = { enrollment_id: string | null; certificate_number: string };
+type CertificateRow = { enrollment_id: string | null; certificate_number: string; file_path: string | null };
 
 type LeadRow = {
   id: string;
@@ -52,7 +53,7 @@ export default async function AdminDashboardPage() {
       .order("enrolled_at", { ascending: false }),
     supabase.from("leads").select("*").order("created_at", { ascending: false }),
     supabase.from("payments").select("amount, currency, status"),
-    supabase.from("certificates").select("enrollment_id, certificate_number"),
+    supabase.from("certificates").select("enrollment_id, certificate_number, file_path"),
   ]);
 
   const enrollmentRows = (enrollments ?? []) as EnrollmentRow[];
@@ -60,7 +61,7 @@ export default async function AdminDashboardPage() {
   const certificateByEnrollment = new Map(
     ((certificates ?? []) as CertificateRow[])
       .filter((c) => c.enrollment_id)
-      .map((c) => [c.enrollment_id as string, c.certificate_number])
+      .map((c) => [c.enrollment_id as string, c])
   );
   const paymentRows = (payments ?? []) as { amount: number; currency: string; status: string }[];
 
@@ -184,14 +185,25 @@ export default async function AdminDashboardPage() {
                           {row.status !== "Concluída" ? (
                             <ConcluirInscricaoButton enrollmentId={row.id} />
                           ) : (
-                            certificateByEnrollment.has(row.id) && (
-                              <a
-                                href={`/api/validar/${certificateByEnrollment.get(row.id)}/pdf`}
-                                className="text-xs font-medium text-gold-dark underline"
-                              >
-                                Descarregar PDF
-                              </a>
-                            )
+                            (() => {
+                              const cert = certificateByEnrollment.get(row.id);
+                              return (
+                                <div className="flex flex-wrap items-center gap-3">
+                                  {cert?.file_path && (
+                                    <a
+                                      href={`/validar/${cert.certificate_number}`}
+                                      className="text-xs font-medium text-gold-dark underline"
+                                    >
+                                      Ver certificado
+                                    </a>
+                                  )}
+                                  <CertificateUploadForm
+                                    enrollmentId={row.id}
+                                    hasCertificate={Boolean(cert?.file_path)}
+                                  />
+                                </div>
+                              );
+                            })()
                           )}
                         </td>
                       </tr>

@@ -37,7 +37,7 @@ export default function ConcluirInscricaoButton({ enrollmentId }: { enrollmentId
         disabled={loading}
         className="rounded border border-ink/20 px-3 py-1.5 text-xs font-medium text-ink hover:border-ink/40"
       >
-        {loading ? "A concluir..." : "Marcar concluída + emitir certificado"}
+        {loading ? "A concluir..." : "Marcar concluída"}
       </button>
       {error && <p className="mt-1 text-xs text-red-700">{error}</p>}
     </div>

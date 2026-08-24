@@ -79,7 +79,6 @@ export default async function ValidarCertificadoPage({ params }: Props) {
 
   const siteUrl = siteBaseUrl();
   const pageUrl = `${siteUrl}/validar/${params.numero}`;
-  const validateUrl = pageUrl.replace(/^https?:\/\//, "");
 
   return (
     <section className="py-24 print:py-0">
@@ -90,7 +89,7 @@ export default async function ValidarCertificadoPage({ params }: Props) {
               <p className="eyebrow">Certificado Wealth Academy</p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <ShareLinkedInButton url={pageUrl} />
-                <DownloadCertificateButton href={`/api/validar/${certificate.certificate_number}/pdf`} />
+                <DownloadCertificateButton href={`/api/validar/${certificate.certificate_number}/ficheiro`} />
               </div>
             </div>
             <div className="mt-8 print:mt-0">
@@ -100,8 +99,6 @@ export default async function ValidarCertificadoPage({ params }: Props) {
                 hours={certificate.hours}
                 issueDate={certificate.issue_date}
                 certificateNumber={certificate.certificate_number}
-                validateUrl={validateUrl}
-                pdfUrl={`${siteUrl}/api/validar/${certificate.certificate_number}/pdf`}
               />
             </div>
           </>

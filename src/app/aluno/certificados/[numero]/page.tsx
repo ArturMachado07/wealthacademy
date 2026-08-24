@@ -42,7 +42,6 @@ export default async function AlunoCertificadoPage({ params }: Props) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
   const publicPageUrl = `${siteUrl}/validar/${certificate.certificate_number}`;
-  const validateUrl = publicPageUrl.replace(/^https?:\/\//, "");
 
   return (
     <section className="py-16 print:py-0">
@@ -58,7 +57,7 @@ export default async function AlunoCertificadoPage({ params }: Props) {
             </div>
             <div className="flex flex-wrap gap-3">
               <ShareLinkedInButton url={publicPageUrl} />
-              <DownloadCertificateButton href={`/api/aluno/certificados/${certificate.certificate_number}/pdf`} />
+              <DownloadCertificateButton href={`/api/aluno/certificados/${certificate.certificate_number}/ficheiro`} />
             </div>
           </div>
         </div>
@@ -70,8 +69,6 @@ export default async function AlunoCertificadoPage({ params }: Props) {
             hours={certificate.hours}
             issueDate={certificate.issue_date}
             certificateNumber={certificate.certificate_number}
-            validateUrl={validateUrl}
-            pdfUrl={`${siteUrl}/api/validar/${certificate.certificate_number}/pdf`}
           />
         </div>
       </div>
