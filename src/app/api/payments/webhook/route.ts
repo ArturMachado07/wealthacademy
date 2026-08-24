@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendEnrollmentConfirmationEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
+import { alertServerError } from "@/lib/error-alert";
 import { getTransaction } from "@/lib/payments/proxypay";
 
 // Recebe o callback assíncrono da ProxyPay/EMIS GPO quando uma "charge" é
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
   try {
     transaction = await getTransaction(body.id);
   } catch (err) {
-    console.error("[payments/webhook] falha ao confirmar transacção junto da ProxyPay", err);
+    await alertServerError("payments/webhook: confirmar transacção junto da ProxyPay", err);
     return NextResponse.json({ ok: false }, { status: 502 });
   }
 
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
     .single();
 
   if (error) {
-    console.error("[payments/webhook] falha ao actualizar pagamento", error);
+    await alertServerError("payments/webhook: actualizar pagamento", error);
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 

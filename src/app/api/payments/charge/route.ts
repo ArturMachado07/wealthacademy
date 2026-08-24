@@ -5,6 +5,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { getCurrentStudent } from "@/lib/auth";
 import { courses } from "@/data/courses";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
+import { alertServerError } from "@/lib/error-alert";
 
 const PROXYPAY_CONFIGURED = Boolean(
   process.env.PROXYPAY_API_TOKEN && process.env.PROXYPAY_POS_ID
@@ -160,7 +161,7 @@ export async function POST(request: Request) {
       expiresAt: charge.expires_at,
     });
   } catch (err) {
-    console.error("[payments/charge]", err);
+    await alertServerError("payments/charge", err);
     return NextResponse.json(
       { ok: false, error: "Não foi possível iniciar o pagamento." },
       { status: 502 }

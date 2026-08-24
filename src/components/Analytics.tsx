@@ -1,13 +1,34 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Script from "next/script";
+import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_EVENT } from "@/lib/cookie-consent";
 
 // Google Analytics 4 e Meta Pixel — ambos opcionais e condicionados a
 // variáveis de ambiente. Sem NEXT_PUBLIC_GA_MEASUREMENT_ID /
 // NEXT_PUBLIC_META_PIXEL_ID definidas, este componente não renderiza nada
 // (mesmo padrão de degradação usada para Supabase/ProxyPay/Resend neste
 // projecto) — nunca inventamos um ID de acompanhamento.
+//
+// Além disso, só carrega estes scripts depois de consentimento explícito
+// (ver CookieBanner.tsx) — antes disso, ou se o visitante recusar, nenhum
+// cookie de analytics é definido (auditoria de pré-lançamento, Fase 3).
 export default function Analytics() {
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const [consented, setConsented] = useState(false);
+
+  useEffect(() => {
+    setConsented(localStorage.getItem(COOKIE_CONSENT_KEY) === "accepted");
+
+    function handleChange() {
+      setConsented(localStorage.getItem(COOKIE_CONSENT_KEY) === "accepted");
+    }
+    window.addEventListener(COOKIE_CONSENT_EVENT, handleChange);
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, handleChange);
+  }, []);
+
+  if (!consented) return null;
 
   return (
     <>

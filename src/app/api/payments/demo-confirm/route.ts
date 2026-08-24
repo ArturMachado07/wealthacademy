@@ -3,6 +3,7 @@ import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendEnrollmentConfirmationEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
+import { alertServerError } from "@/lib/error-alert";
 
 // Confirma um pagamento em MODO DEMO (nunca chama a ProxyPay — só existe
 // enquanto PROXYPAY_API_TOKEN/PROXYPAY_POS_ID não estiverem configurados).
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
     .eq("id", payment.id);
 
   if (updateError) {
-    console.error("[payments/demo-confirm] falha ao actualizar pagamento", updateError);
+    await alertServerError("payments/demo-confirm: actualizar pagamento", updateError);
     return NextResponse.json({ ok: false, error: "Não foi possível confirmar." }, { status: 500 });
   }
 

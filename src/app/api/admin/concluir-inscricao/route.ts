@@ -3,6 +3,7 @@ import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendCertificateEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
+import { alertServerError } from "@/lib/error-alert";
 
 // Marca uma inscrição como "Concluída" e emite o certificado
 // correspondente (número gerado automaticamente — ver
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
     .eq("id", enrollmentId);
 
   if (updateError) {
-    console.error("[wealth-academy] falha ao concluir inscrição:", updateError);
+    await alertServerError("admin/concluir-inscricao: concluir inscrição", updateError);
     return NextResponse.json({ ok: false, error: "Não foi possível concluir a inscrição." }, { status: 500 });
   }
 
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     .single();
 
   if (certError) {
-    console.error("[wealth-academy] falha ao emitir certificado:", certError);
+    await alertServerError("admin/concluir-inscricao: emitir certificado", certError);
     return NextResponse.json(
       { ok: false, error: "Inscrição concluída, mas o certificado falhou." },
       { status: 500 }

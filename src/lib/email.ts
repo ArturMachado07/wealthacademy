@@ -99,6 +99,61 @@ export async function sendEnrollmentConfirmationEmail(params: {
 // Avisa a equipa (email geral da Wealth Academy) sempre que chega um lead
 // novo — antes disto, um lead só era visto se alguém fosse manualmente ao
 // painel Admin conferir (auditoria de pré-lançamento).
+// Alerta de erro em produção — substituto sem dependências para uma
+// ferramenta como o Sentry (auditoria de pré-lançamento, Fase 3). Chamado
+// via src/lib/error-alert.ts, nunca directamente, para já ter o
+// throttling aplicado (evita encher a caixa de correio se o mesmo erro
+// repetir várias vezes seguidas).
+export async function sendErrorAlertEmail(params: { context: string; message: string; detail?: string }) {
+  const resend = getResendClient();
+  if (!resend) return;
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: siteConfig.emails.geral,
+      subject: `⚠ Erro em produção — ${params.context}`,
+      html: renderEmailShell({
+        heading: "Erro em produção",
+        bodyHtml: `
+          <p style="font-size:14px;line-height:1.6;margin:0 0 12px 0;color:#57493F;">
+            Local: <strong>${params.context}</strong>
+          </p>
+          <p style="font-size:14px;line-height:1.6;margin:0 0 12px 0;color:#57493F;">
+            ${params.message}
+          </p>
+          ${
+            params.detail
+              ? `<pre style="font-size:12px;line-height:1.5;background:#F1EFE1;padding:12px;border-radius:4px;overflow-x:auto;color:#57493F;">${escapeHtml(params.detail)}</pre>`
+              : ""
+          }
+        `,
+        ctaLabel: "Ver painel Admin",
+        ctaUrl: `${SITE_URL}/admin`,
+      }),
+    });
+  } catch (err) {
+    console.error("[email] falha ao enviar alerta de erro (isto não deve bloquear nada):", err);
+  }
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      default:
+        return "&#39;";
+    }
+  });
+}
+
 export async function sendNewLeadNotificationEmail(params: {
   name: string;
   email: string;

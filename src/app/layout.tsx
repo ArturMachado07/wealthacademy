@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import OrganizationJsonLd from "@/components/OrganizationJsonLd";
 import Analytics from "@/components/Analytics";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy.ao";
@@ -53,6 +54,9 @@ export default function RootLayout({
           <style>{".reveal { opacity: 1 !important; transform: none !important; }"}</style>
         </noscript>
         <Analytics />
+        <CookieBanner
+          enabled={Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID)}
+        />
         <OrganizationJsonLd />
         <Header />
         <main className="flex-1">{children}</main>
