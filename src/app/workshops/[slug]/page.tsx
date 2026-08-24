@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getWorkshopBySlug } from "@/lib/workshops";
+import WorkshopJsonLd from "@/components/WorkshopJsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -39,24 +42,34 @@ export default async function WorkshopPage({ params }: Props) {
 
   return (
     <section className="py-24">
+      <WorkshopJsonLd workshop={workshop} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Início", path: "/" },
+          { name: "Workshops e Webinars", path: "/workshops" },
+          { name: workshop.title, path: `/workshops/${workshop.slug}` },
+        ]}
+      />
       <div className="container-page">
         <Link href="/workshops" className="text-sm text-ink-soft underline">
           ← Workshops
         </Link>
 
         <div className="mt-8 grid gap-10 md:grid-cols-2">
-          <div className="overflow-hidden rounded border border-ink/10 bg-ink/5">
+          <div className="relative aspect-[3/4] overflow-hidden rounded border border-ink/10 bg-ink/5">
             {workshop.flyer_url ? (
-              // Vem do bucket público do Supabase Storage — <img> directo,
-              // tal como o resto do site.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              // Vem do bucket público do Supabase Storage — remotePatterns
+              // já configurado em next.config.mjs.
+              <Image
                 src={workshop.flyer_url}
                 alt={workshop.title}
-                className={`w-full ${isPast ? "grayscale" : ""}`}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className={`object-cover ${isPast ? "grayscale" : ""}`}
+                priority
               />
             ) : (
-              <div className="flex aspect-[3/4] w-full items-center justify-center p-10 text-center">
+              <div className="flex h-full w-full items-center justify-center p-10 text-center">
                 <p className="text-sm text-ink-soft">Flyer em breve.</p>
               </div>
             )}

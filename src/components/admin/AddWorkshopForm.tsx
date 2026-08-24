@@ -9,6 +9,7 @@ type Initial = {
   title: string;
   category: string;
   date: string;
+  event_date: string;
   time: string;
   location: string;
   guest: string;
@@ -22,6 +23,7 @@ const EMPTY: Initial = {
   title: "",
   category: "",
   date: "",
+  event_date: "",
   time: "",
   location: "",
   guest: "",
@@ -130,6 +132,18 @@ export default function AddWorkshopForm({ initial, lockSlug = false }: { initial
             placeholder="ex.: 12 de Setembro"
             className="mt-1 w-40 rounded border border-ink/20 bg-white px-3 py-2 text-sm"
           />
+        </div>
+        <div>
+          <label className="block text-xs text-ink-soft">Data real (para o Google)</label>
+          <input
+            type="date"
+            value={form.event_date}
+            onChange={(e) => set("event_date", e.target.value)}
+            className="mt-1 w-40 rounded border border-ink/20 bg-white px-3 py-2 text-sm"
+          />
+          <p className="mt-1 w-40 text-[11px] text-ink-soft">
+            Opcional — só é usada para o Google mostrar data/local do evento na pesquisa. O texto em &ldquo;Data&rdquo; acima continua a ser o que aparece no site.
+          </p>
         </div>
         <div>
           <label className="block text-xs text-ink-soft">Hora</label>

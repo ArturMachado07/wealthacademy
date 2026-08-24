@@ -17,6 +17,7 @@ export async function POST(request: Request) {
   const title = body?.title?.trim();
   const category = body?.category?.trim() || null;
   const date = body?.date?.trim() || null;
+  const eventDate = body?.event_date?.trim() || null;
   const time = body?.time?.trim() || null;
   const location = body?.location?.trim() || null;
   const guest = body?.guest?.trim() || null;
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
       title,
       category,
       date,
+      event_date: eventDate,
       time,
       location,
       guest,

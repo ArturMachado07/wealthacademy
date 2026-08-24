@@ -8,6 +8,8 @@ import PaymentButton from "@/components/PaymentButton";
 import MediaSlot from "@/components/MediaSlot";
 import CourseCard from "@/components/CourseCard";
 import CourseJsonLd from "@/components/CourseJsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
+import FaqJsonLd from "@/components/FaqJsonLd";
 import { CheckIcon, CheckCircleIcon } from "@/components/icons";
 import { getCurrentStudent } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -94,6 +96,14 @@ export default async function CoursePage({ params }: Props) {
   return (
     <article className="py-24">
       <CourseJsonLd course={course} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Início", path: "/" },
+          { name: "Formações", path: "/formacoes" },
+          { name: course.title, path: `/formacoes/${course.slug}` },
+        ]}
+      />
+      {course.faq && course.faq.length > 0 && <FaqJsonLd faq={course.faq} />}
       <div className="container-page">
         <nav className="text-sm text-ink-soft">
           <Link href="/formacoes" className="hover:text-gold-dark">

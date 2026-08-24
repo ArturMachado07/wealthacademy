@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Workshop } from "@/lib/workshops";
 
 export default function WorkshopCard({ workshop }: { workshop: Workshop }) {
@@ -9,16 +10,18 @@ export default function WorkshopCard({ workshop }: { workshop: Workshop }) {
       href={`/workshops/${workshop.slug}`}
       className="group flex flex-col overflow-hidden rounded border border-ink/10 bg-white/60 transition-colors hover:border-gold"
     >
-      <div className="aspect-[3/4] w-full overflow-hidden bg-ink/5">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-ink/5">
         {workshop.flyer_url ? (
-          // Vem do bucket público do Supabase Storage (domínio dinâmico por
-          // ambiente) — <img> directo, tal como a foto de perfil do aluno,
-          // em vez de next/image.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          // Vem do bucket público do Supabase Storage — remotePatterns já
+          // configurado em next.config.mjs. O contentedor precisa de
+          // "relative" explícito para o `fill` funcionar (ver Hero.tsx: um
+          // container sem posição definida colapsa a imagem a zero altura).
+          <Image
             src={workshop.flyer_url}
             alt={workshop.title}
-            className={`h-full w-full object-cover transition-transform group-hover:scale-[1.02] ${
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className={`object-cover transition-transform group-hover:scale-[1.02] ${
               isPast ? "grayscale" : ""
             }`}
           />

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getArticleBySlug } from "@/lib/wealth-insights";
 import MediaSlot from "@/components/MediaSlot";
 import ArticleJsonLd from "@/components/ArticleJsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -26,6 +27,13 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <article className="py-24">
       <ArticleJsonLd article={article} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Início", path: "/" },
+          { name: "Wealth Insights", path: "/wealth-insights" },
+          { name: article.title, path: `/wealth-insights/${article.slug}` },
+        ]}
+      />
       <div className="container-page max-w-3xl">
         <p className="eyebrow">{article.category}</p>
         <h1 className="mt-3 text-3xl font-medium leading-tight text-ink md:text-4xl">{article.title}</h1>

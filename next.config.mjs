@@ -1,3 +1,16 @@
+// Domínio do bucket público do Supabase Storage (avatares, flyers de
+// workshops) — calculado a partir da própria NEXT_PUBLIC_SUPABASE_URL, para
+// não hardcodar um projecto específico e continuar a funcionar em qualquer
+// ambiente (dev/preview/produção) sem tocar aqui de novo.
+let supabaseStorageHostname;
+try {
+  supabaseStorageHostname = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+    : undefined;
+} catch {
+  supabaseStorageHostname = undefined;
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -14,7 +27,15 @@ const nextConfig = {
     },
   },
   images: {
-    remotePatterns: [],
+    remotePatterns: supabaseStorageHostname
+      ? [
+          {
+            protocol: "https",
+            hostname: supabaseStorageHostname,
+            pathname: "/storage/v1/object/public/**",
+          },
+        ]
+      : [],
     // Os SVGs usados aqui são só os nossos ficheiros de marca (logótipos),
     // não uploads de terceiros — por isso é seguro permitir a optimização
     // de SVG, que o Next bloqueia por defeito.

@@ -15,6 +15,7 @@ type WorkshopRow = {
   title: string;
   category: string | null;
   date: string | null;
+  event_date: string | null;
   time: string | null;
   location: string | null;
   guest: string | null;
@@ -111,6 +112,7 @@ export default async function AdminWorkshopsPage({
                         title: target.title,
                         category: target.category ?? "",
                         date: target.date ?? "",
+                        event_date: target.event_date ?? "",
                         time: target.time ?? "",
                         location: target.location ?? "",
                         guest: target.guest ?? "",

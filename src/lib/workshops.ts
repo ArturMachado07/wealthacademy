@@ -12,6 +12,9 @@ export type Workshop = {
   title: string;
   category: string | null;
   date: string | null;
+  // Data real (ISO, ex. "2026-09-12") — separada de `date` (texto livre,
+  // para exibição). Usada só para o schema.org/Event; opcional.
+  event_date: string | null;
   time: string | null;
   location: string | null;
   guest: string | null;

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 // Avatar circular simples — mostra a foto (avatar_url) quando existe, ou
 // as iniciais do nome como placeholder (nunca stock photo). Usado no
 // dashboard e no perfil do aluno.
@@ -21,12 +23,11 @@ export default function Avatar({
       .join("") || "?";
 
   if (url) {
-    // <img> directo (não next/image) — a foto vem do bucket público do
-    // Supabase Storage, um domínio dinâmico por ambiente; usar next/image
-    // exigiria configurar remotePatterns, sem ganho real para um avatar
-    // pequeno como este.
+    // A foto vem do bucket público do Supabase Storage — remotePatterns já
+    // configurado em next.config.mjs a partir do próprio domínio do
+    // projecto, por isso next/image funciona em qualquer ambiente.
     return (
-      <img
+      <Image
         src={url}
         alt={name}
         width={size}

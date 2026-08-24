@@ -34,9 +34,10 @@ export const metadata: Metadata = {
     description: "Sua distinção, Nossa missão.",
     url: siteUrl,
   },
-  icons: {
-    icon: "/icon.svg",
-  },
+  // Sem `icons` manual aqui de propósito — agora que existem favicon.ico,
+  // icon.svg e apple-icon.png em src/app/ (convenção de ficheiros do Next),
+  // o Next gera os <link> correctos sozinho para cada um. Declarar `icons`
+  // aqui iria sobrepor-se ao favicon.ico detectado automaticamente.
 };
 
 export default function RootLayout({

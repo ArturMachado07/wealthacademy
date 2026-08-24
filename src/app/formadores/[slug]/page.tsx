@@ -4,6 +4,7 @@ import { getInstructorBySlug, getCoursesByInstructor } from "@/lib/instructors";
 import CourseCard from "@/components/CourseCard";
 import EmptyState from "@/components/EmptyState";
 import MediaSlot from "@/components/MediaSlot";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -31,6 +32,13 @@ export default async function InstructorPage({ params }: Props) {
 
   return (
     <section className="py-24">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Início", path: "/" },
+          { name: "Formadores", path: "/formadores" },
+          { name: instructor.name, path: `/formadores/${instructor.slug}` },
+        ]}
+      />
       <div className="container-page">
         <div className="flex flex-wrap items-center gap-6">
           <MediaSlot
