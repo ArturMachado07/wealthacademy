@@ -10,7 +10,11 @@ export default function InterestForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
-    const form = new FormData(event.currentTarget);
+    // Guardamos a referência ao <form> antes do await — ver nota em
+    // ContactForm.tsx: usar event.currentTarget depois de um await pode
+    // lançar mesmo com o pedido bem-sucedido.
+    const formEl = event.currentTarget;
+    const form = new FormData(formEl);
     const payload = {
       origin: "Área do Aluno — lista de interesse",
       name: form.get("name"),
@@ -26,7 +30,7 @@ export default function InterestForm() {
       });
       if (!res.ok) throw new Error("failed");
       setStatus("success");
-      event.currentTarget.reset();
+      formEl.reset();
     } catch {
       setStatus("error");
     }

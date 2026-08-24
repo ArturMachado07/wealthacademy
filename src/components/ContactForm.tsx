@@ -10,7 +10,13 @@ export default function ContactForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
-    const form = new FormData(event.currentTarget);
+    // Guardamos a referência ao <form> antes do await: os SyntheticEvents do
+    // React podem invalidar "event.currentTarget" assim que o handler cede o
+    // controlo (no primeiro await). Se usássemos event.currentTarget.reset()
+    // depois do fetch, isso podia lançar mesmo com o pedido bem-sucedido —
+    // e o utilizador via "erro" apesar do lead ter sido guardado.
+    const formEl = event.currentTarget;
+    const form = new FormData(formEl);
     const payload = {
       origin: "Contactos",
       name: form.get("name"),
@@ -28,7 +34,7 @@ export default function ContactForm() {
       });
       if (!res.ok) throw new Error("failed");
       setStatus("success");
-      event.currentTarget.reset();
+      formEl.reset();
     } catch {
       setStatus("error");
     }
