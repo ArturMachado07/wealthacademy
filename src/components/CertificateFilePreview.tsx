@@ -29,20 +29,33 @@ export default function CertificateFilePreview({
     <div className="certificate-print mx-auto w-full max-w-3xl">
       <div className="overflow-hidden rounded border border-ink/10 bg-white p-3 shadow-xl shadow-ink/10 sm:p-4">
         {isPdf ? (
-          // Certificados são quase sempre em formato paisagem (ex.: A4
-          // deitado) — usar a proporção em vez de uma altura fixa evita a
-          // barra preta que o visualizador de PDF do browser mostra quando a
-          // "janela" é mais alta do que a própria página.
-          <div className="aspect-[1.414/1] w-full overflow-hidden rounded">
-            <iframe src={pdfSrc} title={`Certificado de ${studentName}`} className="h-full w-full border-0" />
-          </div>
+          // Sem nenhuma interface de visualizador aqui — o iframe fica
+          // "surdo" a cliques (pointer-events-none) e é só o link à volta
+          // que é clicável, abrindo o PDF a sério, no visualizador nativo do
+          // browser, numa nova aba. Visualmente comporta-se como uma imagem.
+          <a
+            href={fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block aspect-[1.414/1] w-full cursor-zoom-in overflow-hidden rounded"
+          >
+            <iframe
+              src={pdfSrc}
+              title={`Certificado de ${studentName}`}
+              tabIndex={-1}
+              aria-hidden="true"
+              className="h-full w-full border-0 pointer-events-none select-none"
+            />
+          </a>
         ) : (
-          // eslint-disable-next-line @next/next/no-img-element -- link assinado, temporário, não passa por next/image
-          <img
-            src={fileUrl}
-            alt={`Certificado de ${studentName} — ${courseTitle}`}
-            className="mx-auto max-h-[80vh] w-auto rounded"
-          />
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block cursor-zoom-in">
+            {/* eslint-disable-next-line @next/next/no-img-element -- link assinado, temporário, não passa por next/image */}
+            <img
+              src={fileUrl}
+              alt={`Certificado de ${studentName} — ${courseTitle}`}
+              className="mx-auto max-h-[80vh] w-auto rounded"
+            />
+          </a>
         )}
       </div>
       <div className="mt-4 text-center print:hidden">
