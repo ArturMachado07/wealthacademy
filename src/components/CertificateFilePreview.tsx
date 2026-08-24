@@ -19,14 +19,20 @@ export default function CertificateFilePreview({
   certificateNumber,
   issueDate,
 }: Props) {
+  // Suprime a barra de ferramentas/painel lateral do visualizador de PDF
+  // nativo do browser (Chrome/Edge) — sem isto mostra a sua própria "janela"
+  // escura à volta do certificado. É só um fragmento de URL, não vai para o
+  // servidor, por isso não interfere com a assinatura do link.
+  const pdfSrc = `${fileUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
+
   return (
     <div className="certificate-print mx-auto w-full max-w-3xl">
       <div className="overflow-hidden rounded border border-ink/10 bg-white p-3 shadow-xl shadow-ink/10 sm:p-4">
         {isPdf ? (
           <iframe
-            src={fileUrl}
+            src={pdfSrc}
             title={`Certificado de ${studentName}`}
-            className="h-[75vh] w-full rounded border border-ink/10"
+            className="h-[75vh] w-full rounded border-0"
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element -- link assinado, temporário, não passa por next/image
