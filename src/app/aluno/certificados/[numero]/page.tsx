@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentStudent } from "@/lib/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import CertificateView from "@/components/CertificateView";
+import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase/server";
+import CertificateFilePreview from "@/components/CertificateFilePreview";
 import DownloadCertificateButton from "@/components/DownloadCertificateButton";
 import ShareLinkedInButton from "@/components/ShareLinkedInButton";
 
@@ -21,6 +21,7 @@ type CertificateRow = {
   course_title: string;
   hours: string | null;
   issue_date: string;
+  file_path: string | null;
 };
 
 export default async function AlunoCertificadoPage({ params }: Props) {
@@ -33,12 +34,26 @@ export default async function AlunoCertificadoPage({ params }: Props) {
   const supabase = await createSupabaseServerClient();
   const { data: certificate } = await supabase
     .from("certificates")
-    .select("certificate_number, course_title, hours, issue_date")
+    .select("certificate_number, course_title, hours, issue_date, file_path")
     .eq("certificate_number", numero)
     .eq("student_id", student.id)
     .maybeSingle<CertificateRow>();
 
   if (!certificate) notFound();
+
+  let fileUrl: string | null = null;
+  if (certificate.file_path) {
+    const admin = createSupabaseAdminClient();
+    const { data: signed, error } = await admin.storage
+      .from("certificados")
+      .createSignedUrl(certificate.file_path, 300);
+    if (error) {
+      console.error("[wealth-academy] falha ao gerar link do certificado:", error);
+    } else {
+      fileUrl = signed?.signedUrl ?? null;
+    }
+  }
+  const isPdf = certificate.file_path?.endsWith(".pdf") ?? false;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
   const publicPageUrl = `${siteUrl}/validar/${certificate.certificate_number}`;
@@ -63,13 +78,22 @@ export default async function AlunoCertificadoPage({ params }: Props) {
         </div>
 
         <div className="mt-8 print:mt-0">
-          <CertificateView
-            studentName={student.name}
-            courseTitle={certificate.course_title}
-            hours={certificate.hours}
-            issueDate={certificate.issue_date}
-            certificateNumber={certificate.certificate_number}
-          />
+          {fileUrl ? (
+            <CertificateFilePreview
+              fileUrl={fileUrl}
+              isPdf={isPdf}
+              studentName={student.name}
+              courseTitle={certificate.course_title}
+              certificateNumber={certificate.certificate_number}
+              issueDate={certificate.issue_date}
+            />
+          ) : (
+            <div className="mx-auto max-w-lg rounded border border-ink/10 bg-white/60 p-10 text-center">
+              <p className="text-sm text-ink-soft">
+                O certificado ainda não foi anexado pela equipa Wealth Academy — volte a tentar em breve.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
-import CertificateView from "@/components/CertificateView";
+import CertificateFilePreview from "@/components/CertificateFilePreview";
 import DownloadCertificateButton from "@/components/DownloadCertificateButton";
 import ShareLinkedInButton from "@/components/ShareLinkedInButton";
 
@@ -13,6 +13,7 @@ type CertificateRow = {
   course_title: string;
   hours: string | null;
   issue_date: string;
+  file_path: string | null;
   students: { name: string } | { name: string }[] | null;
 };
 
@@ -25,11 +26,25 @@ async function getCertificate(numero: string) {
   const supabase = createSupabaseAdminClient();
   const { data } = await supabase
     .from("certificates")
-    .select("certificate_number, course_title, hours, issue_date, students(name)")
+    .select("certificate_number, course_title, hours, issue_date, file_path, students(name)")
     .eq("certificate_number", numero)
     .maybeSingle<CertificateRow>();
 
   return data;
+}
+
+// Link temporário assinado do ficheiro real (digitalização assinada pelo
+// INEFOP, anexada pelo Admin) — gerado no servidor a cada carregamento da
+// página, nunca guardado. 5 minutos chegam para a página carregar mesmo em
+// ligações lentas.
+async function getSignedFileUrl(filePath: string) {
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase.storage.from("certificados").createSignedUrl(filePath, 300);
+  if (error || !data) {
+    console.error("[wealth-academy] falha ao gerar link do certificado:", error);
+    return null;
+  }
+  return data.signedUrl;
 }
 
 function siteBaseUrl() {
@@ -76,6 +91,8 @@ export default async function ValidarCertificadoPage({ params }: Props) {
   const studentName = Array.isArray(certificate?.students)
     ? certificate?.students[0]?.name
     : certificate?.students?.name;
+  const fileUrl = certificate?.file_path ? await getSignedFileUrl(certificate.file_path) : null;
+  const isPdf = certificate?.file_path?.endsWith(".pdf") ?? false;
 
   const siteUrl = siteBaseUrl();
   const pageUrl = `${siteUrl}/validar/${params.numero}`;
@@ -93,13 +110,22 @@ export default async function ValidarCertificadoPage({ params }: Props) {
               </div>
             </div>
             <div className="mt-8 print:mt-0">
-              <CertificateView
-                studentName={studentName}
-                courseTitle={certificate.course_title}
-                hours={certificate.hours}
-                issueDate={certificate.issue_date}
-                certificateNumber={certificate.certificate_number}
-              />
+              {fileUrl ? (
+                <CertificateFilePreview
+                  fileUrl={fileUrl}
+                  isPdf={isPdf}
+                  studentName={studentName}
+                  courseTitle={certificate.course_title}
+                  certificateNumber={certificate.certificate_number}
+                  issueDate={certificate.issue_date}
+                />
+              ) : (
+                <div className="mx-auto max-w-lg rounded border border-ink/10 bg-white/60 p-10 text-center">
+                  <p className="text-sm text-ink-soft">
+                    O certificado ainda não foi anexado pela equipa Wealth Academy — volte a tentar em breve.
+                  </p>
+                </div>
+              )}
             </div>
           </>
         ) : (
