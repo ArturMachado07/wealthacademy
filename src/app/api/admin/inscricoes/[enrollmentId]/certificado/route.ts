@@ -4,6 +4,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendCertificateEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
 import { renderFirstPdfPageToPng } from "@/lib/pdf-preview";
+import { alertServerError } from "@/lib/error-alert";
 
 // Upload manual da digitalização do certificado — já impresso e assinado
 // fisicamente pelo INEFOP — associado a uma inscrição concluída. Mesmo
@@ -81,13 +82,21 @@ export async function POST(
           .from("certificados")
           .upload(candidatePreviewPath, png, { contentType: "image/png", upsert: true });
         if (previewUploadError) {
-          console.error("[wealth-academy] falha ao guardar pré-visualização do certificado:", previewUploadError);
+          await alertServerError(
+            "admin/inscricoes/certificado: guardar pré-visualização",
+            previewUploadError
+          );
         } else {
           previewPath = candidatePreviewPath;
         }
+      } else {
+        await alertServerError(
+          "admin/inscricoes/certificado: gerar pré-visualização",
+          new Error("renderFirstPdfPageToPng devolveu null (sem páginas?)")
+        );
       }
     } catch (err) {
-      console.error("[wealth-academy] falha ao gerar pré-visualização do certificado:", err);
+      await alertServerError("admin/inscricoes/certificado: gerar pré-visualização", err);
     }
   } else {
     // O próprio ficheiro já é uma imagem — serve também de pré-visualização.

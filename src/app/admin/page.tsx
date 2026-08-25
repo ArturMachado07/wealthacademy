@@ -191,10 +191,10 @@ export default async function AdminDashboardPage() {
                                 <div className="flex flex-wrap items-center gap-3">
                                   {cert?.file_path && (
                                     <a
-                                      href={`/validar/${cert.certificate_number}`}
+                                      href={`/api/validar/${cert.certificate_number}/ficheiro`}
                                       className="text-xs font-medium text-gold-dark underline"
                                     >
-                                      Ver certificado
+                                      Descarregar certificado
                                     </a>
                                   )}
                                   <CertificateUploadForm
