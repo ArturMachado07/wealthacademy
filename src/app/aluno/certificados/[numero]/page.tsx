@@ -22,6 +22,7 @@ type CertificateRow = {
   hours: string | null;
   issue_date: string;
   file_path: string | null;
+  preview_path: string | null;
 };
 
 export default async function AlunoCertificadoPage({ params }: Props) {
@@ -34,26 +35,25 @@ export default async function AlunoCertificadoPage({ params }: Props) {
   const supabase = await createSupabaseServerClient();
   const { data: certificate } = await supabase
     .from("certificates")
-    .select("certificate_number, course_title, hours, issue_date, file_path")
+    .select("certificate_number, course_title, hours, issue_date, file_path, preview_path")
     .eq("certificate_number", numero)
     .eq("student_id", student.id)
     .maybeSingle<CertificateRow>();
 
   if (!certificate) notFound();
 
-  let fileUrl: string | null = null;
-  if (certificate.file_path) {
+  let previewUrl: string | null = null;
+  if (certificate.preview_path) {
     const admin = createSupabaseAdminClient();
     const { data: signed, error } = await admin.storage
       .from("certificados")
-      .createSignedUrl(certificate.file_path, 300);
+      .createSignedUrl(certificate.preview_path, 300);
     if (error) {
       console.error("[wealth-academy] falha ao gerar link do certificado:", error);
     } else {
-      fileUrl = signed?.signedUrl ?? null;
+      previewUrl = signed?.signedUrl ?? null;
     }
   }
-  const isPdf = certificate.file_path?.endsWith(".pdf") ?? false;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wealthacademy-ten.vercel.app";
   const publicPageUrl = `${siteUrl}/validar/${certificate.certificate_number}`;
@@ -78,11 +78,10 @@ export default async function AlunoCertificadoPage({ params }: Props) {
         </div>
 
         <div className="mt-8 print:mt-0">
-          {fileUrl ? (
+          {certificate.file_path ? (
             <CertificateFilePreview
-              fileUrl={fileUrl}
+              previewUrl={previewUrl}
               downloadHref={`/api/aluno/certificados/${certificate.certificate_number}/ficheiro`}
-              isPdf={isPdf}
               studentName={student.name}
               courseTitle={certificate.course_title}
               certificateNumber={certificate.certificate_number}

@@ -14,6 +14,7 @@ type CertificateRow = {
   hours: string | null;
   issue_date: string;
   file_path: string | null;
+  preview_path: string | null;
   students: { name: string } | { name: string }[] | null;
 };
 
@@ -26,20 +27,19 @@ async function getCertificate(numero: string) {
   const supabase = createSupabaseAdminClient();
   const { data } = await supabase
     .from("certificates")
-    .select("certificate_number, course_title, hours, issue_date, file_path, students(name)")
+    .select("certificate_number, course_title, hours, issue_date, file_path, preview_path, students(name)")
     .eq("certificate_number", numero)
     .maybeSingle<CertificateRow>();
 
   return data;
 }
 
-// Link temporário assinado do ficheiro real (digitalização assinada pelo
-// INEFOP, anexada pelo Admin) — gerado no servidor a cada carregamento da
-// página, nunca guardado. 5 minutos chegam para a página carregar mesmo em
-// ligações lentas.
-async function getSignedFileUrl(filePath: string) {
+// Link temporário assinado (para o storage privado "certificados") — gerado
+// no servidor a cada carregamento da página, nunca guardado. 5 minutos
+// chegam para a página carregar mesmo em ligações lentas.
+async function getSignedUrl(path: string) {
   const supabase = createSupabaseAdminClient();
-  const { data, error } = await supabase.storage.from("certificados").createSignedUrl(filePath, 300);
+  const { data, error } = await supabase.storage.from("certificados").createSignedUrl(path, 300);
   if (error || !data) {
     console.error("[wealth-academy] falha ao gerar link do certificado:", error);
     return null;
@@ -91,8 +91,8 @@ export default async function ValidarCertificadoPage({ params }: Props) {
   const studentName = Array.isArray(certificate?.students)
     ? certificate?.students[0]?.name
     : certificate?.students?.name;
-  const fileUrl = certificate?.file_path ? await getSignedFileUrl(certificate.file_path) : null;
-  const isPdf = certificate?.file_path?.endsWith(".pdf") ?? false;
+  const hasFile = Boolean(certificate?.file_path);
+  const previewUrl = certificate?.preview_path ? await getSignedUrl(certificate.preview_path) : null;
 
   const siteUrl = siteBaseUrl();
   const pageUrl = `${siteUrl}/validar/${params.numero}`;
@@ -110,11 +110,10 @@ export default async function ValidarCertificadoPage({ params }: Props) {
               </div>
             </div>
             <div className="mt-8 print:mt-0">
-              {fileUrl ? (
+              {hasFile ? (
                 <CertificateFilePreview
-                  fileUrl={fileUrl}
+                  previewUrl={previewUrl}
                   downloadHref={`/api/validar/${certificate.certificate_number}/ficheiro`}
-                  isPdf={isPdf}
                   studentName={studentName}
                   courseTitle={certificate.course_title}
                   certificateNumber={certificate.certificate_number}

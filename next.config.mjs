@@ -25,6 +25,11 @@ const nextConfig = {
     outputFileTracingIncludes: {
       "/**": ["./public/images/**"],
     },
+    // pdf-parse usa @napi-rs/canvas (binários nativos por plataforma) para
+    // desenhar a primeira página do certificado em PDF numa imagem (ver
+    // src/lib/pdf-preview.ts) — sem isto, a Vercel tenta incluir esses
+    // binários dentro do bundle da função e a build falha.
+    serverComponentsExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
   },
   images: {
     remotePatterns: supabaseStorageHostname

@@ -3,6 +3,7 @@ import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendCertificateEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
+import { renderFirstPdfPageToPng } from "@/lib/pdf-preview";
 
 // Upload manual da digitalização do certificado — já impresso e assinado
 // fisicamente pelo INEFOP — associado a uma inscrição concluída. Mesmo
@@ -65,6 +66,34 @@ export async function POST(
     return NextResponse.json({ ok: false, error: "Não foi possível guardar o certificado." }, { status: 500 });
   }
 
+  // Se for PDF, tenta gerar uma imagem da 1ª página para mostrar o
+  // certificado directamente na página (ver src/lib/pdf-preview.ts) — nunca
+  // deve impedir o upload de se completar: se falhar, o certificado fica
+  // disponível na mesma, só sem pré-visualização (mostra um botão de
+  // download em vez da imagem).
+  let previewPath: string | null = null;
+  if (extension === "pdf") {
+    try {
+      const png = await renderFirstPdfPageToPng(bytes);
+      if (png) {
+        const candidatePreviewPath = `${enrollmentId}/certificado-preview.png`;
+        const { error: previewUploadError } = await supabase.storage
+          .from("certificados")
+          .upload(candidatePreviewPath, png, { contentType: "image/png", upsert: true });
+        if (previewUploadError) {
+          console.error("[wealth-academy] falha ao guardar pré-visualização do certificado:", previewUploadError);
+        } else {
+          previewPath = candidatePreviewPath;
+        }
+      }
+    } catch (err) {
+      console.error("[wealth-academy] falha ao gerar pré-visualização do certificado:", err);
+    }
+  } else {
+    // O próprio ficheiro já é uma imagem — serve também de pré-visualização.
+    previewPath = path;
+  }
+
   // Já existe uma linha de certificado para esta inscrição (ex.: admin está
   // a substituir o ficheiro)? Actualiza-a em vez de duplicar — o número do
   // certificado, uma vez atribuído, nunca muda.
@@ -79,7 +108,7 @@ export async function POST(
   if (existing) {
     const { error: updateError } = await supabase
       .from("certificates")
-      .update({ file_path: path, uploaded_at: new Date().toISOString() })
+      .update({ file_path: path, preview_path: previewPath, uploaded_at: new Date().toISOString() })
       .eq("id", existing.id);
 
     if (updateError) {
@@ -94,6 +123,7 @@ export async function POST(
         enrollment_id: enrollment.id,
         course_title: enrollment.course_title,
         file_path: path,
+        preview_path: previewPath,
         uploaded_at: new Date().toISOString(),
       })
       .select("certificate_number")
