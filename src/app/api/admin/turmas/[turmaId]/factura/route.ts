@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
-import { sendEnrollmentConfirmationEmail } from "@/lib/email";
-import { createNotification, createCompanyNotification } from "@/lib/notifications";
 
-// Upload manual do comprovativo de pagamento de uma turma (transferência
-// bancária, tal como as facturas proformas individuais). Ao guardar,
-// activa TODAS as inscrições "Pendente" dessa turma de uma vez — os
-// colaboradores nunca pagam individualmente, é a empresa que paga a turma
-// toda. Só acessível a administradores.
+// Upload manual da FACTURA (documento fiscal, emitido no sistema de
+// facturação externo) de uma turma já paga — mesmo padrão de
+// /api/admin/pagamentos/[id]/factura para pagamentos individuais. O
+// pagamento em si (e a activação dos colaboradores) já aconteceu antes
+// disto, através do pagamento feito pela própria empresa (ver
+// /api/empresas/turmas/[id]/pagar + /api/payments/demo-confirm ou
+// /api/payments/webhook) — isto é só o documento para a contabilidade da
+// empresa, não activa nada.
 const ALLOWED_TYPES: Record<string, string> = {
   "application/pdf": "pdf",
   "image/png": "png",
@@ -32,7 +33,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ tur
   const extension = ALLOWED_TYPES[file.type];
   if (!extension) {
     return NextResponse.json(
-      { ok: false, error: "Formato não suportado — envie o comprovativo em PDF, PNG ou JPG." },
+      { ok: false, error: "Formato não suportado — envie a factura em PDF, PNG ou JPG." },
       { status: 400 }
     );
   }
@@ -41,7 +42,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ tur
 
   const { data: turma, error: fetchError } = await supabase
     .from("turmas")
-    .select("id, company_id, course_title, status")
+    .select("id, status")
     .eq("id", turmaId)
     .single();
 
@@ -49,14 +50,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ tur
     return NextResponse.json({ ok: false, error: "Turma não encontrada." }, { status: 404 });
   }
 
-  if (turma.status !== "fechada") {
+  if (turma.status !== "paga") {
     return NextResponse.json(
-      { ok: false, error: "Só é possível anexar comprovativo a uma turma fechada." },
+      { ok: false, error: "Só é possível anexar factura a uma turma já paga pela empresa." },
       { status: 400 }
     );
   }
 
-  const path = `${turmaId}/comprovativo.${extension}`;
+  const path = `${turmaId}/factura.${extension}`;
   const bytes = new Uint8Array(await file.arrayBuffer());
 
   const { error: uploadError } = await supabase.storage.from("facturas-turmas").upload(path, bytes, {
@@ -65,47 +66,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ tur
   });
 
   if (uploadError) {
-    console.error("[admin/turmas/factura] falha ao guardar comprovativo:", uploadError);
-    return NextResponse.json({ ok: false, error: "Não foi possível guardar o comprovativo." }, { status: 500 });
+    console.error("[admin/turmas/factura] falha ao guardar factura:", uploadError);
+    return NextResponse.json({ ok: false, error: "Não foi possível guardar a factura." }, { status: 500 });
   }
 
   const { error: updateError } = await supabase
     .from("turmas")
-    .update({ status: "paga", invoice_path: path, paid_at: new Date().toISOString() })
+    .update({ invoice_path: path, invoice_uploaded_at: new Date().toISOString() })
     .eq("id", turmaId);
 
   if (updateError) {
     console.error("[admin/turmas/factura] falha ao actualizar turma:", updateError);
-    return NextResponse.json({ ok: false, error: "Comprovativo guardado, mas o registo falhou." }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "Factura guardada, mas o registo falhou." }, { status: 500 });
   }
 
-  // Activa em bloco todas as inscrições desta turma — é este o momento em
-  // que os colaboradores passam a ter acesso ao conteúdo do curso.
-  const { data: members } = await supabase
-    .from("enrollments")
-    .update({ status: "Em curso", updated_at: new Date().toISOString() })
-    .eq("turma_id", turmaId)
-    .eq("status", "Pendente")
-    .select("student_id, students(name, email)");
-
-  for (const member of members ?? []) {
-    const s = Array.isArray(member.students) ? member.students[0] : member.students;
-    if (!s) continue;
-    await sendEnrollmentConfirmationEmail({ to: s.email, name: s.name, courseTitle: turma.course_title });
-    await createNotification(supabase, {
-      studentId: member.student_id,
-      title: "Inscrição confirmada",
-      message: `A sua inscrição em "${turma.course_title}" foi confirmada — a sua empresa concluiu o pagamento da turma.`,
-      link: "/aluno",
-    });
-  }
-
-  await createCompanyNotification(supabase, {
-    companyId: turma.company_id,
-    title: "Turma activada",
-    message: `Recebemos o comprovativo e a turma de "${turma.course_title}" já está activa — os colaboradores têm acesso ao conteúdo.`,
-    link: "/empresa",
-  });
-
-  return NextResponse.json({ ok: true, activated: members?.length ?? 0 });
+  return NextResponse.json({ ok: true });
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendEnrollmentConfirmationEmail } from "@/lib/email";
 import { createNotification, createAdminNotification } from "@/lib/notifications";
+import { activateTurma } from "@/lib/turma-activation";
 import { alertServerError } from "@/lib/error-alert";
 import { getTransaction } from "@/lib/payments/proxypay";
 
@@ -64,6 +65,10 @@ export async function POST(request: Request) {
   if (error) {
     await alertServerError("payments/webhook: actualizar pagamento", error);
     return NextResponse.json({ ok: false }, { status: 500 });
+  }
+
+  if (status === "accepted" && payment?.turma_id) {
+    await activateTurma(supabase, payment.turma_id);
   }
 
   if (status === "accepted" && payment?.enrollment_id) {

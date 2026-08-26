@@ -10,6 +10,7 @@ import CompanyNotificationBell from "@/components/empresa/NotificationBell";
 import CreateTurmaForm from "@/components/empresa/CreateTurmaForm";
 import InviteLinkBox from "@/components/empresa/InviteLinkBox";
 import CloseTurmaButton from "@/components/empresa/CloseTurmaButton";
+import TurmaPaymentButton from "@/components/empresa/TurmaPaymentButton";
 import { UsersIcon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Portal da Empresa" };
@@ -23,6 +24,7 @@ type Turma = {
   capacity: number;
   status: "a_preencher" | "fechada" | "paga";
   discount_applied: boolean;
+  invoice_path: string | null;
   created_at: string;
 };
 
@@ -59,7 +61,7 @@ export default async function EmpresaDashboardPage() {
   const supabase = createSupabaseAdminClient();
   const { data: turmasData } = await supabase
     .from("turmas")
-    .select("id, course_slug, course_title, invite_code, capacity, status, discount_applied, created_at")
+    .select("id, course_slug, course_title, invite_code, capacity, status, discount_applied, invoice_path, created_at")
     .eq("company_id", company.id)
     .order("created_at", { ascending: false });
 
@@ -144,6 +146,27 @@ export default async function EmpresaDashboardPage() {
                         <InviteLinkBox link={`${siteUrl}/aluno/turma/${turma.invite_code}`} />
                         {members.length > 0 && <CloseTurmaButton turmaId={turma.id} />}
                       </>
+                    )}
+
+                    {turma.status === "fechada" && total !== null && (
+                      <div className="mt-3">
+                        <TurmaPaymentButton turmaId={turma.id} amountLabel={formatKz(total)} />
+                      </div>
+                    )}
+
+                    {turma.status === "paga" && (
+                      <p className="mt-3 text-sm">
+                        {turma.invoice_path ? (
+                          <a
+                            href={`/api/empresas/turmas/${turma.id}/factura`}
+                            className="font-medium text-gold-dark underline"
+                          >
+                            Descarregar factura
+                          </a>
+                        ) : (
+                          <span className="text-ink-soft">A factura fica disponível assim que for emitida.</span>
+                        )}
+                      </p>
                     )}
 
                     {members.length > 0 && turma.status !== "a_preencher" && (

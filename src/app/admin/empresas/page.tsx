@@ -16,12 +16,13 @@ type Turma = {
   capacity: number;
   status: "a_preencher" | "fechada" | "paga";
   discount_applied: boolean;
+  invoice_path: string | null;
   created_at: string;
 };
 
 const STATUS_LABEL: Record<Turma["status"], string> = {
   a_preencher: "A preencher",
-  fechada: "Fechada · por facturar",
+  fechada: "Fechada · a aguardar pagamento",
   paga: "Paga · activa",
 };
 
@@ -41,7 +42,7 @@ export default async function AdminEmpresasPage() {
     supabase.from("companies").select("id, name, nif, contact_email, contact_phone").order("name"),
     supabase
       .from("turmas")
-      .select("id, company_id, course_title, capacity, status, discount_applied, created_at")
+      .select("id, company_id, course_title, capacity, status, discount_applied, invoice_path, created_at")
       .order("created_at", { ascending: false }),
   ]);
 
@@ -126,7 +127,12 @@ export default async function AdminEmpresasPage() {
                                 </span>
                               </td>
                               <td className="py-3 pr-4">
-                                {turma.status === "fechada" && <TurmaInvoiceUploadForm turmaId={turma.id} />}
+                                {turma.status === "fechada" && (
+                                  <span className="text-xs text-ink-soft">A aguardar pagamento da empresa</span>
+                                )}
+                                {turma.status === "paga" && (
+                                  <TurmaInvoiceUploadForm turmaId={turma.id} hasInvoice={Boolean(turma.invoice_path)} />
+                                )}
                               </td>
                             </tr>
                           ))}

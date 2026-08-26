@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 import { getCurrentStudent } from "@/lib/auth";
+import { getCurrentCompany } from "@/lib/company-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { sendEnrollmentConfirmationEmail } from "@/lib/email";
 import { createNotification, createAdminNotification } from "@/lib/notifications";
+import { activateTurma } from "@/lib/turma-activation";
 import { alertServerError } from "@/lib/error-alert";
 
 // Confirma um pagamento em MODO DEMO (nunca chama a ProxyPay — só existe
 // enquanto PROXYPAY_API_TOKEN/PROXYPAY_POS_ID não estiverem configurados).
 // Simula o que o webhook real faz quando a EMIS confirma um pagamento
-// aceite: marca o pagamento como "accepted" e a inscrição como "Em curso".
+// aceite. Serve tanto o pagamento individual do aluno (enrollment_id) como
+// o pagamento de uma turma pela empresa (turma_id) — ver
+// /api/empresas/turmas/[id]/pagar.
 export async function POST(request: Request) {
   if (process.env.PROXYPAY_API_TOKEN && process.env.PROXYPAY_POS_ID) {
     return NextResponse.json(
@@ -18,7 +22,8 @@ export async function POST(request: Request) {
   }
 
   const student = await getCurrentStudent();
-  if (!student) {
+  const company = student ? null : await getCurrentCompany();
+  if (!student && !company) {
     return NextResponse.json({ ok: false, error: "not_authenticated" }, { status: 401 });
   }
 
@@ -31,7 +36,7 @@ export async function POST(request: Request) {
 
   const { data: payment, error: fetchError } = await supabase
     .from("payments")
-    .select("id, student_id, enrollment_id, provider, status")
+    .select("id, student_id, enrollment_id, company_id, turma_id, provider, status")
     .eq("id", body.paymentId)
     .single();
 
@@ -39,8 +44,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Pagamento não encontrado." }, { status: 404 });
   }
 
-  // Só o próprio aluno pode confirmar o seu pagamento demo.
-  if (payment.student_id !== student.id) {
+  // Só o dono do pagamento (aluno ou empresa) o pode confirmar.
+  const isOwner = student ? payment.student_id === student.id : payment.company_id === company?.id;
+  if (!isOwner) {
     return NextResponse.json({ ok: false, error: "not_authorized" }, { status: 403 });
   }
 
@@ -62,7 +68,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Não foi possível confirmar." }, { status: 500 });
   }
 
-  if (payment.enrollment_id) {
+  if (payment.turma_id) {
+    await activateTurma(supabase, payment.turma_id);
+  } else if (payment.enrollment_id && student) {
     const { data: enrollment } = await supabase
       .from("enrollments")
       .update({ status: "Em curso", updated_at: new Date().toISOString() })

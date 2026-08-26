@@ -3,7 +3,13 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function TurmaInvoiceUploadForm({ turmaId }: { turmaId: string }) {
+export default function TurmaInvoiceUploadForm({
+  turmaId,
+  hasInvoice,
+}: {
+  turmaId: string;
+  hasInvoice: boolean;
+}) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
@@ -39,7 +45,7 @@ export default function TurmaInvoiceUploadForm({ turmaId }: { turmaId: string })
   return (
     <div>
       <label className="inline-block cursor-pointer whitespace-nowrap rounded bg-gold-dark px-3 py-1.5 text-xs font-medium text-white hover:bg-gold">
-        {loading ? "A enviar..." : "Anexar comprovativo"}
+        {loading ? "A enviar..." : hasInvoice ? "Substituir factura" : "Anexar factura"}
         <input
           ref={inputRef}
           type="file"

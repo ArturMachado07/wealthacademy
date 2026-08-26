@@ -27,6 +27,7 @@ type Enrollment = {
   status: string;
   progress_percent: number;
   next_lesson: string | null;
+  turma_id: string | null;
 };
 
 type Certificate = {
@@ -50,7 +51,7 @@ export default async function AlunoDashboardPage() {
   const [{ data: enrollments }, { data: certificates }] = await Promise.all([
     supabase
       .from("enrollments")
-      .select("id, course_slug, course_title, status, progress_percent, next_lesson")
+      .select("id, course_slug, course_title, status, progress_percent, next_lesson, turma_id")
       .eq("student_id", student.id)
       .order("enrolled_at", { ascending: false }),
     supabase
@@ -185,7 +186,12 @@ export default async function AlunoDashboardPage() {
                       </Link>
                     );
                   })()}
-                  {enrollment.status === "Pendente" && (() => {
+                  {enrollment.status === "Pendente" && enrollment.turma_id && (
+                    <p className="mt-4 text-xs text-ink-soft">
+                      A aguardar o pagamento da sua empresa para activar o acesso a esta formação.
+                    </p>
+                  )}
+                  {enrollment.status === "Pendente" && !enrollment.turma_id && (() => {
                     const course = courses.find((c) => c.slug === enrollment.course_slug);
                     const priced = course ? applyCourseOverride(course, overrides.get(course.slug)) : null;
                     if (!priced?.investment) return null;

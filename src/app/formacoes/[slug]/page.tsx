@@ -12,6 +12,7 @@ import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import FaqJsonLd from "@/components/FaqJsonLd";
 import { CheckIcon, CheckCircleIcon } from "@/components/icons";
 import { getCurrentStudent } from "@/lib/auth";
+import { getCurrentCompany } from "@/lib/company-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 import { getInstructorsByCourse } from "@/lib/instructors";
@@ -50,16 +51,17 @@ export default async function CoursePage({ params }: Props) {
   // Aluno autenticado vê "Inscreva-se na sua conta" em vez do CTA comercial
   // "Quero inscrever-me" (que leva a Contactos, para quem ainda não é aluno).
   const student = await getCurrentStudent();
+  const company = student ? null : await getCurrentCompany();
 
   // Se o aluno já tiver uma inscrição nesta formação, mostra o estado em vez
   // de repetir o botão de inscrição/pagamento — evita a confusão de ver
   // "Inscrever-me" outra vez numa formação já comprada.
-  let existingEnrollment: { status: string } | null = null;
+  let existingEnrollment: { status: string; turma_id: string | null } | null = null;
   if (student) {
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase
       .from("enrollments")
-      .select("status")
+      .select("status, turma_id")
       .eq("student_id", student.id)
       .eq("course_slug", course.slug)
       .in("status", ["Pendente", "Em curso", "Concluída"])
@@ -285,7 +287,11 @@ export default async function CoursePage({ params }: Props) {
                 )}
 
                 <div className="mt-5 flex flex-col gap-3 [&_.btn-primary]:w-full [&_.btn-primary]:justify-center [&_.btn-secondary]:w-full [&_.btn-secondary]:justify-center">
-                  {existingEnrollment?.status === "Pendente" ? (
+                  {existingEnrollment?.status === "Pendente" && existingEnrollment.turma_id ? (
+                    <p className="text-sm text-ink-soft">
+                      A aguardar o pagamento da sua empresa para activar o acesso a esta formação.
+                    </p>
+                  ) : existingEnrollment?.status === "Pendente" ? (
                     <PaymentButton
                       courseSlug={course.slug}
                       courseTitle={course.title}
@@ -305,6 +311,10 @@ export default async function CoursePage({ params }: Props) {
                     ) : (
                       <EnrollButton courseSlug={course.slug} courseTitle={course.title} />
                     )
+                  ) : company ? (
+                    <Link href="/empresa" className="btn-primary">
+                      Gerir turmas no Portal da Empresa
+                    </Link>
                   ) : (
                     <Link href={`/aluno/registo?from=/formacoes/${course.slug}`} className="btn-primary">
                       Quero inscrever-me
