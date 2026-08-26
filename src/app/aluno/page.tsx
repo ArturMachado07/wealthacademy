@@ -188,6 +188,8 @@ export default async function AlunoDashboardPage() {
                           courseSlug={enrollment.course_slug}
                           courseTitle={course?.title ?? enrollment.course_title}
                           investment={priced.investment}
+                          studentName={student.name}
+                          studentEmail={student.email}
                         />
                       </div>
                     );

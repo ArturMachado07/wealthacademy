@@ -290,6 +290,8 @@ export default async function CoursePage({ params }: Props) {
                       courseSlug={course.slug}
                       courseTitle={course.title}
                       investment={course.investment ?? ""}
+                      studentName={student?.name}
+                      studentEmail={student?.email}
                     />
                   ) : existingEnrollment ? null : student ? (
                     course.investment ? (
@@ -297,6 +299,8 @@ export default async function CoursePage({ params }: Props) {
                         courseSlug={course.slug}
                         courseTitle={course.title}
                         investment={course.investment}
+                        studentName={student.name}
+                        studentEmail={student.email}
                       />
                     ) : (
                       <EnrollButton courseSlug={course.slug} courseTitle={course.title} />

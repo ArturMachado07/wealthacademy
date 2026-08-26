@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { WhatsAppIcon } from "@/components/icons";
+import { whatsappLink } from "@/data/site";
 
 type Props = {
   courseSlug: string;
   courseTitle: string;
   investment: string; // ex. "75.000 Kz"
+  studentName?: string;
+  studentEmail?: string;
 };
 
 type Status =
@@ -21,39 +24,35 @@ type Status =
   | "already"
   | "error";
 
-// Métodos mostrados no popup de escolha. Só o Multicaixa Express está de
-// facto ligado (ProxyPay/EMIS GPO) — os restantes ficam visíveis, mas
-// claramente marcados como "Brevemente" e não seleccionáveis, para o aluno
-// saber o que vem a seguir sem nunca pensar que escolheu um método que na
-// realidade seguia por outro caminho (auditoria de pré-lançamento, Fase 1).
-// Assim que houver um método novo ligado (referência Multicaixa, WhatsApp a
-// sério), basta mudar `available` para true — o resto do fluxo já lida com
-// qualquer método marcado como disponível.
+// Métodos seleccionáveis no popup de escolha (não inclui "ajuda", que é um
+// atalho directo para o WhatsApp, fora do grupo de rádio — ver render).
+// Só o Multicaixa Express está de facto ligado a um gateway (ProxyPay/EMIS
+// GPO); "Pagamento por Referência" ainda não gera nada automaticamente —
+// ao confirmar com este método seleccionado, encaminha para o WhatsApp em
+// vez de chamar o endpoint de pagamento (ver handleConfirm), para nunca
+// mostrar um QR/deeplink da Multicaixa Express associado ao método errado.
 const PAYMENT_METHODS = [
   {
     id: "mcx",
     label: "Multicaixa Express",
     description: "Recebe uma notificação no telemóvel para confirmar o pagamento.",
     icon: "/brand/icones-pagamento/mult-express.webp",
-    available: true,
   },
   {
     id: "referencia",
     label: "Pagamento por Referência",
     description: "Geramos entidade e referência para pagar no Multicaixa ou no seu banco.",
     icon: "/brand/icones-pagamento/multicaixa-referencia.webp",
-    available: false,
-  },
-  {
-    id: "ajuda",
-    label: "Preciso de ajuda para pagar",
-    description: "A nossa equipa ajuda-o a concluir a inscrição pelo WhatsApp.",
-    icon: null,
-    available: false,
   },
 ] as const;
 
-export default function PaymentButton({ courseSlug, courseTitle, investment }: Props) {
+export default function PaymentButton({
+  courseSlug,
+  courseTitle,
+  investment,
+  studentName,
+  studentEmail,
+}: Props) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +63,27 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
   } | null>(null);
   const [isDemo, setIsDemo] = useState(false);
   const [method, setMethod] = useState<(typeof PAYMENT_METHODS)[number]["id"]>("mcx");
+
+  // Mensagem pré-preenchida no WhatsApp — inclui os dados que já temos do
+  // aluno (quando autenticado) para a equipa não ter de os pedir outra vez.
+  function buildWhatsAppMessage(intro: string) {
+    const lines = [intro, "", `Formação: ${courseTitle}`, `Investimento: ${investment}`];
+    if (studentName) lines.push(`Nome: ${studentName}`);
+    if (studentEmail) lines.push(`Email: ${studentEmail}`);
+    return lines.join("\n");
+  }
+
+  function handleConfirm() {
+    if (method === "referencia") {
+      window.open(
+        whatsappLink(buildWhatsAppMessage("Olá! Gostaria de pagar por Referência Multicaixa.")),
+        "_blank",
+        "noopener,noreferrer"
+      );
+      return;
+    }
+    handleClick();
+  }
 
   async function handleClick() {
     setStatus("loading");
@@ -208,74 +228,78 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
           aria-label="Escolher forma de pagamento"
           className="fixed inset-0 z-50 flex items-center justify-center bg-ink/55 p-4"
         >
-          <div className="w-full max-w-sm rounded-2xl bg-[#241D18] p-5">
+          <div className="w-full max-w-sm rounded-lg bg-cream p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] uppercase tracking-wide2 text-gold-light">Wealth Academy</p>
-                <h3 className="mt-1 text-[17px] font-medium text-cream">Como quer pagar?</h3>
+                <p className="text-[11px] uppercase tracking-wide2 text-gold-dark">Wealth Academy</p>
+                <h3 className="mt-1 font-display text-lg text-ink">Concluir inscrição</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setStatus("idle")}
                 aria-label="Fechar"
-                className="text-cream/50 hover:text-cream"
+                className="text-ink-soft hover:text-ink"
               >
                 ✕
               </button>
             </div>
 
-            <div className="mt-3 rounded border border-white/10 bg-white/5 px-3 py-2">
-              <p className="text-sm font-medium text-cream">{courseTitle}</p>
-              <p className="text-sm text-gold-light">{investment}</p>
+            <div className="mt-4 rounded border border-ink/10 bg-white px-3 py-2">
+              <p className="text-sm font-medium text-ink">{courseTitle}</p>
+              <p className="text-sm text-gold-dark">{investment}</p>
             </div>
 
-            <div className="mt-4 flex flex-col gap-2.5">
+            <p className="mt-4 text-xs text-ink-soft">Forma de pagamento</p>
+            <div className="mt-2 flex flex-col gap-2">
               {PAYMENT_METHODS.map((option) => (
                 <label
                   key={option.id}
-                  className={`flex items-center gap-3 rounded-[10px] border px-3.5 py-3 ${
-                    !option.available
-                      ? "cursor-not-allowed border-white/10 opacity-70"
-                      : method === option.id
-                        ? "cursor-pointer border-gold-light bg-white/[0.06]"
-                        : "cursor-pointer border-white/10"
+                  className={`flex cursor-pointer items-center gap-3 rounded border px-3 py-2.5 ${
+                    method === option.id ? "border-gold bg-white" : "border-ink/15"
                   }`}
                 >
                   <input
                     type="radio"
                     name="payment-method"
                     checked={method === option.id}
-                    disabled={!option.available}
-                    onChange={() => option.available && setMethod(option.id)}
-                    className="sr-only"
+                    onChange={() => setMethod(option.id)}
+                    className="accent-gold-dark"
                   />
-                  <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[7px] bg-white/[0.06]">
-                    {option.icon ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={option.icon} alt="" className="h-full w-full rounded-[7px] object-cover" />
-                    ) : (
-                      <WhatsAppIcon className="h-[18px] w-[18px] text-gold-light" />
-                    )}
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={option.icon} alt="" className="h-full w-full object-cover" />
                   </span>
                   <span className="flex-1">
-                    <span className="block text-sm font-medium text-cream">{option.label}</span>
-                    <span className="mt-0.5 block text-xs text-cream/60">{option.description}</span>
+                    <span className="block text-sm text-ink">{option.label}</span>
+                    <span className="mt-0.5 block text-xs text-ink-soft">{option.description}</span>
                   </span>
-                  {!option.available && (
-                    <span className="shrink-0 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-cream/60">
-                      Brevemente
-                    </span>
-                  )}
                 </label>
               ))}
+
+              <a
+                href={whatsappLink(buildWhatsAppMessage("Olá! Preciso de ajuda para pagar a minha inscrição."))}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded border border-ink/15 px-3 py-2.5 hover:border-ink/30"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gold/10">
+                  <WhatsAppIcon className="h-[18px] w-[18px] text-gold-dark" />
+                </span>
+                <span className="flex-1">
+                  <span className="block text-sm text-ink">Preciso de ajuda para pagar</span>
+                  <span className="mt-0.5 block text-xs text-ink-soft">
+                    A nossa equipa ajuda-o a concluir a inscrição pelo WhatsApp.
+                  </span>
+                </span>
+              </a>
             </div>
 
-            <button type="button" onClick={handleClick} className="btn-primary mt-5 w-full">
-              Confirmar inscrição
+            <button type="button" onClick={handleConfirm} className="btn-primary mt-5 w-full">
+              {method === "referencia" ? "Continuar no WhatsApp" : "Confirmar inscrição"}
             </button>
-            <p className="mt-3 text-center text-[11px] text-cream/50">
+            <p className="mt-3 text-center text-[11px] text-ink-soft">
               Todas as transacções são seguras e encriptadas. Ao confirmar, aceita os{" "}
-              <Link href="/termos" className="underline hover:text-cream" target="_blank">
+              <Link href="/termos" className="underline hover:text-ink" target="_blank">
                 Termos e Condições
               </Link>
               .
