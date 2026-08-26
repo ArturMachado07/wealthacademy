@@ -28,9 +28,8 @@ type Status =
 // atalho directo para o WhatsApp, fora do grupo de rádio — ver render).
 // Só o Multicaixa Express está de facto ligado a um gateway (ProxyPay/EMIS
 // GPO); "Pagamento por Referência" ainda não gera nada automaticamente —
-// ao confirmar com este método seleccionado, encaminha para o WhatsApp em
-// vez de chamar o endpoint de pagamento (ver handleConfirm), para nunca
-// mostrar um QR/deeplink da Multicaixa Express associado ao método errado.
+// por agora segue o mesmo fluxo (em modo demonstração confirma a inscrição
+// na mesma), só muda o ícone/descrição mostrados ao aluno.
 const PAYMENT_METHODS = [
   {
     id: "mcx",
@@ -71,18 +70,6 @@ export default function PaymentButton({
     if (studentName) lines.push(`Nome: ${studentName}`);
     if (studentEmail) lines.push(`Email: ${studentEmail}`);
     return lines.join("\n");
-  }
-
-  function handleConfirm() {
-    if (method === "referencia") {
-      window.open(
-        whatsappLink(buildWhatsAppMessage("Olá! Gostaria de pagar por Referência Multicaixa.")),
-        "_blank",
-        "noopener,noreferrer"
-      );
-      return;
-    }
-    handleClick();
   }
 
   async function handleClick() {
@@ -294,8 +281,8 @@ export default function PaymentButton({
               </a>
             </div>
 
-            <button type="button" onClick={handleConfirm} className="btn-primary mt-5 w-full">
-              {method === "referencia" ? "Continuar no WhatsApp" : "Confirmar inscrição"}
+            <button type="button" onClick={handleClick} className="btn-primary mt-5 w-full">
+              Confirmar inscrição
             </button>
             <p className="mt-3 text-center text-[11px] text-ink-soft">
               Todas as transacções são seguras e encriptadas. Ao confirmar, aceita os{" "}
