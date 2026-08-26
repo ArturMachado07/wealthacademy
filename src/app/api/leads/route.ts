@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { sendNewLeadNotificationEmail } from "@/lib/email";
+import { createAdminNotification } from "@/lib/notifications";
 
 // Endpoint de recepção de leads (contacto geral, formulário corporativo,
 // lista de interesse da Área do Aluno).
@@ -50,6 +51,12 @@ export async function POST(request: Request) {
       console.error("[wealth-academy] falha ao gravar lead na BD:", error);
       return NextResponse.json({ ok: false, error: "Não foi possível registar o pedido." }, { status: 500 });
     }
+
+    await createAdminNotification(supabase, {
+      title: "Novo lead",
+      message: `${body.name} enviou um pedido de contacto (${body.origin ?? "Website"}).`,
+      link: "/admin",
+    });
   } else {
     console.log("[wealth-academy] novo lead (sem BD configurada):", JSON.stringify(body));
   }
