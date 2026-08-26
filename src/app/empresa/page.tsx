@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentCompany } from "@/lib/company-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
@@ -6,6 +7,7 @@ import { courses } from "@/data/courses";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 import { parseInvestment, formatKz, turmaTotal } from "@/lib/pricing";
 import SignOutButton from "@/components/SignOutButton";
+import Avatar from "@/components/Avatar";
 import CompanyNotificationBell from "@/components/empresa/NotificationBell";
 import CreateTurmaForm from "@/components/empresa/CreateTurmaForm";
 import InviteLinkBox from "@/components/empresa/InviteLinkBox";
@@ -83,9 +85,23 @@ export default async function EmpresaDashboardPage() {
     <section className="py-16">
       <div className="container-page">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="eyebrow">Portal da Empresa</p>
-            <h1 className="mt-2 font-display text-3xl text-ink">Olá, {company.name}</h1>
+          <div className="flex items-center gap-4">
+            <Avatar url={company.logo_url} name={company.name} size={64} />
+            <div>
+              <p className="eyebrow">Portal da Empresa</p>
+              <h1 className="mt-2 font-display text-3xl text-ink">Olá, {company.name}</h1>
+              <div className="mt-3 flex gap-4 text-sm">
+                <Link href="/empresa/perfil" className="text-gold-dark underline">
+                  O meu perfil
+                </Link>
+                <Link href="/empresa/pagamentos" className="text-gold-dark underline">
+                  Os meus pagamentos
+                </Link>
+                <Link href="/empresa/certificados" className="text-gold-dark underline">
+                  Certificados dos colaboradores
+                </Link>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <CompanyNotificationBell />
@@ -150,7 +166,11 @@ export default async function EmpresaDashboardPage() {
 
                     {turma.status === "fechada" && total !== null && (
                       <div className="mt-3">
-                        <TurmaPaymentButton turmaId={turma.id} amountLabel={formatKz(total)} />
+                        <TurmaPaymentButton
+                          turmaId={turma.id}
+                          courseTitle={turma.course_title}
+                          amountLabel={formatKz(total)}
+                        />
                       </div>
                     )}
 

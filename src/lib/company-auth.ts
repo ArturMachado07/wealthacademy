@@ -6,6 +6,7 @@ export type Company = {
   nif: string | null;
   contact_email: string;
   contact_phone: string | null;
+  logo_url: string | null;
 };
 
 // Devolve a empresa autenticada (via Supabase Auth) ou null — espelha
@@ -27,7 +28,7 @@ export async function getCurrentCompany(): Promise<Company | null> {
 
   const { data: company } = await supabase
     .from("companies")
-    .select("id, name, nif, contact_email, contact_phone")
+    .select("id, name, nif, contact_email, contact_phone, logo_url")
     .eq("auth_user_id", user.id)
     .single();
 

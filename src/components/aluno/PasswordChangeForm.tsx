@@ -2,7 +2,11 @@
 
 import { useState, type FormEvent } from "react";
 
-export default function PasswordChangeForm() {
+export default function PasswordChangeForm({
+  endpoint = "/api/aluno/perfil/senha",
+}: {
+  endpoint?: string;
+}) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,7 +28,7 @@ export default function PasswordChangeForm() {
     }
 
     setLoading(true);
-    const res = await fetch("/api/aluno/perfil/senha", {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
