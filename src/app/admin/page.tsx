@@ -89,33 +89,34 @@ export default async function AdminDashboardPage() {
   return (
     <section className="py-16">
       <div className="container-page">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="eyebrow">Painel Admin</p>
             <h1 className="mt-2 font-display text-3xl text-ink">Olá, {admin.name}</h1>
             <p className="mt-1 text-sm text-ink-soft">{admin.role}</p>
-            <div className="mt-3 flex flex-wrap gap-4 text-sm">
-              <Link href="/admin/formacoes" className="text-gold-dark underline">
-                Gerir conteúdo das formações (módulos e aulas)
-              </Link>
-              <Link href="/admin/pagamentos" className="text-gold-dark underline">
-                Ver todos os pagamentos
-              </Link>
-              <Link href="/admin/insights" className="text-gold-dark underline">
-                Gerir Wealth Insights (autores e artigos)
-              </Link>
-              <Link href="/admin/formadores" className="text-gold-dark underline">
-                Gerir Formadores
-              </Link>
-              <Link href="/admin/workshops" className="text-gold-dark underline">
-                Gerir Workshops
-              </Link>
-            </div>
           </div>
           <div className="flex items-center gap-2">
             <AdminNotificationBell />
             <SignOutButton />
           </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-4 text-sm">
+          <Link href="/admin/formacoes" className="text-gold-dark underline">
+            Gerir conteúdo das formações (módulos e aulas)
+          </Link>
+          <Link href="/admin/pagamentos" className="text-gold-dark underline">
+            Ver todos os pagamentos
+          </Link>
+          <Link href="/admin/insights" className="text-gold-dark underline">
+            Gerir Wealth Insights (autores e artigos)
+          </Link>
+          <Link href="/admin/formadores" className="text-gold-dark underline">
+            Gerir Formadores
+          </Link>
+          <Link href="/admin/workshops" className="text-gold-dark underline">
+            Gerir Workshops
+          </Link>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
