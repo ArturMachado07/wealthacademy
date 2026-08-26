@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { WhatsAppIcon } from "@/components/icons";
 
 type Props = {
   courseSlug: string;
@@ -25,26 +26,29 @@ type Status =
 // claramente marcados como "Brevemente" e não seleccionáveis, para o aluno
 // saber o que vem a seguir sem nunca pensar que escolheu um método que na
 // realidade seguia por outro caminho (auditoria de pré-lançamento, Fase 1).
-// Assim que houver dados bancários reais / um gateway de cartão ligado,
-// basta mudar `available` para true em cada um — o resto do fluxo já lida
-// com qualquer método marcado como disponível.
+// Assim que houver um método novo ligado (referência Multicaixa, WhatsApp a
+// sério), basta mudar `available` para true — o resto do fluxo já lida com
+// qualquer método marcado como disponível.
 const PAYMENT_METHODS = [
   {
     id: "mcx",
     label: "Multicaixa Express",
-    icons: ["/brand/icones-pagamento/express.svg"],
+    description: "Recebe uma notificação no telemóvel para confirmar o pagamento.",
+    icon: "/brand/icones-pagamento/mult-express.webp",
     available: true,
   },
   {
-    id: "card",
-    label: "Cartão Visa / Mastercard",
-    icons: ["/brand/icones-pagamento/visa.svg", "/brand/icones-pagamento/mastercard.svg"],
+    id: "referencia",
+    label: "Pagamento por Referência",
+    description: "Geramos entidade e referência para pagar no Multicaixa ou no seu banco.",
+    icon: "/brand/icones-pagamento/multicaixa-referencia.webp",
     available: false,
   },
   {
-    id: "transfer",
-    label: "Transferência bancária",
-    icons: ["/brand/icones-pagamento/transf-banco.svg"],
+    id: "ajuda",
+    label: "Preciso de ajuda para pagar",
+    description: "A nossa equipa ajuda-o a concluir a inscrição pelo WhatsApp.",
+    icon: null,
     available: false,
   },
 ] as const;
@@ -204,38 +208,37 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
           aria-label="Escolher forma de pagamento"
           className="fixed inset-0 z-50 flex items-center justify-center bg-ink/55 p-4"
         >
-          <div className="w-full max-w-sm rounded-lg bg-cream p-6">
+          <div className="w-full max-w-sm rounded-2xl bg-[#241D18] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] uppercase tracking-wide2 text-gold-dark">Wealth Academy</p>
-                <h3 className="mt-1 font-display text-lg text-ink">Concluir inscrição</h3>
+                <p className="text-[11px] uppercase tracking-wide2 text-gold-light">Wealth Academy</p>
+                <h3 className="mt-1 text-[17px] font-medium text-cream">Como quer pagar?</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setStatus("idle")}
                 aria-label="Fechar"
-                className="text-ink-soft hover:text-ink"
+                className="text-cream/50 hover:text-cream"
               >
                 ✕
               </button>
             </div>
 
-            <div className="mt-4 rounded border border-ink/10 bg-white px-3 py-2">
-              <p className="text-sm font-medium text-ink">{courseTitle}</p>
-              <p className="text-sm text-gold-dark">{investment}</p>
+            <div className="mt-3 rounded border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-sm font-medium text-cream">{courseTitle}</p>
+              <p className="text-sm text-gold-light">{investment}</p>
             </div>
 
-            <p className="mt-4 text-xs text-ink-soft">Forma de pagamento</p>
-            <div className="mt-2 flex flex-col gap-2">
+            <div className="mt-4 flex flex-col gap-2.5">
               {PAYMENT_METHODS.map((option) => (
                 <label
                   key={option.id}
-                  className={`flex items-center gap-3 rounded border px-3 py-2.5 ${
+                  className={`flex items-center gap-3 rounded-[10px] border px-3.5 py-3 ${
                     !option.available
-                      ? "cursor-not-allowed border-ink/10 opacity-60"
+                      ? "cursor-not-allowed border-white/10 opacity-70"
                       : method === option.id
-                        ? "cursor-pointer border-gold bg-white"
-                        : "cursor-pointer border-ink/15"
+                        ? "cursor-pointer border-gold-light bg-white/[0.06]"
+                        : "cursor-pointer border-white/10"
                   }`}
                 >
                   <input
@@ -244,20 +247,25 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
                     checked={method === option.id}
                     disabled={!option.available}
                     onChange={() => option.available && setMethod(option.id)}
-                    className="accent-gold-dark"
+                    className="sr-only"
                   />
-                  <span className="flex-1 text-sm text-ink">{option.label}</span>
+                  <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[7px] bg-white/[0.06]">
+                    {option.icon ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={option.icon} alt="" className="h-full w-full rounded-[7px] object-cover" />
+                    ) : (
+                      <WhatsAppIcon className="h-[18px] w-[18px] text-gold-light" />
+                    )}
+                  </span>
+                  <span className="flex-1">
+                    <span className="block text-sm font-medium text-cream">{option.label}</span>
+                    <span className="mt-0.5 block text-xs text-cream/60">{option.description}</span>
+                  </span>
                   {!option.available && (
-                    <span className="rounded-full border border-ink/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink-soft">
+                    <span className="shrink-0 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-cream/60">
                       Brevemente
                     </span>
                   )}
-                  <span className="flex items-center gap-2">
-                    {option.icons.map((src) => (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img key={src} src={src} alt="" className="h-5 w-auto" />
-                    ))}
-                  </span>
                 </label>
               ))}
             </div>
@@ -265,9 +273,9 @@ export default function PaymentButton({ courseSlug, courseTitle, investment }: P
             <button type="button" onClick={handleClick} className="btn-primary mt-5 w-full">
               Confirmar inscrição
             </button>
-            <p className="mt-3 text-center text-[11px] text-ink-soft">
+            <p className="mt-3 text-center text-[11px] text-cream/50">
               Todas as transacções são seguras e encriptadas. Ao confirmar, aceita os{" "}
-              <Link href="/termos" className="underline hover:text-ink" target="_blank">
+              <Link href="/termos" className="underline hover:text-cream" target="_blank">
                 Termos e Condições
               </Link>
               .
