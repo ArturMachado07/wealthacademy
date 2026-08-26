@@ -102,6 +102,9 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className="mt-3 flex flex-wrap gap-4 text-sm">
+          <Link href="/admin/empresas" className="text-gold-dark underline">
+            Gerir Empresas e Turmas
+          </Link>
           <Link href="/admin/formacoes" className="text-gold-dark underline">
             Gerir conteúdo das formações (módulos e aulas)
           </Link>

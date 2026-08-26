@@ -39,3 +39,22 @@ export async function createAdminNotification(
     console.error("[notifications] falha ao criar notificação de admin:", error);
   }
 }
+
+// Cria uma notificação no centro de notificações da Empresa (ver
+// supabase/026_companies_turmas.sql) — avisa sobre o que se passa com as
+// suas turmas (colaborador entrou, turma completa, turma paga e activada).
+export async function createCompanyNotification(
+  supabase: SupabaseClient,
+  params: { companyId: string; title: string; message: string; link?: string }
+) {
+  const { error } = await supabase.from("company_notifications").insert({
+    company_id: params.companyId,
+    title: params.title,
+    message: params.message,
+    link: params.link ?? null,
+  });
+
+  if (error) {
+    console.error("[notifications] falha ao criar notificação de empresa:", error);
+  }
+}

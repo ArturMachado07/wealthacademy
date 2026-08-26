@@ -23,7 +23,7 @@ export default function EmpresasSection() {
             responder de forma estratégica às exigências do mercado.
           </p>
           <Link href="/empresas" className="btn-primary mt-8 inline-flex">
-            Solicitar Programa Personalizado
+            Para Empresas
           </Link>
         </Reveal>
 
