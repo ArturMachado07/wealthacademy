@@ -20,3 +20,22 @@ export async function createNotification(
     console.error("[notifications] falha ao criar notificação:", error);
   }
 }
+
+// Cria uma notificação no centro de notificações do Admin (ver
+// supabase/025_admin_notifications.sql) — o mesmo espírito da de cima, mas
+// para alertar a equipa sobre o que os alunos vão fazendo (pagamentos
+// confirmados, cursos terminados), sem terem de ir conferir o dashboard.
+export async function createAdminNotification(
+  supabase: SupabaseClient,
+  params: { title: string; message: string; link?: string }
+) {
+  const { error } = await supabase.from("admin_notifications").insert({
+    title: params.title,
+    message: params.message,
+    link: params.link ?? null,
+  });
+
+  if (error) {
+    console.error("[notifications] falha ao criar notificação de admin:", error);
+  }
+}

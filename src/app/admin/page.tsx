@@ -7,6 +7,7 @@ import SignOutButton from "@/components/SignOutButton";
 import ConcluirInscricaoButton from "@/components/admin/ConcluirInscricaoButton";
 import CertificateUploadForm from "@/components/admin/CertificateUploadForm";
 import LeadStatusSelect from "@/components/admin/LeadStatusSelect";
+import AdminNotificationBell from "@/components/admin/NotificationBell";
 import { UsersIcon, UserPlusIcon, CoinIcon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Painel Admin" };
@@ -111,7 +112,10 @@ export default async function AdminDashboardPage() {
               </Link>
             </div>
           </div>
-          <SignOutButton />
+          <div className="flex items-center gap-2">
+            <AdminNotificationBell />
+            <SignOutButton />
+          </div>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">

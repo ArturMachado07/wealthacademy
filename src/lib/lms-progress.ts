@@ -1,4 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { createAdminNotification } from "@/lib/notifications";
 
 type AdminClient = ReturnType<typeof createSupabaseAdminClient>;
 
@@ -42,7 +43,7 @@ export async function recalcCourseProgress(
   // do Admin (emite certificado), mesmo que o progresso chegue a 100%.
   const { data: enrollment } = await supabase
     .from("enrollments")
-    .select("id, status")
+    .select("id, status, progress_percent, course_title")
     .eq("student_id", studentId)
     .eq("course_slug", courseSlug)
     .maybeSingle();
@@ -52,6 +53,18 @@ export async function recalcCourseProgress(
       .from("enrollments")
       .update({ progress_percent: progressPercent, updated_at: new Date().toISOString() })
       .eq("id", enrollment.id);
+
+    // Alerta o Admin só na transição para 100% (não a cada aula revisitada
+    // depois disso) — é o sinal de que o aluno terminou e está à espera do
+    // certificado a ser tratado manualmente.
+    if (progressPercent === 100 && enrollment.progress_percent !== 100) {
+      const { data: student } = await supabase.from("students").select("name").eq("id", studentId).maybeSingle();
+      await createAdminNotification(supabase, {
+        title: "Aluno terminou o curso",
+        message: `${student?.name ?? "Um aluno"} concluiu todas as aulas de "${enrollment.course_title}" — falta marcar como concluída e anexar o certificado.`,
+        link: "/admin",
+      });
+    }
   }
 
   return { progressPercent, completedLessons, totalLessons };
