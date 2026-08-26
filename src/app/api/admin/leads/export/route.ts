@@ -37,6 +37,11 @@ export async function GET() {
     "origin",
     "course_slug",
     "company",
+    "role",
+    "participants",
+    "training_need",
+    "preferred_modality",
+    "message",
     "status",
     "created_at",
   ];

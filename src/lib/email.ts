@@ -161,6 +161,11 @@ export async function sendNewLeadNotificationEmail(params: {
   interest?: string | null;
   origin?: string | null;
   company?: string | null;
+  role?: string | null;
+  participants?: string | null;
+  trainingNeed?: string | null;
+  preferredModality?: string | null;
+  message?: string | null;
 }) {
   const resend = getResendClient();
   if (!resend) return;
@@ -184,7 +189,12 @@ export async function sendNewLeadNotificationEmail(params: {
             <tr><td style="font-weight:600;">Telefone</td><td>${params.phone}</td></tr>
             ${params.interest ? `<tr><td style="font-weight:600;">Interesse</td><td>${params.interest}</td></tr>` : ""}
             ${params.company ? `<tr><td style="font-weight:600;">Empresa</td><td>${params.company}</td></tr>` : ""}
+            ${params.role ? `<tr><td style="font-weight:600;">Cargo</td><td>${params.role}</td></tr>` : ""}
+            ${params.participants ? `<tr><td style="font-weight:600;">Participantes</td><td>${params.participants}</td></tr>` : ""}
+            ${params.trainingNeed ? `<tr><td style="font-weight:600;">Necessidade de formação</td><td>${params.trainingNeed}</td></tr>` : ""}
+            ${params.preferredModality ? `<tr><td style="font-weight:600;">Modalidade preferencial</td><td>${params.preferredModality}</td></tr>` : ""}
             ${params.origin ? `<tr><td style="font-weight:600;">Origem</td><td>${params.origin}</td></tr>` : ""}
+            ${params.message ? `<tr><td style="font-weight:600;">Mensagem</td><td>${params.message}</td></tr>` : ""}
           </table>
         `,
         ctaLabel: "Ver todos os leads",

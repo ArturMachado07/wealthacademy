@@ -39,6 +39,11 @@ export async function POST(request: Request) {
       origin: body.origin ?? "Website",
       course_slug: body.course ?? null,
       company: body.company ?? null,
+      role: body.role ?? null,
+      participants: body.participants ?? null,
+      training_need: body.trainingNeed ?? null,
+      preferred_modality: body.preferredModality ?? null,
+      message: body.message ?? null,
     });
 
     if (error) {
@@ -56,6 +61,11 @@ export async function POST(request: Request) {
     interest: body.interest ?? null,
     origin: body.origin ?? "Website",
     company: body.company ?? null,
+    role: body.role ?? null,
+    participants: body.participants ?? null,
+    trainingNeed: body.trainingNeed ?? null,
+    preferredModality: body.preferredModality ?? null,
+    message: body.message ?? null,
   });
 
   return NextResponse.json({ ok: true });

@@ -31,6 +31,12 @@ type LeadRow = {
   origin: string;
   status: string;
   created_at: string;
+  company: string | null;
+  role: string | null;
+  participants: string | null;
+  training_need: string | null;
+  preferred_modality: string | null;
+  message: string | null;
 };
 
 function studentOf(row: EnrollmentRow) {
@@ -242,20 +248,54 @@ export default async function AdminDashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {leadRows.map((lead) => (
-                    <tr key={lead.id} className="border-b border-ink/5">
-                      <td className="py-3 pr-4 font-medium text-ink">{lead.name}</td>
-                      <td className="py-3 pr-4 text-ink-soft">
-                        {lead.email}
-                        {lead.phone ? ` · ${lead.phone}` : ""}
-                      </td>
-                      <td className="py-3 pr-4 text-ink-soft">{lead.interest ?? "—"}</td>
-                      <td className="py-3 pr-4 text-ink-soft">{lead.origin}</td>
-                      <td className="py-3 pr-4">
-                        <LeadStatusSelect leadId={lead.id} status={lead.status} />
-                      </td>
-                    </tr>
-                  ))}
+                  {leadRows.map((lead) => {
+                    // Leads do formulário "Para Empresas" trazem campos extra
+                    // (cargo, participantes, modalidade, etc.) que não cabem
+                    // na tabela principal — mostramos num <details> por baixo
+                    // da linha, só quando há de facto algo para mostrar.
+                    const extraFields: Array<[string, string]> = (
+                      [
+                        ["Empresa", lead.company ?? ""],
+                        ["Cargo", lead.role ?? ""],
+                        ["Participantes", lead.participants ?? ""],
+                        ["Modalidade preferencial", lead.preferred_modality ?? ""],
+                        ["Necessidade de formação", lead.training_need ?? ""],
+                        ["Mensagem", lead.message ?? ""],
+                      ] as Array<[string, string]>
+                    ).filter(([, value]) => value);
+
+                    return (
+                      <tr key={lead.id} className="border-b border-ink/5 align-top">
+                        <td className="py-3 pr-4 font-medium text-ink">{lead.name}</td>
+                        <td className="py-3 pr-4 text-ink-soft">
+                          {lead.email}
+                          {lead.phone ? ` · ${lead.phone}` : ""}
+                        </td>
+                        <td className="py-3 pr-4 text-ink-soft">{lead.interest ?? "—"}</td>
+                        <td className="py-3 pr-4 text-ink-soft">
+                          {lead.origin}
+                          {extraFields.length > 0 && (
+                            <details className="mt-1">
+                              <summary className="cursor-pointer text-xs text-gold-dark underline">
+                                Ver detalhes
+                              </summary>
+                              <dl className="mt-2 grid gap-1 text-xs text-ink-soft">
+                                {extraFields.map(([label, value]) => (
+                                  <div key={label}>
+                                    <dt className="inline font-medium text-ink">{label}: </dt>
+                                    <dd className="inline">{value}</dd>
+                                  </div>
+                                ))}
+                              </dl>
+                            </details>
+                          )}
+                        </td>
+                        <td className="py-3 pr-4">
+                          <LeadStatusSelect leadId={lead.id} status={lead.status} />
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
