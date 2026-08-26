@@ -7,6 +7,7 @@ import SignOutButton from "@/components/SignOutButton";
 import ConcluirInscricaoButton from "@/components/admin/ConcluirInscricaoButton";
 import CertificateUploadForm from "@/components/admin/CertificateUploadForm";
 import LeadStatusSelect from "@/components/admin/LeadStatusSelect";
+import { UsersIcon, UserPlusIcon, CoinIcon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Painel Admin" };
 export const dynamic = "force-dynamic";
@@ -115,15 +116,24 @@ export default async function AdminDashboardPage() {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           <div className="rounded border border-ink/10 bg-white/60 p-6">
-            <p className="text-xs uppercase tracking-wide text-ink-soft">Inscrições</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10">
+              <UsersIcon className="h-[18px] w-[18px] text-gold-dark" />
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-wide text-ink-soft">Inscrições</p>
             <p className="mt-2 font-display text-3xl text-ink">{enrollmentRows.length}</p>
           </div>
           <div className="rounded border border-ink/10 bg-white/60 p-6">
-            <p className="text-xs uppercase tracking-wide text-ink-soft">Leads</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10">
+              <UserPlusIcon className="h-[18px] w-[18px] text-gold-dark" />
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-wide text-ink-soft">Leads</p>
             <p className="mt-2 font-display text-3xl text-ink">{leadRows.length}</p>
           </div>
           <div className="rounded border border-ink/10 bg-white/60 p-6">
-            <p className="text-xs uppercase tracking-wide text-ink-soft">Receita confirmada</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10">
+              <CoinIcon className="h-[18px] w-[18px] text-gold-dark" />
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-wide text-ink-soft">Receita confirmada</p>
             <p className="mt-2 font-display text-3xl text-ink">
               {revenueByCurrency.size === 0
                 ? "0 Kz"

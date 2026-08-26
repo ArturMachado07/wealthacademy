@@ -160,6 +160,56 @@ export function CheckCircleIcon({ className }: IconProps) {
   );
 }
 
+export function ClockIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+  );
+}
+
+export function AwardIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="8.5" r="5" />
+      <path d="M8.5 12.8L6.5 20l5.5-3 5.5 3-2-7.2" />
+    </svg>
+  );
+}
+
+export function UsersIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="9" cy="8.5" r="3" />
+      <path d="M3.5 20c.6-3.4 2.9-5.5 5.5-5.5s4.9 2.1 5.5 5.5" />
+      <circle cx="17.5" cy="9.5" r="2.2" />
+      <path d="M15.8 14.7c1.9.4 3.3 2 3.7 4.3" />
+    </svg>
+  );
+}
+
+export function UserPlusIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="10" cy="8.5" r="3.2" />
+      <path d="M4 20c.6-3.6 3-5.8 6-5.8s5.4 2.2 6 5.8" />
+      <path d="M18.5 8v5" />
+      <path d="M16 10.5h5" />
+    </svg>
+  );
+}
+
+export function CoinIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 8v8" />
+      <path d="M9.5 9.8c0-1.1 1-2 2.5-2s2.5.7 2.5 1.8-1 1.6-2.5 1.9c-1.5.3-2.5.9-2.5 2s1 1.8 2.5 1.8 2.5-.8 2.5-1.9" />
+    </svg>
+  );
+}
+
 export function FilterIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

@@ -8,6 +8,7 @@ import NotificationBell from "@/components/aluno/NotificationBell";
 import Avatar from "@/components/Avatar";
 import EmptyState from "@/components/EmptyState";
 import PaymentButton from "@/components/PaymentButton";
+import { ClockIcon, CheckCircleIcon, AwardIcon } from "@/components/icons";
 import { courses } from "@/data/courses";
 import { getCourseOverrides, applyCourseOverride } from "@/lib/course-overrides";
 import { getWorkshops } from "@/lib/workshops";
@@ -102,15 +103,24 @@ export default async function AlunoDashboardPage() {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           <div className="rounded border border-ink/10 bg-white/60 p-6">
-            <p className="text-xs uppercase tracking-wide text-ink-soft">Em curso</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10">
+              <ClockIcon className="h-[18px] w-[18px] text-gold-dark" />
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-wide text-ink-soft">Em curso</p>
             <p className="mt-2 font-display text-3xl text-ink">{emCursoCount}</p>
           </div>
           <div className="rounded border border-ink/10 bg-white/60 p-6">
-            <p className="text-xs uppercase tracking-wide text-ink-soft">Concluídos</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10">
+              <CheckCircleIcon className="h-[18px] w-[18px] text-gold-dark" />
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-wide text-ink-soft">Concluídos</p>
             <p className="mt-2 font-display text-3xl text-ink">{concluidasCount}</p>
           </div>
           <div className="rounded border border-ink/10 bg-white/60 p-6">
-            <p className="text-xs uppercase tracking-wide text-ink-soft">Certificados</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10">
+              <AwardIcon className="h-[18px] w-[18px] text-gold-dark" />
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-wide text-ink-soft">Certificados</p>
             <p className="mt-2 font-display text-3xl text-ink">{earnedCertificates.length}</p>
           </div>
         </div>
